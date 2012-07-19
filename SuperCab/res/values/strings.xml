@@ -241,5 +241,9 @@
 <string name="upload_failed">Upload Failed!</string>
 <string name="please_correct_username">Please check your username and password.</string>
 
+<!-- SuperCab! -->
+<string name="loading_address">Loading Address...</string>
+<string name="pick_me_up_here">Pick me up here</string>
+<string name="drop_me_off_here">Drop me off here</string>
 
 </resources>

@@ -1,16 +1,22 @@
 package co.gargoyle.supercab.android.utilities;
 
+import java.util.List;
+
+import android.location.Address;
 import android.location.Location;
 
 import com.google.android.maps.GeoPoint;
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 public class GeoUtils {
 
+  private static final int MAP_SCALE = (int) (1E6);
+
   @Inject
   public GeoUtils() {
   }
-  
+
   private static final int TWO_MINUTES = 1000 * 60 * 2;
 
   /** Determines whether one Location reading is better than the current Location fix
@@ -74,10 +80,10 @@ public class GeoUtils {
       return location.toString();
     }
   }
-  
+
   public Location geoPointToLocation(GeoPoint geoPoint) {
-    double latitude = geoPoint.getLatitudeE6() / 1E6;
-    double longitude = geoPoint.getLongitudeE6() / 1E6;
+    double latitude  = GeoUtils.integerToDoubleValue(geoPoint.getLatitudeE6());
+    double longitude = GeoUtils.integerToDoubleValue(geoPoint.getLongitudeE6());
 
     Location location = new Location("GeoUtils");
     location.setLatitude(latitude);
@@ -87,15 +93,60 @@ public class GeoUtils {
   }
 
   public GeoPoint locationToGeoPoint(Location location) {
-    //double latitude = location.getLatitude();
-    //double longitude = location.getLongitude();
-    int latitude = (int) (location.getLatitude()  * 1E6);
-    int longitude = (int) (location.getLongitude() * 1E6);
+    int latitude  = GeoUtils.doubleToIntegerValue(location.getLatitude());
+    int longitude = GeoUtils.doubleToIntegerValue(location.getLongitude());
 
     GeoPoint geoPoint = new GeoPoint(latitude, longitude);
 
     return geoPoint;
   }
 
+  public static GeoPoint addressToGeoPoint(Address address) {
+    int latitude  = GeoUtils.doubleToIntegerValue(address.getLatitude());
+    int longitude = GeoUtils.doubleToIntegerValue(address.getLongitude());
+
+    GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+
+    return geoPoint;
+  }
+
+  public static double integerToDoubleValue(int valueE6) {
+    double newValue = valueE6 / 1E6;
+    return newValue;
+  }
+
+  public static int doubleToIntegerValue(double value) {
+    int newValue = (int) (value * 1E6);
+    return newValue;
+  }
+
+  public static GeoPoint getPoint(double lat, double lon) {
+    return (new GeoPoint((int) (lat * 1000000.0), (int) (lon * 1000000.0)));
+  }
+
+
+  public static Optional<GeoPoint> getCenterPoint(List<GeoPoint> points) {
+    if (points.size() == 0) {
+      return Optional.absent();
+    }
+
+    int minLat = 81   * MAP_SCALE;
+    int maxLat = -81  * MAP_SCALE;
+    int minLon = 181  * MAP_SCALE;
+    int maxLon = -181 * MAP_SCALE;
+
+    for (GeoPoint point : points) {
+      minLat = (int) ((minLat > point.getLatitudeE6() ) ? point.getLatitudeE6()  : minLat);
+      maxLat = (int) ((maxLat < point.getLatitudeE6() ) ? point.getLatitudeE6()  : maxLat);
+      minLon = (int) ((minLon > point.getLongitudeE6()) ? point.getLongitudeE6() : minLon);
+      maxLon = (int) ((maxLon < point.getLongitudeE6()) ? point.getLongitudeE6() : maxLon);
+    }
+
+    int latitudeMidpoint = (minLat + maxLat) / 2;
+    int longitudeMidpoint = (minLon + maxLon) / 2;
+
+    GeoPoint centerPoint = new GeoPoint(latitudeMidpoint, longitudeMidpoint);
+    return Optional.of(centerPoint);
+  }
 
 }
