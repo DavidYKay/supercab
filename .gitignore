@@ -1,8 +1,6 @@
 .DS_Store
 bin/
 gen/
-.classpath
-.project
 
 .hg*
 

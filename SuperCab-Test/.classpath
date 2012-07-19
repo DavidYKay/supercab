@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/robolectric-1.2-20120713.175518-108-jar-with-dependencies.jar"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="/home/dk/Tools/android/android-sdk-linux/platforms/android-14/android.jar"/>
+	<classpathentry kind="lib" path="/home/dk/Tools/android/android-sdk-linux/add-ons/addon-google_apis-google-14/libs/maps.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SuperCab"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
