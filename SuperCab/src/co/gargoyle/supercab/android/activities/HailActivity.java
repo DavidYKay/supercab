@@ -1,15 +1,25 @@
 package co.gargoyle.supercab.android.activities;
 
+import java.io.IOException;
+import java.util.List;
+
 import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import co.gargoyle.supercab.android.R;
+import co.gargoyle.supercab.android.map.ExtendedMapView;
+import co.gargoyle.supercab.android.map.ExtendedMapView.OnMoveListener;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
@@ -19,8 +29,9 @@ public class HailActivity extends RoboMapActivity {
 
   private static final String t = "HailActivity";
 
+  @InjectView(R.id.location_text) private TextView mAddressText;
   @InjectView(R.id.hail_button) private Button mHailButton;
-  @InjectView(R.id.map) private MapView mMapView;
+  @InjectView(R.id.map) private ExtendedMapView mMapView;
   
   @Inject private GeoUtils mGeoUtils;
 
@@ -28,6 +39,8 @@ public class HailActivity extends RoboMapActivity {
   private MapController mMapController;
 
   private Location mLastKnownLocation;
+
+  private Handler mHandler;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +61,17 @@ public class HailActivity extends RoboMapActivity {
       }
     };
     mMapView.getOverlays().add(mMyLocationOverlay);
+    
+    mMapView.setOnMoveListener(new OnMoveListener() {
+      public void onMove(MapView mapView, GeoPoint center, boolean stopped) {
+        Log.d(t, String.format("onMove center: %s stopped: %b", center.toString(), stopped));
+        if (stopped) {
+          updateAddressWithGeoPoint(center);
+        }
+      }
+
+     
+    });
 
     centerMapOnLastKnownLocation();
   }
@@ -62,11 +86,14 @@ public class HailActivity extends RoboMapActivity {
 
     mMyLocationOverlay.disableMyLocation();
     mMyLocationOverlay.disableCompass();
+
+    mHandler = null;
   }
 
   @Override
   protected void onResume() {
     super.onResume();
+    mHandler = new Handler();
 
     mMyLocationOverlay.enableMyLocation();
     mMyLocationOverlay.enableCompass();
@@ -138,6 +165,42 @@ public class HailActivity extends RoboMapActivity {
       return false;
     }
     return true;
+  }
+  
+  private void updateAddressWithGeoPoint(GeoPoint center) {
+    Log.d("address", "updateAddressWithGeoPoint()");
+    Address address = geoCodeNewPoint(center);
+
+    String addressString = address.getAddressLine(0);
+    Log.d("address", "current address text: " + mAddressText.getText().toString());
+    Log.d("address", "new address text: " + addressString);
+    //mAddressText.setText(addressString);
+    updateAddressTextOnUiThread(addressString);
+  }
+
+  private void updateAddressTextOnUiThread(final CharSequence newText) {
+    Runnable updateUITimerTask = new Runnable() {
+      public void run() {
+        // do whatever you want to change here, like:
+        //mAddressText.setText(newText);
+        mAddressText.setText(newText);
+      }
+    };
+    mHandler.post(updateUITimerTask);
+  }
+
+  private Address geoCodeNewPoint(GeoPoint center) {
+    Geocoder geocoder = new Geocoder(this);
+    Location location = mGeoUtils.geoPointToLocation(center);
+    try {
+      List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+      Address address = addresses.get(0);
+      return address;
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      return null;
+    }
   }
 
 }

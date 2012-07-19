@@ -47,7 +47,11 @@
       />
   </RelativeLayout>
 
-  <com.google.android.maps.MapView 
+  
+  <!--
+  com.google.android.maps.MapView 
+-->
+  <co.gargoyle.supercab.android.map.ExtendedMapView
     android:id="@+id/map"
     android:layout_width="fill_parent"
     android:layout_height="0px"
@@ -98,7 +102,7 @@
           android:layout_height="fill_parent"
           android:layout_alignParentTop="true"
           android:layout_toRightOf="@id/location_hint"
-          android:text="1 Kindaruma Road"
+          android:text="Finding Address..."
           android:gravity="center"
           />
       </LinearLayout>
