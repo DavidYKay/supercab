@@ -5,6 +5,9 @@ import java.util.List;
 
 import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.map.ExtendedMapView;
 import co.gargoyle.supercab.android.map.ExtendedMapView.OnMoveListener;
+import co.gargoyle.supercab.android.map.XOverlay;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 
 import com.google.android.maps.GeoPoint;
@@ -35,6 +39,7 @@ public class HailActivity extends RoboMapActivity {
 
   @Inject private GeoUtils mGeoUtils;
 
+  private XOverlay mXOverlay;
   private MyLocationOverlay mMyLocationOverlay;
   private MapController mMapController;
 
@@ -64,7 +69,10 @@ public class HailActivity extends RoboMapActivity {
         }
       }
     };
+    mXOverlay = new XOverlay(getXBitmap());
+
     mMapView.getOverlays().add(mMyLocationOverlay);
+    mMapView.getOverlays().add(mXOverlay);
 
     mMapView.setOnMoveListener(new OnMoveListener() {
       public void onMove(MapView mapView, GeoPoint center, boolean stopped) {
@@ -205,4 +213,9 @@ public class HailActivity extends RoboMapActivity {
     }
   }
 
+  private Bitmap getXBitmap() {
+    Drawable xDrawable = getResources().getDrawable(R.drawable.x);
+    Bitmap bitmap = ((BitmapDrawable)xDrawable).getBitmap();
+    return bitmap;
+  }
 }
