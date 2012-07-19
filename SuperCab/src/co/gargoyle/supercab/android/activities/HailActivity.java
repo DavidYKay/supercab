@@ -32,15 +32,16 @@ public class HailActivity extends RoboMapActivity {
   @InjectView(R.id.location_text) private TextView mAddressText;
   @InjectView(R.id.hail_button) private Button mHailButton;
   @InjectView(R.id.map) private ExtendedMapView mMapView;
-  
+
   @Inject private GeoUtils mGeoUtils;
 
   private MyLocationOverlay mMyLocationOverlay;
   private MapController mMapController;
 
-  private Location mLastKnownLocation;
-
   private Handler mHandler;
+
+  private Location mLastKnownLocation;
+  private boolean mHasGeolocated;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +58,14 @@ public class HailActivity extends RoboMapActivity {
       @Override
       public synchronized void onLocationChanged(Location location) {
         super.onLocationChanged(location);
-        centerMapOnLocation(location);
+        if (!mHasGeolocated) {
+          centerMapOnLocation(location);
+          mHasGeolocated = true;
+        }
       }
     };
     mMapView.getOverlays().add(mMyLocationOverlay);
-    
+
     mMapView.setOnMoveListener(new OnMoveListener() {
       public void onMove(MapView mapView, GeoPoint center, boolean stopped) {
         Log.d(t, String.format("onMove center: %s stopped: %b", center.toString(), stopped));
@@ -69,8 +73,6 @@ public class HailActivity extends RoboMapActivity {
           updateAddressWithGeoPoint(center);
         }
       }
-
-     
     });
 
     centerMapOnLastKnownLocation();
@@ -166,7 +168,7 @@ public class HailActivity extends RoboMapActivity {
     }
     return true;
   }
-  
+
   private void updateAddressWithGeoPoint(GeoPoint center) {
     Log.d("address", "updateAddressWithGeoPoint()");
     Address address = geoCodeNewPoint(center);
