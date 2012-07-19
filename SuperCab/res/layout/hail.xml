@@ -33,6 +33,7 @@
       android:layout_alignParentLeft="true"
       android:layout_marginLeft="10dp"
       android:text="@string/app_name"
+      android:textSize="24sp"
       android:gravity="center"
       />
 
