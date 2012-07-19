@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2009 University of Washington Licensed under the Apache
+  License, Version 2.0 (the "License"); you may not use this file except in
+  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
+  OR CONDITIONS OF ANY KIND, either express or implied. See the License for
+  the specific language governing permissions and limitations under the License.
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginBottom="0dp"
+    android:layout_marginLeft="0dp"
+    android:layout_marginRight="0dp"
+    android:layout_marginTop="0dp"
+    android:orientation="vertical"
+    android:padding="0dp" >
+
+    <ImageView
+      android:id="@+id/logo_header"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
+      android:gravity="center"
+      android:paddingBottom="1dp"
+      android:paddingTop="6dp"
+      android:layout_marginTop="10dp"
+      android:layout_marginLeft="10dp"
+      android:layout_marginRight="10dp"
+      android:src="@drawable/logo_big"
+      />
+
+    <TextView
+      android:id="@+id/main_menu_header"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/logo_header"
+      android:gravity="center"
+      android:text="@string/app_name"
+      android:textSize="12dp"
+      android:layout_marginBottom="10dp"
+      />
+    <!--
+        android:textStyle="bold"
+        -->
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" >
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="10dp" />
+
+            <Button
+                android:id="@+id/enter_data"
+                android:text="@string/enter_new_sale"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:textSize="21dp"
+                android:onClick="onEnterDataButtonClicked"
+                />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="5dp" />
+
+            <Button
+                android:id="@+id/send_data"
+                android:text="@string/review_old_sales"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:textSize="21dp"
+                android:onClick="onSendDataButtonClicked"
+                />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="20dp" />
+
+              <Button
+                android:id="@+id/download_form"
+                android:text="@string/download_form"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:textSize="21dp"
+                android:onClick="onDownloadFormButtonClicked"
+                />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="20dp" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
