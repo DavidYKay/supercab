@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.restlet.data.MediaType;
-import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
@@ -13,15 +11,15 @@ import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.Fare;
 
-public class UploadFareTask extends AsyncTask<Fare, Integer, Boolean> {
+public class GetFareTask extends AsyncTask<Fare, Integer, Boolean> {
 
-  // private UploadPhoneCallListener mListener;
+  // private GetPhoneCallListener mListener;
 
-  // public UploadPhoneCallTask(UploadPhoneCallListener listener) {
+  // public GetPhoneCallTask(GetPhoneCallListener listener) {
   // mListener = listener;
   // }
 
-  private static final String TAG = "UploadFareTask";
+  private static final String TAG = "GetFareTask";
 
   @Override
   protected Boolean doInBackground(Fare... fares) {
@@ -30,10 +28,7 @@ public class UploadFareTask extends AsyncTask<Fare, Integer, Boolean> {
     URI uri = getURI();
 
     ClientResource fareProfile = new ClientResource(uri);
-
-    JacksonRepresentation<Fare> jacksonRep = new JacksonRepresentation<Fare>(MediaType.APPLICATION_JSON, fare);
-    //Representation rep = fareProfile.post();
-    Representation rep = fareProfile.post(jacksonRep);
+    Representation rep = fareProfile.get();
     if (fareProfile.getStatus().isSuccess()) {
       try {
         Log.d(TAG, "response: " + rep.getText());
@@ -58,7 +53,7 @@ public class UploadFareTask extends AsyncTask<Fare, Integer, Boolean> {
 
   private URI getURI() {
     try {
-      URI uri = new URI("http://192.168.0.107/fares/new");
+      URI uri = new URI("http://192.168.0.107/");
       return uri;
     } catch (URISyntaxException e) {
       e.printStackTrace();
