@@ -1,4 +1,4 @@
-package co.gargoyle.supercab.android.map;
+package co.gargoyle.supercab.android.model;
 
 import android.location.Address;
 import co.gargoyle.supercab.android.enums.FareType;

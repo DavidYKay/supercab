@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 
 import com.google.android.maps.GeoPoint;

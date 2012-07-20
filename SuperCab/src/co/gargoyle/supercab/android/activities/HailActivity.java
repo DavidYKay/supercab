@@ -30,8 +30,8 @@ import co.gargoyle.supercab.android.map.ExtendedMapView.OnMoveListener;
 import co.gargoyle.supercab.android.map.PickupDropoffItem;
 import co.gargoyle.supercab.android.map.PickupDropoffOverlay;
 import co.gargoyle.supercab.android.map.PickupDropoffOverlayTapListener;
-import co.gargoyle.supercab.android.map.PickupPoint;
 import co.gargoyle.supercab.android.map.XOverlay;
+import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 
 import com.google.android.maps.GeoPoint;

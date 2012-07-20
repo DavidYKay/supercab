@@ -2,6 +2,7 @@ package co.gargoyle.supercab.android.map;
 
 import android.graphics.drawable.Drawable;
 import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 
 import com.google.android.maps.OverlayItem;
