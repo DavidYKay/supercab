@@ -70,6 +70,12 @@ public class PickupDropoffOverlay extends ItemizedOverlay<PickupDropoffItem> {
   // Add / Remove
   ////////////////////////////////////////////////////////////
 
+  public PickupPoint get(int i) {
+    synchronized(mPickups) {
+      return mPickups.get(i);
+    }
+  }
+
   public void addPickup(PickupPoint pickup) {
     synchronized(mPickups) {
       mPickups.add(pickup);

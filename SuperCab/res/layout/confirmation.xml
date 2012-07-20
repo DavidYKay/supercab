@@ -33,6 +33,35 @@
     android:stretchColumns="1"
     android:gravity="center"
     >
+    <TableRow
+      android:id="@+id/time_row"
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent"
+      android:gravity="center_horizontal"
+      >
+      <TextView
+        android:id="@+id/time_label"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="From:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="left"
+        />
+      <TextView
+        android:id="@+id/time_value"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="12:34"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="right"
+        />
+    </TableRow>
 
     <TableRow
       android:id="@+id/from_row"

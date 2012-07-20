@@ -1,6 +1,7 @@
 package co.gargoyle.supercab.android.activities;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import co.gargoyle.supercab.android.map.PickupDropoffItem;
 import co.gargoyle.supercab.android.map.PickupDropoffOverlay;
 import co.gargoyle.supercab.android.map.PickupDropoffOverlayTapListener;
 import co.gargoyle.supercab.android.map.XOverlay;
+import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 
@@ -42,6 +44,8 @@ import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 public class HailActivity extends RoboMapActivity {
+  
+  public static final String KEY_FARE = "fare";
 
   private static final String TAG = "HailActivity";
   private static final String LOCATION_TAG = "location";
@@ -193,8 +197,16 @@ public class HailActivity extends RoboMapActivity {
   public void onConfirmButtonClicked(View view) {
     Log.i(TAG, "onConfirmButtonClicked()");
 
-    Intent i = new Intent( HailActivity.this, ConfirmationActivity.class);
+    PickupPoint source = mPickupDropoffOverlay.get(0);
+    PickupPoint destination = mPickupDropoffOverlay.get(1);
+    Date timeRequested = new Date();
+
+    Fare fare = new Fare(source, destination, timeRequested);
+
+    Intent i = new Intent(HailActivity.this, ConfirmationActivity.class);
+    i.putExtra(KEY_FARE, fare);
     startActivity(i);
+
   }
 
   public void onCancelConfirmButtonClicked(View view) {

@@ -1,11 +1,13 @@
 package co.gargoyle.supercab.android.model;
 
 import android.location.Address;
+import android.os.Parcel;
+import android.os.Parcelable;
 import co.gargoyle.supercab.android.enums.FareType;
 
 import com.google.common.base.Objects;
 
-public class PickupPoint {
+public class PickupPoint implements Parcelable {
 
   private FareType mFareType;
   private Address mAddress;
@@ -38,8 +40,32 @@ public class PickupPoint {
   public String toString() {
     return Objects.toStringHelper(this)
                 .addValue(mFareType)
-                .addValue(mAddress)
+                .addValue(mAddress.getAddressLine(0))
                 .toString();
   }
+
+  @Override
+  public int describeContents() {
+    return 0;
+  }
+
+  @Override
+  public void writeToParcel(Parcel out, int flags) {
+    out.writeParcelable(mFareType, flags);
+    out.writeParcelable(mAddress, flags);
+  }
+
+  public static final Parcelable.Creator<PickupPoint> CREATOR = new Parcelable.Creator<PickupPoint>() {
+    public PickupPoint createFromParcel(Parcel in) {
+      FareType fareType = in.readParcelable(PickupPoint.class.getClassLoader());
+      Address address = in.readParcelable(PickupPoint.class.getClassLoader());
+      return new PickupPoint(fareType, address);
+    }
+
+    public PickupPoint[] newArray(int size) {
+      return new PickupPoint[size];
+    }
+  };
+
 
 }
