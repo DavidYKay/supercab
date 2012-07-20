@@ -245,5 +245,7 @@
 <string name="loading_address">Loading Address...</string>
 <string name="pick_me_up_here">Pick me up here</string>
 <string name="drop_me_off_here">Drop me off here</string>
+<string name="confirm">Confirm</string>
+<string name="status">Status</string>
 
 </resources>

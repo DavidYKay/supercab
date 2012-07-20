@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Copyright (C) 2009 University of Washington Licensed under the Apache
-  License, Version 2.0 (the "License"); you may not use this file except in
-  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-  Unless required by applicable law or agreed to in writing, software distributed
-  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
-  OR CONDITIONS OF ANY KIND, either express or implied. See the License for
-  the specific language governing permissions and limitations under the License.
--->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:id="@+id/rl"
   android:layout_width="fill_parent"
@@ -45,14 +36,14 @@
       android:layout_alignParentRight="true"
       android:onClick="onProfileButtonClicked"
       android:scaleType="fitEnd"
-      android:src="@drawable/profile" 
+      android:src="@drawable/profile"
       />
 
   </RelativeLayout>
 
 
   <!--
-  com.google.android.maps.MapView 
+  com.google.android.maps.MapView
 -->
   <co.gargoyle.supercab.android.map.ExtendedMapView
     android:id="@+id/map"
@@ -63,6 +54,7 @@
     android:clickable="true" />
 
   <LinearLayout
+    android:id="@+id/bottom_bar_pickup"
     android:layout_width="fill_parent"
     android:layout_height="0px"
     android:layout_weight="25"
@@ -100,8 +92,7 @@
           android:layout_marginBottom="5dp"
           android:gravity="center"
           android:scaleType="fitStart"
-          android:src="@drawable/map_pin_green" 
-          />
+          android:src="@drawable/map_pin_green" />
 
         <TextView
           android:id="@+id/location_text"
@@ -128,7 +119,7 @@
         android:layout_alignParentTop="true"
 
         android:scaleType="fitEnd"
-        android:src="@drawable/geolocate_128" 
+        android:src="@drawable/geolocate_128"
         android:onClick="onLocateButtonClicked"
         />
     </LinearLayout>
@@ -142,7 +133,69 @@
       android:textSize="24dp"
       android:onClick="onHailButtonClicked"
       />
+  </LinearLayout>
 
+  <LinearLayout
+    android:id="@+id/bottom_bar_confirmation"
+    android:layout_width="fill_parent"
+    android:layout_height="0px"
+    android:layout_weight="25"
+    android:orientation="vertical"
+    android:visibility="gone"
+    >
+
+    <TextView
+      android:id="@+id/location_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
+      android:layout_toRightOf="@id/location_hint"
+      android:text="Pickup: XXX"
+      android:textColor="@color/text_inactive"
+      android:textSize="24dp"
+      android:textStyle="bold"
+      android:gravity="center"
+      />
+    <TextView
+      android:id="@+id/location_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
+      android:layout_toRightOf="@id/location_hint"
+      android:text="Dropoff: XXX"
+      android:textColor="@color/text_inactive"
+      android:textSize="24dp"
+      android:textStyle="bold"
+      android:gravity="center"
+      />
+
+    <LinearLayout
+      android:layout_width="fill_parent"
+      android:layout_height="48dp"
+      android:orientation="horizontal"
+      >
+      <Button
+        android:id="@+id/cancel_confirm_button"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="50"
+        android:layout_alignParentBottom="true"
+        android:text="@string/cancel"
+        android:textSize="24dp"
+        android:onClick="onCancelConfirmButtonClicked"
+        />
+      <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="50"
+        android:layout_alignParentBottom="true"
+        android:text="@string/confirm"
+        android:textSize="24dp"
+        android:onClick="onConfirmButtonClicked"
+        />
+    </LinearLayout>
 
   </LinearLayout>
+
 </LinearLayout>

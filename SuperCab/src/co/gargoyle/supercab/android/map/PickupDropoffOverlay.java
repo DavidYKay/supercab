@@ -81,6 +81,14 @@ public class PickupDropoffOverlay extends ItemizedOverlay<PickupDropoffItem> {
   public void removePickup(PickupPoint pickup) {
     synchronized(mPickups) {
       mPickups.remove(pickup);
+      populate();
+    }
+  }
+
+  public void clear() {
+    synchronized(mPickups) {
+      mPickups.clear();
+      populate();
     }
   }
 
@@ -95,8 +103,6 @@ public class PickupDropoffOverlay extends ItemizedOverlay<PickupDropoffItem> {
   ////////////////////////////////////////////////////////////
   // Add / Remove
   ////////////////////////////////////////////////////////////
-
-  private static final int MAP_SCALE = (int) (1E6);
 
   public Optional<GeoPoint> getCenterPoint() {
 

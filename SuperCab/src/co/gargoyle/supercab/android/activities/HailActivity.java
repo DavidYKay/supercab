@@ -6,6 +6,7 @@ import java.util.List;
 
 import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -48,6 +49,8 @@ public class HailActivity extends RoboMapActivity {
   private static final int TEXT_ACTIVE_COLOR   = R.color.text_active;
   private static final int TEXT_INACTIVE_COLOR = R.color.text_inactive;
 
+  @InjectView(R.id.bottom_bar_pickup) private View mPickupBar;
+  @InjectView(R.id.bottom_bar_confirmation) private View mConfirmationBar;
   @InjectView(R.id.location_hint) private ImageView mPinHint;
   @InjectView(R.id.location_text) private TextView mAddressText;
   @InjectView(R.id.hail_button) private Button mHailButton;
@@ -168,7 +171,6 @@ public class HailActivity extends RoboMapActivity {
     if (isUiThread()) {
       addPickupDropoffAtCurrentAddress();
     } else {
-      final String newText = getResources().getString(R.string.loading_address);
       Runnable updateUITimerTask = new Runnable() {
         public void run() {
           addPickupDropoffAtCurrentAddress();
@@ -188,11 +190,32 @@ public class HailActivity extends RoboMapActivity {
 
   }
 
+  public void onConfirmButtonClicked(View view) {
+    Log.i(TAG, "onConfirmButtonClicked()");
+
+    Intent i = new Intent( HailActivity.this, ConfirmationActivity.class);
+    startActivity(i);
+  }
+
+  public void onCancelConfirmButtonClicked(View view) {
+    Log.i(TAG, "onCancelConfirmButtonClicked()");
+
+    // Clear pins, reset to 0
+    setMode(FareType.PICKUP);
+  }
+
   ////////////////////////////////////////////////////////////
   // Mode Management
   ////////////////////////////////////////////////////////////
 
   private void setMode(FareType mode) {
+
+    if (mMode == FareType.WAITING && mode == FareType.PICKUP) {
+      // Complete reset
+      enterStandardMode();
+      mPickupDropoffOverlay.clear();
+    }
+
     mMode = mode;
 
     mXOverlay.setMode(mode);
@@ -202,6 +225,38 @@ public class HailActivity extends RoboMapActivity {
     mHailButton.setText(getHailTextForMode(mode));
     mHailButton.invalidate();
 
+
+    if (mode == FareType.WAITING) {
+      enterConfirmationMode();
+    } else {
+      // NOP
+    }
+  }
+
+  private void enterStandardMode() {
+    setBottomBarConfirmation(false);
+    centerMapOnLastKnownLocation();
+  }
+
+  private void enterConfirmationMode() {
+    Toast.makeText(HailActivity.this, "Confirm???", Toast.LENGTH_SHORT).show();
+    zoomMapToFitBothPins();
+
+    setBottomBarConfirmation(true);
+  }
+
+  ////////////////////////////////////////////////////////////
+  // View Management
+  ////////////////////////////////////////////////////////////
+
+  private void setBottomBarConfirmation(boolean confirmation) {
+    if (confirmation) {
+      mPickupBar.setVisibility(View.GONE);
+      mConfirmationBar.setVisibility(View.VISIBLE);
+    } else {
+      mPickupBar.setVisibility(View.VISIBLE);
+      mConfirmationBar.setVisibility(View.GONE);
+    }
   }
 
   ////////////////////////////////////////////////////////////
@@ -277,11 +332,7 @@ public class HailActivity extends RoboMapActivity {
     if (mMode == FareType.PICKUP) {
       setMode(FareType.DROPOFF);
     } else if (mMode == FareType.DROPOFF) {
-      setMode(FareType.PICKUP);
-
-      //Toast.makeText(HailActivity.this, "Confirm???", Toast.LENGTH_SHORT).show();
-      //zoomMapToFitBothPins();
-
+      setMode(FareType.WAITING);
     } else {
       throw new RuntimeException("Can't pickup, dropoff, pickup.");
       //setMode(FareType.PICKUP);
@@ -443,13 +494,11 @@ public class HailActivity extends RoboMapActivity {
 
   private boolean isUiThread() {
     if (Looper.myLooper() != null && Looper.myLooper() == Looper.getMainLooper()) {
-      //throw new RuntimeException("This is not to be executed in the Main-thread ");
       return true;
     } else {
       return false;
     }
   }
-
 
   private Address copyAddress(Address origAddress) {
     Parcel p = Parcel.obtain();
