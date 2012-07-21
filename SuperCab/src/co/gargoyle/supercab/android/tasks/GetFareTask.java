@@ -23,7 +23,7 @@ public class GetFareTask extends AsyncTask<Fare, Integer, Boolean> {
 
   @Override
   protected Boolean doInBackground(Fare... fares) {
-    Fare fare = fares[0];
+    //Fare fare = fares[0];
 
     URI uri = getURI();
 
