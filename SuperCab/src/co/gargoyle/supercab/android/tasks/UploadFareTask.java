@@ -13,18 +13,22 @@ import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.Fare;
 
-public class UploadFareTask extends AsyncTask<Fare, Integer, Boolean> {
+import com.google.common.base.Optional;
 
-  // private UploadPhoneCallListener mListener;
+import com.google.common.base.Optional;
 
-  // public UploadPhoneCallTask(UploadPhoneCallListener listener) {
-  // mListener = listener;
-  // }
+public class UploadFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
+
+   private UploadFareListener mListener;
+
+   public UploadFareTask(UploadFareListener listener) {
+     mListener = listener;
+   }
 
   private static final String TAG = "UploadFareTask";
 
   @Override
-  protected Boolean doInBackground(Fare... fares) {
+  protected Optional<Long> doInBackground(Fare... fares) {
     Fare fare = fares[0];
 
     URI uri = getURI();
@@ -37,18 +41,18 @@ public class UploadFareTask extends AsyncTask<Fare, Integer, Boolean> {
     if (fareProfile.getStatus().isSuccess()) {
       try {
         Log.d(TAG, "response: " + rep.getText());
-        return true;
+        return Optional.of(0L);
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
 
-    return false;
+    return Optional.absent();
   }
 
   @Override
-  protected void onPostExecute(Boolean success) {
-    // mListener.completed(success);
+  protected void onPostExecute(Optional<Long> fareId) {
+    mListener.completed(fareId);
   }
 
   @Override
@@ -58,7 +62,7 @@ public class UploadFareTask extends AsyncTask<Fare, Integer, Boolean> {
 
   private URI getURI() {
     try {
-      URI uri = new URI("http://192.168.0.107/fares/new");
+      URI uri = new URI("http://192.168.0.107/api/v1/fare");
       return uri;
     } catch (URISyntaxException e) {
       e.printStackTrace();

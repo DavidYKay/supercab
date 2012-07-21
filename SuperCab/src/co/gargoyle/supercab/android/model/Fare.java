@@ -10,6 +10,7 @@ public class Fare implements Parcelable {
   private PickupPoint mSource;
   private PickupPoint mDestination;
   private Date mTimeRequested;
+  private long mSuperCabId;
   
   public Fare(PickupPoint source, PickupPoint destination, Date timeRequested) {
     super();
@@ -28,6 +29,14 @@ public class Fare implements Parcelable {
 
   public PickupPoint getSource() {
     return mSource;
+  }
+  
+  public long getSuperCabId() {
+    return mSuperCabId;
+  }
+  
+  public void setSuperCabId(long id) {
+    mSuperCabId = id;
   }
 
   @Override
