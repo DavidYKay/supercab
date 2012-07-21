@@ -42,6 +42,7 @@ import org.restlet.resource.ClientResource;
 import android.content.Context;
 import android.util.Log;
 import co.gargoyle.supercab.android.R;
+import co.gargoyle.supercab.android.model.Fare;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gcm.GCMRegistrar;
@@ -52,7 +53,6 @@ import com.google.common.base.Optional;
  */
 public final class ServerUtilities {
   
- 
 
   private static final String TAG = "ServerUtilities";
   private static final int MAX_ATTEMPTS = 5;
@@ -66,7 +66,8 @@ public final class ServerUtilities {
    */
   public static boolean register(final Context context, final String regId) {
     Log.i(TAG, "registering device (regId = " + regId + ")");
-    String serverUrl = CommonUtilities.SERVER_URL + "/device/";
+    //String serverUrl = CommonUtilities.SERVER_URL + "/device/";
+    String serverUrl = CommonUtilities.SERVER_URL + "/push/register";
     Map<String, String> params = new HashMap<String, String>();
     params.put("push_id", regId);
     long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
@@ -114,8 +115,9 @@ public final class ServerUtilities {
    */
   public static void unregister(final Context context, final String regId) {
     Log.i(TAG, "unregistering device (regId = " + regId + ")");
+    String serverUrl = CommonUtilities.SERVER_URL + "/push/unregister";
     //String serverUrl = CommonUtilities.SERVER_URL + "/unregister";
-    String serverUrl = CommonUtilities.SERVER_URL + "/device/";
+    //String serverUrl = CommonUtilities.SERVER_URL + "/device/";
     Map<String, String> params = new HashMap<String, String>();
     params.put("push_id", regId);
     try {
@@ -134,8 +136,9 @@ public final class ServerUtilities {
     }
   }
   
-  private static void postRestlet(String endpoint, Map<String, String> params) throws IOException {
-    URI uri = getDeviceURI();
+  public static boolean postRestlet(String endpoint, Map<String, String> params) throws IOException {
+    //URI uri = getDeviceURI();
+    URI uri = makeURI(endpoint);
     ClientResource deviceResource = new ClientResource(uri);
 
     deviceResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, "driver", "driver");
@@ -148,11 +151,12 @@ public final class ServerUtilities {
     if (deviceResource.getStatus().isSuccess()) {
       String responseText = representation.getText();
       Log.d(TAG, "response: " + responseText);
+      return true;
     } else {
       Log.e(TAG, "error!: " + deviceResource.getStatus());
       // error!
+      return false;
     }
-
   }
 
   /**
@@ -282,9 +286,10 @@ public final class ServerUtilities {
     }
   }
   
-  private static URI getDeviceURI() {
+  private static URI makeURI(String endpoint) {
     try {
-      URI uri = new URI(CommonUtilities.SERVER_URL + "/device/");
+      //URI uri = new URI(CommonUtilities.SERVER_URL + "/register");
+      URI uri = new URI(endpoint);
       return uri;
     } catch (URISyntaxException e) {
       e.printStackTrace();
@@ -317,6 +322,18 @@ public final class ServerUtilities {
       return Optional.absent();
     }
   }
+  
+  public static Representation convertFareToJsonRepresentation(Fare fare) throws IOException {
+    JacksonRepresentation<Fare> jacksonRep = new JacksonRepresentation<Fare>(fare);
+
+    jacksonRep.setObjectMapper(new ObjectMapper());
+
+    String jsonText = jacksonRep.getText();
+
+    Representation textRep = new StringRepresentation(jsonText);
+    textRep.setMediaType(MediaType.APPLICATION_JSON);
+    return textRep;
+  }
     
   public static Representation convertMapToJsonRepresentation(Map<String, String> map) throws IOException {
     JacksonRepresentation<Map<String,String>> jacksonRep = new JacksonRepresentation<Map<String,String>>(map);
@@ -324,6 +341,7 @@ public final class ServerUtilities {
     jacksonRep.setObjectMapper(new ObjectMapper());
 
     String jsonText = jacksonRep.getText();
+    Log.v(TAG, "New JSON Text: " + jsonText);
 
     Representation textRep = new StringRepresentation(jsonText);
     textRep.setMediaType(MediaType.APPLICATION_JSON);

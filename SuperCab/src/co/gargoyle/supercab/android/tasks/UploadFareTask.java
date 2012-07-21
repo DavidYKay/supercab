@@ -4,22 +4,23 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.restlet.data.MediaType;
-import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.Fare;
-
-import com.google.common.base.Optional;
+import co.gargoyle.supercab.android.utilities.CommonUtilities;
+import co.gargoyle.supercab.android.utilities.ServerUtilities;
 
 import com.google.common.base.Optional;
 
 public class UploadFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
 
    private UploadFareListener mListener;
+   private Exception mException;
 
    public UploadFareTask(UploadFareListener listener) {
      mListener = listener;
@@ -35,16 +36,30 @@ public class UploadFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
 
     ClientResource fareProfile = new ClientResource(uri);
 
-    JacksonRepresentation<Fare> jacksonRep = new JacksonRepresentation<Fare>(MediaType.APPLICATION_JSON, fare);
-    //Representation rep = fareProfile.post();
-    Representation rep = fareProfile.post(jacksonRep);
-    if (fareProfile.getStatus().isSuccess()) {
+    fareProfile.setChallengeResponse(ChallengeScheme.HTTP_BASIC, "passenger", "passenger");
+
+    try {
+      Representation jacksonRep;
       try {
-        Log.d(TAG, "response: " + rep.getText());
-        return Optional.of(0L);
-      } catch (IOException e) {
-        e.printStackTrace();
+        jacksonRep = ServerUtilities.convertFareToJsonRepresentation(fare);
+      } catch (IOException e1) {
+        e1.printStackTrace();
+        mException = e1;
+        return Optional.absent();
       }
+      //Representation rep = fareProfile.post();
+      Representation rep = fareProfile.post(jacksonRep);
+      if (fareProfile.getStatus().isSuccess()) {
+        try {
+          Log.d(TAG, "response: " + rep.getText());
+          return Optional.of(0L);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    } catch (ResourceException e) {
+      e.printStackTrace();
+      mException = e;
     }
 
     return Optional.absent();
@@ -52,6 +67,9 @@ public class UploadFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
 
   @Override
   protected void onPostExecute(Optional<Long> fareId) {
+    if (mException != null) {
+      mListener.handleError(mException);
+    }
     mListener.completed(fareId);
   }
 
@@ -62,7 +80,9 @@ public class UploadFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
 
   private URI getURI() {
     try {
-      URI uri = new URI("http://192.168.0.107/api/v1/fare");
+      //String serverUrl = CommonUtilities.SERVER_URL + "/fare/new";
+      String serverUrl = CommonUtilities.SERVER_URL + "/api/v1/fare/";
+      URI uri = new URI(serverUrl);
       return uri;
     } catch (URISyntaxException e) {
       e.printStackTrace();

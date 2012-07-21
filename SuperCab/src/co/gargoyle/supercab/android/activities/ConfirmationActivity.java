@@ -4,6 +4,7 @@ import java.util.Date;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -79,6 +80,18 @@ public class ConfirmationActivity extends RoboActivity implements UploadFareList
                      Toast.LENGTH_SHORT).show();
       mDriverLabel.setText("Awaiting driver...");
     }
+  }
+
+  @Override
+  public void handleError(Throwable exception) {
+    goBlooey(exception);
+    
+  }
+  
+  void goBlooey(Throwable t) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+  
+    builder.setTitle("Exception!").setMessage(t.toString()).setPositiveButton("OK", null).show();
   }
 
 }

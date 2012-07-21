@@ -6,4 +6,6 @@ public interface UploadFareListener {
 
   public void completed(Optional<Long> fareId);
 
+  public void handleError(Throwable exception);
+
 }
