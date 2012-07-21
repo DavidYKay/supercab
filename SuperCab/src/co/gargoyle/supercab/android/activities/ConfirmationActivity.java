@@ -54,6 +54,8 @@ public class ConfirmationActivity extends RoboActivity implements UploadFareList
     mFare = fare;
     
     mDriverLabel.setText("Uploading...");
+    
+    uploadFare(fare);
   }
   
   private String getAddressLine(PickupPoint point) {
