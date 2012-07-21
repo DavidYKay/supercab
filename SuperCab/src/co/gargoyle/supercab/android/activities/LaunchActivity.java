@@ -43,18 +43,21 @@ public class LaunchActivity extends RoboActivity {
     GCMRegistrar.checkManifest(this);
     setContentView(R.layout.push);
     mDisplay = (TextView) findViewById(R.id.display);
-    registerReceiver(mHandleMessageReceiver,
-                     new IntentFilter(DISPLAY_MESSAGE_ACTION));
+    registerReceiver(mHandleMessageReceiver, new IntentFilter(DISPLAY_MESSAGE_ACTION));
     final String regId = GCMRegistrar.getRegistrationId(this);
+
     if (regId.equals("")) {
       // Automatically registers application on startup.
       GCMRegistrar.register(this, SENDER_ID);
+
+      moveToApp();
     } else {
       // Device is already registered on GCM, needs to check if it is
       // registered on our server as well.
       if (GCMRegistrar.isRegisteredOnServer(this)) {
         // Skips registration.
         mDisplay.append(getString(R.string.already_registered) + "\n");
+        moveToApp();
       } else {
         // Try to register again, but not in the UI thread.
         // It's also necessary to cancel the thread onDestroy(),
@@ -81,6 +84,7 @@ public class LaunchActivity extends RoboActivity {
           @Override
           protected void onPostExecute(Void result) {
             mRegisterTask = null;
+            moveToApp();
           }
 
         };
@@ -150,5 +154,12 @@ public class LaunchActivity extends RoboActivity {
           mDisplay.append(newMessage + "\n");
         }
       };
+
+  private void moveToApp() {
+    Intent i = new Intent(LaunchActivity.this, HailActivity.class);
+    startActivity(i);
+
+    finish();
+  }
 
 }
