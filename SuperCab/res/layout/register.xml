@@ -97,12 +97,12 @@
         android:gravity="left"
         android:paddingBottom="1dp"
         android:paddingTop="1dp"
-        android:text="@string/change_email"
+        android:text="@string/phone_number"
         android:textSize="14dp"
         android:layout_marginLeft="7dp"
         />
       <EditText
-        android:id="@+id/edit_email"
+        android:id="@+id/edit_phone_number"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="left"
@@ -110,7 +110,7 @@
         android:layout_marginLeft="7dp"
         android:layout_marginRight="7dp"
 
-        android:inputType="textEmailAddress"
+        android:inputType="phone"
         android:singleLine="true"
         android:imeOptions="actionNext"
         />
@@ -175,6 +175,7 @@
         android:textSize="14dp"
         android:layout_marginLeft="7dp"
         />
+
       <EditText
         android:id="@+id/edit_first_name"
         android:layout_width="fill_parent"

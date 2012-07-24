@@ -33,7 +33,7 @@ public class LoginActivity extends RoboActivity {
   private static final int AUTH_FAILED_DIALOG = 2;
 
   private String mAlertMsg;
-  private boolean mAlertShowing = false;
+//  private boolean mAlertShowing = false;
 
   protected AlertDialog mAlertDialog;
   protected ProgressDialog mProgressDialog;

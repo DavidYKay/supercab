@@ -271,5 +271,6 @@
 <string name="change_first_name">First Name</string>
 <string name="change_last_name">Last Name</string>
 <string name="confirm_password">Confirm Password</string>
+<string name="phone_number">Phone Number</string>
 
 </resources>

@@ -15,7 +15,7 @@ public class RegisterActivity extends LoginActivity {
   private static final String TAG = "RegisterActivity";
   
   @InjectView(R.id.edit_username) EditText mEditUsername;
-  @InjectView(R.id.edit_email) EditText mEditEmail;
+  @InjectView(R.id.edit_phone_number) EditText mEditPhoneNumber;
   @InjectView(R.id.edit_password) EditText mEditPassword;
   @InjectView(R.id.edit_password_confirm) EditText mConfirmPassword;
 

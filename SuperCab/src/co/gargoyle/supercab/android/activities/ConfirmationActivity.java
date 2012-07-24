@@ -23,7 +23,7 @@ public class ConfirmationActivity extends RoboActivity implements UploadFareList
   @InjectView(R.id.time_value) private TextView mTimeLabel;
   @InjectView(R.id.from_address) private TextView mFromLabel;
   @InjectView(R.id.to_address) private TextView mToLabel;
-  @InjectView(R.id.fare_status) private TextView mFareLabel;
+//  @InjectView(R.id.fare_status) private TextView mFareLabel;
   @InjectView(R.id.driver_status) private TextView mDriverLabel;
 
   private Fare mFare;
