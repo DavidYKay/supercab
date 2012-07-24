@@ -155,8 +155,7 @@ public class LoginActivity extends RoboActivity {
   }
 
   private boolean isLoggedIn() {
-    // TODO Auto-generated method stub
-    return false;
+    return mPreferenceUtils.hasCredentials();
   }
 
   ////////////////////////////////////////////////////////////
