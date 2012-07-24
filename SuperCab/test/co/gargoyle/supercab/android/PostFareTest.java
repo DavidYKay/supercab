@@ -15,15 +15,15 @@ import android.location.Address;
 import co.gargoyle.supercab.android.enums.FareType;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
-import co.gargoyle.supercab.android.tasks.UploadFareTask;
-import co.gargoyle.supercab.android.tasks.listeners.UploadFareListener;
+import co.gargoyle.supercab.android.tasks.PostFareTask;
+import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
 
 import com.google.common.base.Optional;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-public class UploadFareTest {
+public class PostFareTest {
 
   @Test
   public void shouldUploadFare() throws Exception {
@@ -34,7 +34,7 @@ public class UploadFareTest {
 
 
 //    final Optional<Long> resultFareId;
-    UploadFareListener listener = new UploadFareListener() {
+    PostFareListener listener = new PostFareListener() {
       @Override
       public void completed(Optional<Long> fareId) {
         assertTrue(fareId.isPresent());
@@ -55,7 +55,7 @@ public class UploadFareTest {
         signal.countDown();
       }
     };
-    UploadFareTask task = new UploadFareTask(context, listener);
+    PostFareTask task = new PostFareTask(context, listener);
 
     Address pickupAddress  = Constants.ADDRESS_IHUB;
     Address dropoffAddress = Constants.ADDRESS_AIRPORT;

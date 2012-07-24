@@ -13,12 +13,12 @@ import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
-import co.gargoyle.supercab.android.tasks.UploadFareTask;
-import co.gargoyle.supercab.android.tasks.listeners.UploadFareListener;
+import co.gargoyle.supercab.android.tasks.PostFareTask;
+import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
 
 import com.google.common.base.Optional;
 
-public class ConfirmationActivity extends RoboActivity implements UploadFareListener {
+public class ConfirmationActivity extends RoboActivity implements PostFareListener {
 
   @InjectView(R.id.time_value) private TextView mTimeLabel;
   @InjectView(R.id.from_address) private TextView mFromLabel;
@@ -65,7 +65,7 @@ public class ConfirmationActivity extends RoboActivity implements UploadFareList
   
 
   private void uploadFare(Fare fare) {
-    UploadFareTask task = new UploadFareTask(this, this);
+    PostFareTask task = new PostFareTask(this, this);
     task.execute(fare);
   }
 

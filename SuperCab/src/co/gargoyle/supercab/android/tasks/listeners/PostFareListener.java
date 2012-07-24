@@ -2,7 +2,7 @@ package co.gargoyle.supercab.android.tasks.listeners;
 
 import com.google.common.base.Optional;
 
-public interface UploadFareListener {
+public interface PostFareListener {
 
   public void completed(Optional<Long> fareId);
 
