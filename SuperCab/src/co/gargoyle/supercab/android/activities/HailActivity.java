@@ -97,11 +97,7 @@ public class HailActivity extends RoboMapActivity {
       @Override
       public synchronized void onLocationChanged(Location location) {
         super.onLocationChanged(location);
-        if (!mHasGeolocated) {
-          //centerMapOnLocation(location);
-          centerMapAction(location);
-          mHasGeolocated = true;
-        }
+        checkAndUpdateLastKnownLocation(location);
       }
     };
 
@@ -347,8 +343,10 @@ public class HailActivity extends RoboMapActivity {
         Log.d(LOCATION_TAG, "centerMapOnLocation:" + mGeoUtils.locationToString(location));
         mLastKnownLocation = location;
 
-        //mMapController.setCenter(mGeoUtils.locationToGeoPoint(location));
-        centerMapAction(location);
+        if (!mHasGeolocated) {
+          centerMapAction(location);
+          mHasGeolocated = true;
+        }
       } else {
         Log.d(LOCATION_TAG, "poor location fix" + mGeoUtils.locationToString(location));
       }
