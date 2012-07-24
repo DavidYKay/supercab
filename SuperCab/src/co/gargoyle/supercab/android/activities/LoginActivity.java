@@ -40,14 +40,13 @@ public class LoginActivity extends RoboActivity {
 
   @Inject private AlertUtils mAlertUtils;
   @Inject private PreferenceUtils mPreferenceUtils;
-//  @Inject private ServerUtils mServerUtils;
 
   @InjectView(R.id.edit_username) EditText mEditUsername;
   @InjectView(R.id.edit_password) EditText mEditPassword;
 
-  // //////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////
   // Activity Overrides
-  // //////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +61,6 @@ public class LoginActivity extends RoboActivity {
 
       mEditPassword.setOnEditorActionListener(mPasswordEnterListener);
     }
-  }
-
-  private boolean isLoggedIn() {
-    // TODO Auto-generated method stub
-    return false;
   }
 
   @Override
@@ -98,9 +92,9 @@ public class LoginActivity extends RoboActivity {
     return null;
   }
 
-  // //////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////
   // UI Methods
-  // //////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////
 
   public void onLoginButtonClicked(View view) {
     // Kabloey
@@ -135,7 +129,12 @@ public class LoginActivity extends RoboActivity {
 //    String urlString = getStoredUrl();
 
   }
-  
+
+  private boolean isLoggedIn() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
   ////////////////////////////////////////////////////////////
   // Login Complete
   ////////////////////////////////////////////////////////////
