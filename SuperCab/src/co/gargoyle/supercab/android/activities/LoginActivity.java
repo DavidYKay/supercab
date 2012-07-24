@@ -126,7 +126,7 @@ public class LoginActivity extends RoboActivity {
   private void attemptLogin() {
     String username = mEditUsername.getText().toString();
     String password = mEditPassword.getText().toString();
-//    String urlString = getStoredUrl();
+    // String urlString = getStoredUrl();
 
   }
 
