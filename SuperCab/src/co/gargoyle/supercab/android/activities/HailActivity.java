@@ -44,7 +44,7 @@ import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 public class HailActivity extends RoboMapActivity {
-  
+
   public static final String KEY_FARE = "fare";
 
   private static final String TAG = "HailActivity";
@@ -53,12 +53,18 @@ public class HailActivity extends RoboMapActivity {
   private static final int TEXT_ACTIVE_COLOR   = R.color.text_active;
   private static final int TEXT_INACTIVE_COLOR = R.color.text_inactive;
 
+  private static final int ZOOM_LEVEL_CITY         = 15;
+  private static final int ZOOM_LEVEL_NEIGHBORHOOD = 20;
+
   @InjectView(R.id.bottom_bar_pickup) private View mPickupBar;
   @InjectView(R.id.bottom_bar_confirmation) private View mConfirmationBar;
   @InjectView(R.id.location_hint) private ImageView mPinHint;
   @InjectView(R.id.location_text) private TextView mAddressText;
   @InjectView(R.id.hail_button) private Button mHailButton;
   @InjectView(R.id.map) private ExtendedMapView mMapView;
+
+  @InjectView(R.id.confirmation_pickup_text) private TextView mConfirmationPickupText;
+  @InjectView(R.id.confirmation_dropoff_text) private TextView mConfirmationDropoffText;
 
   @Inject private GeoUtils mGeoUtils;
 
@@ -85,16 +91,13 @@ public class HailActivity extends RoboMapActivity {
     mMapView.setBuiltInZoomControls(true);
 
     mMapController = mMapView.getController();
-    mMapController.setZoom(20); // Fixed Zoom Level
+    mMapController.setZoom(ZOOM_LEVEL_NEIGHBORHOOD); // Fixed Zoom Level
 
     mMyLocationOverlay = new MyLocationOverlay(this, mMapView) {
       @Override
       public synchronized void onLocationChanged(Location location) {
         super.onLocationChanged(location);
-        if (!mHasGeolocated) {
-          centerMapOnLocation(location);
-          mHasGeolocated = true;
-        }
+        checkAndUpdateLastKnownLocation(location);
       }
     };
 
@@ -125,11 +128,12 @@ public class HailActivity extends RoboMapActivity {
           updateAddressWithGeoPoint(center);
         } else {
           setAddressLabelActive(false);
+          mLastKnownAddress = null;
         }
       }
     });
 
-    centerMapOnLastKnownLocation();
+    centerMapAction();
   }
 
   ////////////////////////////////////////////////////////////
@@ -192,21 +196,13 @@ public class HailActivity extends RoboMapActivity {
   public void onLocateButtonClicked(View view) {
     Log.i(TAG, "onLocateButtonClicked()");
 
+    centerMapAction();
   }
 
   public void onConfirmButtonClicked(View view) {
     Log.i(TAG, "onConfirmButtonClicked()");
 
-    PickupPoint source = mPickupDropoffOverlay.get(0);
-    PickupPoint destination = mPickupDropoffOverlay.get(1);
-    Date timeRequested = new Date();
-
-    Fare fare = new Fare(source, destination, timeRequested);
-
-    Intent i = new Intent(HailActivity.this, ConfirmationActivity.class);
-    i.putExtra(KEY_FARE, fare);
-    startActivity(i);
-
+    proceedToConfirmation(getFareFromUi());
   }
 
   public void onCancelConfirmButtonClicked(View view) {
@@ -247,19 +243,28 @@ public class HailActivity extends RoboMapActivity {
 
   private void enterStandardMode() {
     setBottomBarConfirmation(false);
-    centerMapOnLastKnownLocation();
+    centerMapAction();
   }
 
   private void enterConfirmationMode() {
     Toast.makeText(HailActivity.this, "Confirm???", Toast.LENGTH_SHORT).show();
     zoomMapToFitBothPins();
 
+    populateBottomBar();
     setBottomBarConfirmation(true);
   }
 
   ////////////////////////////////////////////////////////////
   // View Management
   ////////////////////////////////////////////////////////////
+
+  private void populateBottomBar() {
+    PickupPoint source = mPickupDropoffOverlay.get(0);
+    PickupPoint destination = mPickupDropoffOverlay.get(1);
+
+    mConfirmationPickupText.setText(source.getAddress().getAddressLine(0));
+    mConfirmationDropoffText.setText(destination.getAddress().getAddressLine(0));
+  }
 
   private void setBottomBarConfirmation(boolean confirmation) {
     if (confirmation) {
@@ -275,6 +280,46 @@ public class HailActivity extends RoboMapActivity {
   // Map Management
   ////////////////////////////////////////////////////////////
 
+  private void zoomMapAction() {
+    int zoomLevel = mMapView.getZoomLevel();
+
+    if (zoomLevel < ZOOM_LEVEL_CITY) {
+      mMapController.setZoom(ZOOM_LEVEL_CITY);
+    } else if (zoomLevel < ZOOM_LEVEL_NEIGHBORHOOD) {
+      mMapController.setZoom(ZOOM_LEVEL_NEIGHBORHOOD);
+    } else {
+      // We're zoomed in enough. Stop.
+    }
+
+  }
+
+  private void centerMapAction() {
+    if (mLastKnownLocation != null) {
+      centerMapAction(mLastKnownLocation);
+    } else {
+      Location lastFix = mMyLocationOverlay.getLastFix();
+      if (lastFix != null) {
+        centerMapAction(lastFix);
+      }
+    }
+  }
+
+  private void centerMapAction(Location location) {
+    centerMapAction(mGeoUtils.locationToGeoPoint(location));
+  }
+
+  private void centerMapAction(GeoPoint point) {
+    GeoPoint mapCenter = mMapView.getMapCenter();
+    if (mapCenter.equals(point)) {
+      // Zoom in
+      zoomMapAction();
+    } else {
+      // Pan over
+      //mMapController.setCenter(point);
+      mMapController.animateTo(point);
+    }
+  }
+
   private void zoomMapToFitBothPins() {
     mMapController.zoomToSpan(mPickupDropoffOverlay.getLatSpanE6(), mPickupDropoffOverlay.getLonSpanE6());
 
@@ -284,16 +329,16 @@ public class HailActivity extends RoboMapActivity {
     }
   }
 
-  private void centerMapOnLastKnownLocation() {
-    centerMapOnLocation(mMyLocationOverlay.getLastFix());
-  }
-
-  private void centerMapOnLocation(Location location) {
+  private void checkAndUpdateLastKnownLocation(Location location) {
     if (isValidLocation(location)) {
       if (mGeoUtils.isBetterLocation(location, mLastKnownLocation)) {
         Log.d(LOCATION_TAG, "centerMapOnLocation:" + mGeoUtils.locationToString(location));
         mLastKnownLocation = location;
-        mMapController.setCenter(mGeoUtils.locationToGeoPoint(location));
+
+        if (!mHasGeolocated) {
+          centerMapAction(location);
+          mHasGeolocated = true;
+        }
       } else {
         Log.d(LOCATION_TAG, "poor location fix" + mGeoUtils.locationToString(location));
       }
@@ -521,4 +566,25 @@ public class HailActivity extends RoboMapActivity {
     return newAddress;
   }
 
+  ////////////////////////////////////////////////////////////
+  // Nav
+  ////////////////////////////////////////////////////////////
+
+  private Fare getFareFromUi() {
+    PickupPoint source = mPickupDropoffOverlay.get(0);
+    PickupPoint destination = mPickupDropoffOverlay.get(1);
+    Date timeRequested = new Date();
+
+    Fare fare = new Fare(source, destination, timeRequested);
+
+    return fare;
+  }
+
+  private void proceedToConfirmation(Fare fare) {
+    Intent i = new Intent(HailActivity.this, ConfirmationActivity.class);
+    i.putExtra(KEY_FARE, fare);
+    startActivity(i);
+
+
+  }
 }

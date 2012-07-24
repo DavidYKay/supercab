@@ -50,14 +50,8 @@ public class PreferenceUtils {
   }
 
   public boolean hasCredentials() {
-    String username = mSettings.getString(PreferenceConstants.KEY_USERNAME, null);
-    String password = mSettings.getString(PreferenceConstants.KEY_PASSWORD, null);
-
-    if (StringUtils.stringIsEmpty(username) || StringUtils.stringIsEmpty(password)) {
-      return false;
-    } else {
-      return true;
-    }
+    Optional<UserCredentials> creds = getCredentials();
+    return creds.isPresent();
   }
 
   public void saveCredentials(UserCredentials credentials) {
