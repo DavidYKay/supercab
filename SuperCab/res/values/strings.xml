@@ -37,7 +37,7 @@
 <string name="change_language">Change Language</string>
 <string name="change_password">Password</string>
 <string name="change_server_url">Server URL</string>
-<string name="change_username">CarbonKeeper Username</string>
+<string name="change_username">SuperCab Username</string>
 <string name="clearanswer_confirm">Remove the response to \"%s\"?</string>
 <string name="clear_answer">Remove response</string>
 <string name="clear_answer_ask">Remove This Response?</string>
@@ -50,7 +50,7 @@
 <string name="default_completed_summary">Mark form as finalized by default</string>
 <!--
 <string name="default_server_url">http://192.168.0.100:8000</string>
-<string name="default_server_url">http://spark.carbonkeeper.org</string>
+<string name="default_server_url">http://www.supercab.com</string>
 -->
 <string name="default_server_url">http://192.168.0.100:8000</string>
 <string name="delete_confirm">Delete %s form(s)?</string>
@@ -153,7 +153,7 @@
 <string name="view_hierarchy">Go To Prompt</string>
 <string name="open_data_kit">Open Data Kit</string>
 <string name="general_preferences">Change Settings</string>
-<string name="click_to_web">Tap to visit http://spark.carbonkeeper.org</string>
+<string name="click_to_web">Tap to visit http://www.supercab.com</string>
 <string name="client">Client</string>
 <string name="show_splash">Show Splash Screen</string>
 <string name="show_splash_summary">Shows when application starts</string>
