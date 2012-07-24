@@ -44,7 +44,7 @@ import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 public class HailActivity extends RoboMapActivity {
-  
+
   public static final String KEY_FARE = "fare";
 
   private static final String TAG = "HailActivity";
@@ -59,6 +59,9 @@ public class HailActivity extends RoboMapActivity {
   @InjectView(R.id.location_text) private TextView mAddressText;
   @InjectView(R.id.hail_button) private Button mHailButton;
   @InjectView(R.id.map) private ExtendedMapView mMapView;
+
+  @InjectView(R.id.confirmation_pickup_text) private TextView mConfirmationPickupText;
+  @InjectView(R.id.confirmation_dropoff_text) private TextView mConfirmationDropoffText;
 
   @Inject private GeoUtils mGeoUtils;
 
@@ -254,12 +257,21 @@ public class HailActivity extends RoboMapActivity {
     Toast.makeText(HailActivity.this, "Confirm???", Toast.LENGTH_SHORT).show();
     zoomMapToFitBothPins();
 
+    populateBottomBar();
     setBottomBarConfirmation(true);
   }
 
   ////////////////////////////////////////////////////////////
   // View Management
   ////////////////////////////////////////////////////////////
+
+  private void populateBottomBar() {
+    PickupPoint source = mPickupDropoffOverlay.get(0);
+    PickupPoint destination = mPickupDropoffOverlay.get(1);
+
+    mConfirmationPickupText.setText(source.getAddress().getAddressLine(0));
+    mConfirmationDropoffText.setText(source.getAddress().getAddressLine(0));
+  }
 
   private void setBottomBarConfirmation(boolean confirmation) {
     if (confirmation) {
