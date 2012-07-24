@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 
 import com.google.android.maps.GeoPoint;
@@ -68,6 +69,12 @@ public class PickupDropoffOverlay extends ItemizedOverlay<PickupDropoffItem> {
   ////////////////////////////////////////////////////////////
   // Add / Remove
   ////////////////////////////////////////////////////////////
+
+  public PickupPoint get(int i) {
+    synchronized(mPickups) {
+      return mPickups.get(i);
+    }
+  }
 
   public void addPickup(PickupPoint pickup) {
     synchronized(mPickups) {
