@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -18,6 +19,8 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Boolean> {
   private static final String TAG = "GetUserTask";
 
   private GetUserListener mListener;
+
+  private ResourceException mException;
 
    public GetUserTask(GetUserListener listener) {
      mListener = listener;
@@ -36,14 +39,18 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Boolean> {
                                      creds.username, 
                                      creds.password);
 
-    Representation rep = fareProfile.get();
-    if (fareProfile.getStatus().isSuccess()) {
-      try {
-        Log.d(TAG, "response: " + rep.getText());
-        return true;
-      } catch (IOException e) {
-        e.printStackTrace();
+    try {
+      Representation rep = fareProfile.get();
+      if (fareProfile.getStatus().isSuccess()) {
+        try {
+          Log.d(TAG, "response: " + rep.getText());
+          return true;
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
+    } catch (ResourceException e) {
+      mException = e;
     }
 
     return false;
@@ -51,7 +58,11 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Boolean> {
 
   @Override
   protected void onPostExecute(Boolean success) {
-     mListener.completed(success);
+    if (mException != null) {
+      mListener.handleError(mException);
+    } else {
+      mListener.completed(success);
+    }
   }
 
   @Override
