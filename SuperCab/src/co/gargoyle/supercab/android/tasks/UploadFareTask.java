@@ -9,10 +9,13 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.Fare;
+import co.gargoyle.supercab.android.model.UserCredentials;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
+import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 import co.gargoyle.supercab.android.utilities.ServerUtilities;
 
 import com.google.common.base.Optional;
@@ -21,9 +24,11 @@ public class UploadFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
 
    private UploadFareListener mListener;
    private Exception mException;
+   private Context mContext;
 
-   public UploadFareTask(UploadFareListener listener) {
+   public UploadFareTask(Context context, UploadFareListener listener) {
      mListener = listener;
+     mContext = context;
    }
 
   private static final String TAG = "UploadFareTask";
@@ -36,7 +41,12 @@ public class UploadFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
 
     ClientResource fareProfile = new ClientResource(uri);
 
-    fareProfile.setChallengeResponse(ChallengeScheme.HTTP_BASIC, "passenger", "passenger");
+    Optional<UserCredentials> credentials = new PreferenceUtils(mContext).getCredentials();
+    if (credentials.isPresent()) {
+      fareProfile.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
+                                       credentials.get().username,
+                                       credentials.get().password);
+    }
 
     try {
       Representation jacksonRep;

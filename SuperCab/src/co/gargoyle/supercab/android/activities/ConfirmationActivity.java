@@ -65,7 +65,7 @@ public class ConfirmationActivity extends RoboActivity implements UploadFareList
   
 
   private void uploadFare(Fare fare) {
-    UploadFareTask task = new UploadFareTask(this);
+    UploadFareTask task = new UploadFareTask(this, this);
     task.execute(fare);
   }
 

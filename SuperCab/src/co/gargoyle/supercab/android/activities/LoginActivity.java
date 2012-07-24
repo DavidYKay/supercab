@@ -17,6 +17,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import co.gargoyle.supercab.android.R;
+import co.gargoyle.supercab.android.model.UserCredentials;
+import co.gargoyle.supercab.android.tasks.GetUserListener;
+import co.gargoyle.supercab.android.tasks.GetUserTask;
 import co.gargoyle.supercab.android.utilities.AlertUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
@@ -34,9 +37,6 @@ public class LoginActivity extends RoboActivity {
 
   private AlertDialog mAlertDialog;
   private ProgressDialog mProgressDialog;
-
-  private String mTempUsername;
-  private String mTempPassword;
 
   @Inject private AlertUtils mAlertUtils;
   @Inject private PreferenceUtils mPreferenceUtils;
@@ -124,10 +124,34 @@ public class LoginActivity extends RoboActivity {
    * Attempts login with fixed username / password EditTexts
    */
   private void attemptLogin() {
+    showDialog(PROGRESS_DIALOG);
+    beginNetworkLogin(getCredentialsFromUi());
+  }
+  
+  private UserCredentials getCredentialsFromUi() {
     String username = mEditUsername.getText().toString();
     String password = mEditPassword.getText().toString();
-//    String urlString = getStoredUrl();
 
+    return new UserCredentials(username, password);
+  }
+
+  private void beginNetworkLogin(final UserCredentials credentials) {
+    GetUserTask task = new GetUserTask(new GetUserListener() {
+
+      @Override
+      public void handleError(Throwable throwable) {
+        mProgressDialog.dismiss();
+        goBlooey(throwable);
+      }
+
+      @Override
+      public void completed(Boolean success) {
+        mProgressDialog.dismiss();
+        saveCredentialsAndProceedToApp(credentials);
+      }
+    });
+
+    task.execute(credentials);
   }
 
   private boolean isLoggedIn() {
@@ -145,11 +169,21 @@ public class LoginActivity extends RoboActivity {
     finish();
   }
 
-  private void saveCredentialsAndProceedToApp() {
-    mPreferenceUtils.saveCredentials(mTempUsername, mTempPassword);
+  private void saveCredentialsAndProceedToApp(UserCredentials credentials) {
+    mPreferenceUtils.saveCredentials(credentials);
 
     // finish login and proceed
     proceedToApp();
+  }
+
+  ////////////////////////////////////////////////////////////
+  // Utils
+  ////////////////////////////////////////////////////////////
+
+  void goBlooey(Throwable t) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+    builder.setTitle("Exception!").setMessage(t.toString()).setPositiveButton("OK", null).show();
   }
 
 }

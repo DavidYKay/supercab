@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 
+import co.gargoyle.supercab.android.model.UserCredentials;
+
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -37,21 +39,13 @@ public class PreferenceUtils {
     return mContext;
   }
   
-  public Optional<String> getUsername() {
+  public Optional<UserCredentials> getCredentials() {
     String username = mSettings.getString(PreferenceConstants.KEY_USERNAME, null);
-    if (username == null) {
-      return Optional.absent();
-    } else {
-      return Optional.of(username);
-    }
-  }
-  
-  public Optional<String> getPassword() {
     String password = mSettings.getString(PreferenceConstants.KEY_PASSWORD, null);
-    if (password == null) {
+    if (username == null || password == null) {
       return Optional.absent();
     } else {
-      return Optional.of(password);
+      return Optional.of(new UserCredentials(username, password));
     }
   }
 
@@ -64,6 +58,10 @@ public class PreferenceUtils {
     } else {
       return true;
     }
+  }
+
+  public void saveCredentials(UserCredentials credentials) {
+    saveCredentials(credentials.username, credentials.password);
   }
 
   public void saveCredentials(String username, String password) {

@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import android.content.Context;
 import android.location.Address;
 import co.gargoyle.supercab.android.enums.FareType;
 import co.gargoyle.supercab.android.model.Fare;
@@ -18,6 +19,7 @@ import co.gargoyle.supercab.android.tasks.UploadFareListener;
 import co.gargoyle.supercab.android.tasks.UploadFareTask;
 
 import com.google.common.base.Optional;
+import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
@@ -25,6 +27,8 @@ public class UploadFareTest {
 
   @Test
   public void shouldUploadFare() throws Exception {
+    Context context = Robolectric.application;
+        
     // create  a signal to let us know when our task is done.
     final CountDownLatch signal = new CountDownLatch(1);
 
@@ -51,7 +55,7 @@ public class UploadFareTest {
         signal.countDown();
       }
     };
-    UploadFareTask task = new UploadFareTask(listener);
+    UploadFareTask task = new UploadFareTask(context, listener);
 
     Address pickupAddress  = Constants.ADDRESS_IHUB;
     Address dropoffAddress = Constants.ADDRESS_AIRPORT;
