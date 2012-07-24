@@ -12,10 +12,13 @@ import org.restlet.resource.ResourceException;
 import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.UserCredentials;
+import co.gargoyle.supercab.android.model.UserProfile;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 
-public class GetUserTask extends AsyncTask<UserCredentials, Integer, Boolean> {
+import com.google.common.base.Optional;
+
+public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<UserProfile>> {
   
   private static final String TAG = "GetUserTask";
 
@@ -27,7 +30,7 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Boolean> {
    }
 
   @Override
-  protected Boolean doInBackground(UserCredentials... credentialsList) {
+  protected Optional<UserProfile> doInBackground(UserCredentials... credentialsList) {
     //User fare = fares[0];
     UserCredentials creds = credentialsList[0];
 
@@ -44,7 +47,9 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Boolean> {
       if (fareProfile.getStatus().isSuccess()) {
         try {
           Log.d(TAG, "response: " + rep.getText());
-          return true;
+//          return true;
+          UserProfile user = representationToUser(rep);
+          return Optional.of(user);
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -53,15 +58,15 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Boolean> {
       mException = e;
     }
 
-    return false;
+    return Optional.absent();
   }
 
   @Override
-  protected void onPostExecute(Boolean success) {
+  protected void onPostExecute(Optional<UserProfile> user) {
     if (mException != null) {
       mListener.handleError(mException);
     } else {
-      mListener.completed(success);
+      mListener.completed(user);
     }
   }
 
@@ -79,6 +84,11 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Boolean> {
       e.printStackTrace();
       throw new RuntimeException("Programmer mistyped the URI!");
     }
+  }
+
+  private UserProfile representationToUser(Representation rep) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

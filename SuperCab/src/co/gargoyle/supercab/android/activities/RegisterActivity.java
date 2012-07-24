@@ -131,8 +131,10 @@ public class RegisterActivity extends RoboActivity {
 
       @Override
       public void completed(Boolean success) {
-        mProgressDialog.dismiss();
-        saveProfileAndProceedToApp(profile);
+        if (success) {
+          mProgressDialog.dismiss();
+          saveProfileAndProceedToApp(profile);
+        }
       }
 
 

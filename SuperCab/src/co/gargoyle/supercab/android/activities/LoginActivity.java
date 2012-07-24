@@ -18,11 +18,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.model.UserCredentials;
+import co.gargoyle.supercab.android.model.UserProfile;
+import co.gargoyle.supercab.android.model.UserType;
 import co.gargoyle.supercab.android.tasks.GetUserTask;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 import co.gargoyle.supercab.android.utilities.AlertUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 public class LoginActivity extends RoboActivity {
@@ -53,7 +56,7 @@ public class LoginActivity extends RoboActivity {
     super.onCreate(savedInstanceState);
 
     if (isLoggedIn()) {
-      proceedToApp();
+      proceedToApp(loadUserFromDb());
     } else {
       setContentView(R.layout.login);
 
@@ -154,9 +157,13 @@ public class LoginActivity extends RoboActivity {
       }
 
       @Override
-      public void completed(Boolean success) {
+      public void completed(Optional<UserProfile> user) {
         mProgressDialog.dismiss();
-        saveCredentialsAndProceedToApp(credentials);
+        if (user.isPresent()) {
+          saveUserAndProceedToApp(user.get(), credentials);
+        } else {
+          goBlooey(new Exception("Login Failed!"));
+        }
       }
     });
 
@@ -171,22 +178,32 @@ public class LoginActivity extends RoboActivity {
   // Login Complete
   ////////////////////////////////////////////////////////////
 
-  private void proceedToApp() {
-    // TODO: Detect if driver
-    startActivity(new Intent(LoginActivity.this, HailActivity.class));
+  private void proceedToApp(UserProfile user) {
+    Intent i;
+    if (user.type == UserType.PASSENGER) {
+        i = new Intent(LoginActivity.this, HailActivity.class);
+    } else {
+        i = new Intent(LoginActivity.this, FareListActivity.class);
+    }
+    startActivity(i);
     finish();
   }
 
-  private void saveCredentialsAndProceedToApp(UserCredentials credentials) {
+  private void saveUserAndProceedToApp(UserProfile user, UserCredentials credentials) {
     mPreferenceUtils.saveCredentials(credentials);
 
     // finish login and proceed
-    proceedToApp();
+    proceedToApp(user);
   }
 
   ////////////////////////////////////////////////////////////
   // Utils
   ////////////////////////////////////////////////////////////
+
+  private UserProfile loadUserFromDb() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
   void goBlooey(Throwable t) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);

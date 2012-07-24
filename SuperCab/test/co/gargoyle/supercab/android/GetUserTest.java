@@ -10,9 +10,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import co.gargoyle.supercab.android.model.UserCredentials;
+import co.gargoyle.supercab.android.model.UserProfile;
 import co.gargoyle.supercab.android.tasks.GetUserTask;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 
+import com.google.common.base.Optional;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
@@ -33,8 +35,8 @@ public class GetUserTest {
       }
 
       @Override
-      public void completed(Boolean success) {
-        assertTrue(success);
+      public void completed(Optional<UserProfile> user) {
+        assertTrue(user.isPresent());
 
         signal.countDown();
       }
