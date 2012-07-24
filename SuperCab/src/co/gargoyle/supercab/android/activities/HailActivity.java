@@ -263,7 +263,7 @@ public class HailActivity extends RoboMapActivity {
     PickupPoint destination = mPickupDropoffOverlay.get(1);
 
     mConfirmationPickupText.setText(source.getAddress().getAddressLine(0));
-    mConfirmationDropoffText.setText(source.getAddress().getAddressLine(0));
+    mConfirmationDropoffText.setText(destination.getAddress().getAddressLine(0));
   }
 
   private void setBottomBarConfirmation(boolean confirmation) {
