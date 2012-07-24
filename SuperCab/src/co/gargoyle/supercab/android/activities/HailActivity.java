@@ -201,16 +201,7 @@ public class HailActivity extends RoboMapActivity {
   public void onConfirmButtonClicked(View view) {
     Log.i(TAG, "onConfirmButtonClicked()");
 
-    PickupPoint source = mPickupDropoffOverlay.get(0);
-    PickupPoint destination = mPickupDropoffOverlay.get(1);
-    Date timeRequested = new Date();
-
-    Fare fare = new Fare(source, destination, timeRequested);
-
-    Intent i = new Intent(HailActivity.this, ConfirmationActivity.class);
-    i.putExtra(KEY_FARE, fare);
-    startActivity(i);
-
+    proceedToConfirmation(getFareFromUi());
   }
 
   public void onCancelConfirmButtonClicked(View view) {
@@ -574,4 +565,25 @@ public class HailActivity extends RoboMapActivity {
     return newAddress;
   }
 
+  ////////////////////////////////////////////////////////////
+  // Nav
+  ////////////////////////////////////////////////////////////
+
+  private Fare getFareFromUi() {
+    PickupPoint source = mPickupDropoffOverlay.get(0);
+    PickupPoint destination = mPickupDropoffOverlay.get(1);
+    Date timeRequested = new Date();
+
+    Fare fare = new Fare(source, destination, timeRequested);
+
+    return fare;
+  }
+
+  private void proceedToConfirmation(Fare fare) {
+    Intent i = new Intent(HailActivity.this, ConfirmationActivity.class);
+    i.putExtra(KEY_FARE, fare);
+    startActivity(i);
+
+
+  }
 }

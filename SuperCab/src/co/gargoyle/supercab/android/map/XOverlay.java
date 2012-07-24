@@ -45,7 +45,8 @@ public class XOverlay extends Overlay {
 
     //float top  = (canvasHeight / 2) - (4 * bitmapHeight);
     //float top  = (canvasHeight / 2) - (2 * bitmapHeight);
-    float top  = (canvasHeight / 2) - (bitmapHeight / 2);
+    //float top  = (canvasHeight / 2) - (bitmapHeight / 2);
+    float top  = (canvasHeight / 2) - (bitmapHeight);
 
     Paint paint = new Paint();
     canvas.drawBitmap(xBitmap, left, top, paint);
