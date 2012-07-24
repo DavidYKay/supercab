@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -15,15 +17,34 @@ import android.location.Address;
 import co.gargoyle.supercab.android.enums.FareType;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
-import co.gargoyle.supercab.android.tasks.UploadFareListener;
-import co.gargoyle.supercab.android.tasks.UploadFareTask;
+import co.gargoyle.supercab.android.tasks.PostFareTask;
+import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
+import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
 import com.google.common.base.Optional;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-public class UploadFareTest {
+public class PostFareTest {
+
+  @Before
+  public void runBeforeEveryTest() {
+    Context context = Robolectric.application;
+    PreferenceUtils prefs = new PreferenceUtils(context);
+    prefs.saveCredentials(
+        "passenger",
+        "passenger");
+
+  }
+
+  @After
+  public void runAfterEveryTest() {
+    Context context = Robolectric.application;
+    PreferenceUtils prefs = new PreferenceUtils(context);
+    prefs.saveCredentials(null, null);
+  }
+
 
   @Test
   public void shouldUploadFare() throws Exception {
@@ -33,18 +54,10 @@ public class UploadFareTest {
     final CountDownLatch signal = new CountDownLatch(1);
 
 
-//    final Optional<Long> resultFareId;
-    UploadFareListener listener = new UploadFareListener() {
+    PostFareListener listener = new PostFareListener() {
       @Override
       public void completed(Optional<Long> fareId) {
         assertTrue(fareId.isPresent());
-        //if (fareId.isPresent()) {
-        //  // Sweet victory
-        //  //resultFareId = fareId;
-        //} else {
-        //  fail("did not receive a fareId back!");
-        //}
-
         signal.countDown();
       }
 
@@ -55,7 +68,7 @@ public class UploadFareTest {
         signal.countDown();
       }
     };
-    UploadFareTask task = new UploadFareTask(context, listener);
+    PostFareTask task = new PostFareTask(context, listener);
 
     Address pickupAddress  = Constants.ADDRESS_IHUB;
     Address dropoffAddress = Constants.ADDRESS_AIRPORT;
@@ -65,19 +78,8 @@ public class UploadFareTest {
     Date time = new Date(Constants.FEB_13_2009);
     final Fare fare = new Fare(pickup, dropoff, time);
 
-    // Execute the async task on the UI thread! THIS IS KEY!
-    //runTestOnUiThread(new Runnable() {
-    //  @Override
-    //  public void run() {
-    //    task.execute(fare);
-    //  }
-    //});       
-    
     task.execute(fare);
     
-    /* The testing thread will wait here until the UI thread releases it
-     * above with the countDown() or 30 seconds passes and it times out.
-     */        
     signal.await(30, TimeUnit.SECONDS);
     
   }

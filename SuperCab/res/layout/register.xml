@@ -90,6 +90,7 @@
         android:singleLine="true"
         android:imeOptions="actionNext"
         />
+      
 
       <TextView
         android:layout_width="wrap_content"
@@ -113,13 +114,133 @@
         android:inputType="textPassword"
         android:singleLine="true"
         android:password="true"
+        android:imeOptions="actionGo"
+        />
+      
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:paddingBottom="2dp"
+        android:paddingTop="1dp"
+        android:text="@string/confirm_password"
+        android:textSize="14dp"
+        android:layout_marginLeft="7dp"
+        />
+      <EditText
+        android:id="@+id/confirm_password"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:textSize="17dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+
+        android:inputType="textPassword"
+        android:singleLine="true"
+        android:password="true"
+        android:imeOptions="actionGo"
+        />
+      
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:paddingBottom="1dp"
+        android:paddingTop="1dp"
+        android:text="@string/phone_number"
+        android:textSize="14dp"
+        android:layout_marginLeft="7dp"
+        />
+      <EditText
+        android:id="@+id/edit_phone_number"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:textSize="17dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+
+        android:inputType="phone"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        />
+      
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:paddingBottom="1dp"
+        android:paddingTop="1dp"
+        android:text="@string/change_first_name"
+        android:textSize="14dp"
+        android:layout_marginLeft="7dp"
+        />
+
+      <EditText
+        android:id="@+id/edit_first_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:textSize="17dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+
+        android:inputType="textPersonName"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        />
+      
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:paddingBottom="1dp"
+        android:paddingTop="1dp"
+        android:text="@string/change_last_name"
+        android:textSize="14dp"
+        android:layout_marginLeft="7dp"
+        />
+      <EditText
+        android:id="@+id/edit_last_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:textSize="17dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+
+        android:inputType="textPersonName"
+        android:singleLine="true"
         android:imeOptions="actionDone"
         />
 
       <!--
-      android:paddingBottom="5dp"
-      android:paddingTop="5dp"
-         -->
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:paddingBottom="1dp"
+        android:paddingTop="1dp"
+        android:text="@string/pick_user_type"
+        android:textSize="14dp"
+        android:layout_marginLeft="7dp"
+        />
+      <Spinner
+        android:id="@+id/pick_user_type"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:textSize="17dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+
+        android:inputType="textEmailAddress"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        />
+        -->
+
   </LinearLayout>
 </ScrollView>
 <!--
@@ -138,21 +259,6 @@
   android:gravity="center"
   android:text="@string/register"
   android:onClick="onRegisterButtonClicked"
-
-  android:visibility="gone"
   />
-
-<Button
-  android:id="@+id/loginButton"
-  android:layout_width="144dp"
-  android:layout_height="wrap_content"
-  android:layout_alignParentRight="true"
-  android:layout_below="@+id/registerButton"
-  android:layout_marginTop="7dp"
-  android:gravity="center"
-  android:text="@string/log_in"
-  android:onClick="onLoginButtonClicked"
-  />
-
 
 </RelativeLayout>

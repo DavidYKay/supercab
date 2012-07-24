@@ -37,7 +37,7 @@
 <string name="change_language">Change Language</string>
 <string name="change_password">Password</string>
 <string name="change_server_url">Server URL</string>
-<string name="change_username">SuperCab Username</string>
+<string name="change_username">Username</string>
 <string name="clearanswer_confirm">Remove the response to \"%s\"?</string>
 <string name="clear_answer">Remove response</string>
 <string name="clear_answer_ask">Remove This Response?</string>
@@ -265,5 +265,12 @@
 <string name="server_registering">Trying (attempt %1$d/%2$d) to register device on Demo Server.</string>
 <string name="server_unregister_error">Could not unregister device on Demo Server (%1$s).</string>
 <string name="server_unregistered">From Demo Server: successfully removed device!</string>
+
+<string name="register">Register</string>
+<string name="pick_user_type">User Type</string>
+<string name="change_first_name">First Name</string>
+<string name="change_last_name">Last Name</string>
+<string name="confirm_password">Confirm Password</string>
+<string name="phone_number">Phone Number</string>
 
 </resources>

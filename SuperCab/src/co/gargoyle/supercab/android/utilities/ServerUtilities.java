@@ -16,24 +16,14 @@
 package co.gargoyle.supercab.android.utilities;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -114,26 +104,7 @@ public final class ServerUtilities {
    * Unregister this account/device pair within the server.
    */
   public static void unregister(final Context context, final String regId) {
-    Log.i(TAG, "unregistering device (regId = " + regId + ")");
-    String serverUrl = CommonUtilities.SERVER_URL + "/push/unregister";
-    //String serverUrl = CommonUtilities.SERVER_URL + "/unregister";
-    //String serverUrl = CommonUtilities.SERVER_URL + "/device/";
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("push_id", regId);
-    try {
-      delete(serverUrl, params);
-      GCMRegistrar.setRegisteredOnServer(context, false);
-      String message = context.getString(R.string.server_unregistered);
-      CommonUtilities.displayMessage(context, message);
-    } catch (IOException e) {
-      // At this point the device is unregistered from GCM, but still
-      // registered in the server.
-      // We could try to unregister again, but it is not necessary:
-      // if the server tries to send a message to the device, it will get
-      // a "NotRegistered" error message and should unregister the device.
-      String message = context.getString(R.string.server_unregister_error, e.getMessage());
-      CommonUtilities.displayMessage(context, message);
-    }
+   
   }
   
   public static boolean postRestlet(String endpoint, Map<String, String> params) throws IOException {
@@ -158,133 +129,6 @@ public final class ServerUtilities {
       return false;
     }
   }
-
-  /**
-   * Issue a POST request to the server.
-   * 
-   * @param endpoint
-   *          POST address.
-   * @param params
-   *          request parameters.
-   * 
-   * @throws IOException
-   *           propagated from POST.
-   */
-  private static void post(String endpoint, Map<String, String> params) throws IOException {
-
-    setupAuthentication();
-
-    URL url;
-    try {
-      url = new URL(endpoint);
-    } catch (MalformedURLException e) {
-      throw new IllegalArgumentException("invalid url: " + endpoint);
-    }
-    StringBuilder bodyBuilder = new StringBuilder();
-    Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
-    // constructs the POST body using the parameters
-    while (iterator.hasNext()) {
-      Entry<String, String> param = iterator.next();
-      bodyBuilder.append(param.getKey()).append('=').append(param.getValue());
-      if (iterator.hasNext()) {
-        bodyBuilder.append('&');
-      }
-    }
-    String body = bodyBuilder.toString();
-    Log.v(TAG, "Posting '" + body + "' to " + url);
-    byte[] bytes = body.getBytes();
-    HttpURLConnection conn = null;
-    try {
-      conn = (HttpURLConnection) url.openConnection();
-      conn.setDoOutput(true);
-      conn.setUseCaches(false);
-      conn.setFixedLengthStreamingMode(bytes.length);
-      conn.setRequestMethod("POST");
-      conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-      // post the request
-      OutputStream out = conn.getOutputStream();
-      out.write(bytes);
-      out.close();
-      // handle the response
-      int status = conn.getResponseCode();
-      if (status != 200) {
-        throw new IOException("Post failed with error code " + status);
-      }
-    } finally {
-      if (conn != null) {
-        conn.disconnect();
-      }
-    }
-  }
-  
-  /**
-   * Issue a DELETE request to the server.
-   * 
-   * @param endpoint
-   *          DELETE address.
-   * @param params
-   *          request parameters.
-   * 
-   * @throws IOException
-   *           propagated from DELETE.
-   */
-  private static void delete(String endpoint, Map<String, String> params) throws IOException {
-    URL url;
-    try {
-      url = new URL(endpoint);
-    } catch (MalformedURLException e) {
-      throw new IllegalArgumentException("invalid url: " + endpoint);
-    }
-    StringBuilder bodyBuilder = new StringBuilder();
-    Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
-    // constructs the POST body using the parameters
-    while (iterator.hasNext()) {
-      Entry<String, String> param = iterator.next();
-      bodyBuilder.append(param.getKey()).append('=').append(param.getValue());
-      if (iterator.hasNext()) {
-        bodyBuilder.append('&');
-      }
-    }
-    String body = bodyBuilder.toString();
-    Log.v(TAG, "Posting '" + body + "' to " + url);
-    byte[] bytes = body.getBytes();
-    HttpURLConnection conn = null;
-    try {
-      conn = (HttpURLConnection) url.openConnection();
-      conn.setDoOutput(true);
-      conn.setUseCaches(false);
-      conn.setFixedLengthStreamingMode(bytes.length);
-      conn.setRequestMethod("DELETE");
-      conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-      // post the request
-      OutputStream out = conn.getOutputStream();
-      out.write(bytes);
-      out.close();
-      // handle the response
-      int status = conn.getResponseCode();
-      if (status != 200) {
-        throw new IOException("Post failed with error code " + status);
-      }
-    } finally {
-      if (conn != null) {
-        conn.disconnect();
-      }
-    }
-  }
-
-  private static boolean hasSetupAuth = false;
-  private static void setupAuthentication() {
-    if (!hasSetupAuth) {
-      Authenticator.setDefault(new Authenticator() {
-        protected PasswordAuthentication getPasswordAuthentication() {
-          String username = "driver";
-          String password = "driver";
-          return new PasswordAuthentication(username, password.toCharArray());
-        };
-      });
-      hasSetupAuth = true;
-    }
-  }
   
   private static URI makeURI(String endpoint) {
     try {
@@ -294,32 +138,6 @@ public final class ServerUtilities {
     } catch (URISyntaxException e) {
       e.printStackTrace();
       throw new RuntimeException("Programmer mistyped the URI!");
-    }
-  }
-
-  private static Form convertMapToForm(Map<String, String> map) {
-    Form form = new Form();
-    for (Entry<String, String> entry : map.entrySet()) {
-      Parameter parameter = new Parameter(entry.getKey(), entry.getValue());
-      form.add(parameter);
-    }
-
-    return form;
-  }
-
-  private static Optional<Representation> convertMapToWebRepresentation(Map<String, String> map) {
-    Form form = convertMapToForm(map);
-    return Optional.of(form.getWebRepresentation());
-  }
-  
-  private static Optional<String> convertMapToFormEncodedString(Map<String, String> map) {
-    Form form = convertMapToForm(map);
-    try {
-      String encodedForm = form.encode();
-      return Optional.of(encodedForm);
-    } catch (IOException exception) {
-      exception.printStackTrace();
-      return Optional.absent();
     }
   }
   
@@ -347,4 +165,23 @@ public final class ServerUtilities {
     textRep.setMediaType(MediaType.APPLICATION_JSON);
     return textRep;
   }
+
+  public static <T> Optional<Representation> convertToJsonRepresentation(T obj) {
+    JacksonRepresentation<T> jacksonRep = new JacksonRepresentation<T>(obj);
+
+    jacksonRep.setObjectMapper(new ObjectMapper());
+
+    String jsonText;
+    try {
+      jsonText = jacksonRep.getText();
+      Representation textRep = new StringRepresentation(jsonText);
+      textRep.setMediaType(MediaType.APPLICATION_JSON);
+      return Optional.of(textRep);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return Optional.absent();
+    }
+
+  }
+
 }

@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import co.gargoyle.supercab.android.model.UserCredentials;
-import co.gargoyle.supercab.android.tasks.GetUserListener;
 import co.gargoyle.supercab.android.tasks.GetUserTask;
+import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
@@ -20,8 +20,6 @@ public class GetUserTest {
 
   @Test
   public void shouldGetUser() throws Exception {
-//    Context context = Robolectric.application;
-        
     // create  a signal to let us know when our task is done.
     final CountDownLatch signal = new CountDownLatch(1);
 

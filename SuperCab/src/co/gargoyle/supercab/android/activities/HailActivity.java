@@ -485,13 +485,6 @@ public class HailActivity extends RoboMapActivity {
   // Resources
   ////////////////////////////////////////////////////////////
 
-  private Bitmap getXBitmap() {
-    Drawable xDrawable = getResources().getDrawable(R.drawable.x);
-    Bitmap bitmap = ((BitmapDrawable) xDrawable).getBitmap();
-    return bitmap;
-  }
-
-
   private HashMap<FareType, Bitmap> getPinOverlayMappings() {
     HashMap<FareType, Bitmap> mappings = new HashMap<FareType, Bitmap>();
 

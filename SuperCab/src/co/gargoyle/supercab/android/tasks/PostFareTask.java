@@ -14,19 +14,20 @@ import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.UserCredentials;
+import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 import co.gargoyle.supercab.android.utilities.ServerUtilities;
 
 import com.google.common.base.Optional;
 
-public class UploadFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
+public class PostFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
 
-   private UploadFareListener mListener;
+   private PostFareListener mListener;
    private Exception mException;
    private Context mContext;
 
-   public UploadFareTask(Context context, UploadFareListener listener) {
+   public PostFareTask(Context context, PostFareListener listener) {
      mListener = listener;
      mContext = context;
    }
