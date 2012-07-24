@@ -12,15 +12,15 @@ import org.restlet.resource.ResourceException;
 import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.UserCredentials;
+import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 
 public class GetUserTask extends AsyncTask<UserCredentials, Integer, Boolean> {
   
   private static final String TAG = "GetUserTask";
 
-  private GetUserListener mListener;
-
-  private ResourceException mException;
+  protected GetUserListener mListener;
+  protected ResourceException mException;
 
    public GetUserTask(GetUserListener listener) {
      mListener = listener;
@@ -70,7 +70,7 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Boolean> {
 
   }
 
-  private URI getURI() {
+  protected URI getURI() {
     try {
       String serverUrl = CommonUtilities.SERVER_URL + "/api/v1/user/";
       URI uri = new URI(serverUrl);

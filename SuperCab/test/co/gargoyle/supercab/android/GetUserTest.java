@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import co.gargoyle.supercab.android.model.UserCredentials;
-import co.gargoyle.supercab.android.tasks.GetUserListener;
 import co.gargoyle.supercab.android.tasks.GetUserTask;
+import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 

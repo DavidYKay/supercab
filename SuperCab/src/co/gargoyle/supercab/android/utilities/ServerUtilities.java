@@ -347,4 +347,23 @@ public final class ServerUtilities {
     textRep.setMediaType(MediaType.APPLICATION_JSON);
     return textRep;
   }
+
+  public static <T> Optional<Representation> convertToJsonRepresentation(T obj) {
+    JacksonRepresentation<T> jacksonRep = new JacksonRepresentation<T>(obj);
+
+    jacksonRep.setObjectMapper(new ObjectMapper());
+
+    String jsonText;
+    try {
+      jsonText = jacksonRep.getText();
+      Representation textRep = new StringRepresentation(jsonText);
+      textRep.setMediaType(MediaType.APPLICATION_JSON);
+      return Optional.of(textRep);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return Optional.absent();
+    }
+
+  }
+
 }

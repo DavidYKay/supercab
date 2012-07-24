@@ -1,4 +1,4 @@
-package co.gargoyle.supercab.android.tasks;
+package co.gargoyle.supercab.android.tasks.listeners;
 
 import com.google.common.base.Optional;
 

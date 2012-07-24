@@ -18,8 +18,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.model.UserCredentials;
-import co.gargoyle.supercab.android.tasks.GetUserListener;
 import co.gargoyle.supercab.android.tasks.GetUserTask;
+import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 import co.gargoyle.supercab.android.utilities.AlertUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
@@ -35,11 +35,11 @@ public class LoginActivity extends RoboActivity {
   private String mAlertMsg;
   private boolean mAlertShowing = false;
 
-  private AlertDialog mAlertDialog;
-  private ProgressDialog mProgressDialog;
+  protected AlertDialog mAlertDialog;
+  protected ProgressDialog mProgressDialog;
 
-  @Inject private AlertUtils mAlertUtils;
-  @Inject private PreferenceUtils mPreferenceUtils;
+  @Inject protected AlertUtils mAlertUtils;
+  @Inject protected PreferenceUtils mPreferenceUtils;
 
   @InjectView(R.id.edit_username) EditText mEditUsername;
   @InjectView(R.id.edit_password) EditText mEditPassword;
@@ -101,6 +101,14 @@ public class LoginActivity extends RoboActivity {
     Log.v(TAG, "BOOM");
     attemptLogin();
   }
+  
+  public void onRegisterButtonClicked(View view) {
+    // Kabloey
+    Log.v(TAG, "BOOM");
+    
+    startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+    finish();
+  }
 
   TextView.OnEditorActionListener mPasswordEnterListener = new TextView.OnEditorActionListener() {
     public boolean onEditorAction(TextView exampleView, int actionId, KeyEvent event) {
@@ -115,6 +123,7 @@ public class LoginActivity extends RoboActivity {
       return false;
     }
   };
+  
 
   ////////////////////////////////////////////////////////////
   // Login

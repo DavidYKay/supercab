@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.UserCredentials;
+import co.gargoyle.supercab.android.tasks.listeners.UploadFareListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 import co.gargoyle.supercab.android.utilities.ServerUtilities;

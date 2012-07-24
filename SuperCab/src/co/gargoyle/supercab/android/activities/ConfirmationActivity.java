@@ -13,8 +13,8 @@ import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
-import co.gargoyle.supercab.android.tasks.UploadFareListener;
 import co.gargoyle.supercab.android.tasks.UploadFareTask;
+import co.gargoyle.supercab.android.tasks.listeners.UploadFareListener;
 
 import com.google.common.base.Optional;
 
