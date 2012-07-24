@@ -128,7 +128,7 @@
         android:layout_marginLeft="7dp"
         />
       <EditText
-        android:id="@+id/edit_password_confirm"
+        android:id="@+id/confirm_password"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="left"

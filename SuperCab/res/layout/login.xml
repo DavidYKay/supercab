@@ -138,6 +138,8 @@
   android:gravity="center"
   android:text="@string/register"
   android:onClick="onRegisterButtonClicked"
+
+  android:visibility="gone"
   />
 
 <Button

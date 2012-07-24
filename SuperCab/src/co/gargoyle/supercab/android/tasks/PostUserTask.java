@@ -18,7 +18,6 @@ import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 import co.gargoyle.supercab.android.utilities.ServerUtilities;
 
-//public class PostUserTask extends GetUserTask {
 public class PostUserTask extends AsyncTask<UserProfile, Integer, Boolean> {
   
   private static final String TAG = "PostUserTask";
@@ -27,13 +26,11 @@ public class PostUserTask extends AsyncTask<UserProfile, Integer, Boolean> {
   protected ResourceException mException;
 
   public PostUserTask(PostUserListener listener) {
-//    super(postUserListener);
     mListener = listener;
   }
   
   @Override
   protected Boolean doInBackground(UserProfile... credentialsList) {
-    //User user = users[0];
     UserProfile userProfile = credentialsList[0];
 
     URI uri = getURI();

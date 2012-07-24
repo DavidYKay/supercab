@@ -20,8 +20,6 @@ public class GetUserTest {
 
   @Test
   public void shouldGetUser() throws Exception {
-//    Context context = Robolectric.application;
-        
     // create  a signal to let us know when our task is done.
     final CountDownLatch signal = new CountDownLatch(1);
 

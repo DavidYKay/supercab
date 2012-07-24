@@ -3,7 +3,10 @@ package co.gargoyle.supercab.android.activities;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,28 +17,43 @@ import co.gargoyle.supercab.android.exceptions.PasswordsDontMatchException;
 import co.gargoyle.supercab.android.model.UserProfile;
 import co.gargoyle.supercab.android.tasks.PostUserTask;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
+import co.gargoyle.supercab.android.utilities.AlertUtils;
 import co.gargoyle.supercab.android.utilities.StringUtils;
+
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
 
 //public class RegisterActivity extends LoginActivity {
 public class RegisterActivity extends RoboActivity {
-  
+
   private static final String TAG = "RegisterActivity";
-  
+
+  private static final int PROGRESS_DIALOG = 1;
+  private static final int AUTH_FAILED_DIALOG = 2;
+
   protected ProgressDialog mProgressDialog;
-  
+
+  private Optional<PostUserTask> mRegisterTask = Optional.absent();
+  private String mAlertMsg;
+
   @InjectView(R.id.edit_username) EditText mEditUsername;
   @InjectView(R.id.edit_phone_number) EditText mEditPhoneNumber;
   @InjectView(R.id.edit_password) EditText mEditPassword;
-  @InjectView(R.id.edit_password_confirm) EditText mConfirmPassword;
+  @InjectView(R.id.confirm_password) EditText mConfirmPassword;
 
   @InjectView(R.id.edit_last_name) EditText mEditLastName;
   @InjectView(R.id.edit_first_name) EditText mEditFirstName;
+
+  @Inject protected AlertUtils mAlertUtils;
+  //@Inject protected PreferenceUtils mPreferenceUtils;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.register);
+
+    mAlertMsg = getString(R.string.please_wait);
 
 //    mEditLastName.setOnEditorActionListener(mPasswordEnterListener);
   }
@@ -49,7 +67,7 @@ public class RegisterActivity extends RoboActivity {
     Log.v(TAG, "BOOM");
     attemptRegister();
   }
-  
+
   private UserProfile getProfileFromUi() throws PasswordsDontMatchException, FormIncompleteException {
     String password1 =  mEditPassword.getText().toString();
     String password2 =  mConfirmPassword.getText().toString();
@@ -92,6 +110,7 @@ public class RegisterActivity extends RoboActivity {
   private void attemptRegister() {
     try {
       beginNetworkRegister(getProfileFromUi());
+      showDialog(PROGRESS_DIALOG);
     } catch (PasswordsDontMatchException e) {
       e.printStackTrace();
       goBlooey(e);
@@ -100,7 +119,7 @@ public class RegisterActivity extends RoboActivity {
       goBlooey(e);
     }
   }
-  
+
   private void beginNetworkRegister(final UserProfile profile) {
     PostUserTask task = new PostUserTask(new PostUserListener() {
 
@@ -116,21 +135,68 @@ public class RegisterActivity extends RoboActivity {
         saveProfileAndProceedToApp(profile);
       }
 
-     
+
     });
+
+    mRegisterTask = Optional.of(task);
 
     task.execute(profile);
   }
 
+  ////////////////////////////////////////////////////////////
+  // Nav
+  ////////////////////////////////////////////////////////////
+
   private void saveProfileAndProceedToApp(UserProfile profile) {
-    // TODO Auto-generated method stub
-    
+    // TODO Save profile ????
+    proceedToApp();
   }
-  
+
+  private void proceedToApp() {
+    startActivity(new Intent(RegisterActivity.this, HailActivity.class));
+    finish();
+  }
+
+
+  ////////////////////////////////////////////////////////////
+  // Utils
+  ////////////////////////////////////////////////////////////
+
   void goBlooey(Throwable t) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
     builder.setTitle("Error!").setMessage(t.getMessage()).setPositiveButton("OK", null).show();
   }
-  
+
+  @Override
+  protected Dialog onCreateDialog(int id) {
+    switch (id) {
+    case PROGRESS_DIALOG:
+      mProgressDialog = new ProgressDialog(this);
+      DialogInterface.OnClickListener loadingButtonListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          dialog.dismiss();
+          // End the tasks
+          if (mRegisterTask.isPresent()) {
+            mRegisterTask.get().cancel(true);
+          }
+        }
+      };
+      mProgressDialog.setTitle(getString(R.string.downloading_data));
+      mProgressDialog.setMessage(mAlertMsg);
+      mProgressDialog.setIcon(android.R.drawable.ic_dialog_info);
+      mProgressDialog.setIndeterminate(true);
+      mProgressDialog.setCancelable(false);
+      mProgressDialog.setButton(getString(R.string.cancel),
+          loadingButtonListener);
+      return mProgressDialog;
+    case AUTH_FAILED_DIALOG:
+      return mAlertUtils.createAlertDialog(
+          R.string.auth_failed,
+          R.string.please_correct_username
+          );
+    }
+    return null;
+  }
 }
