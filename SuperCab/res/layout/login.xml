@@ -113,7 +113,7 @@
         android:inputType="textPassword"
         android:singleLine="true"
         android:password="true"
-        android:imeOptions="actionGo"
+        android:imeOptions="actionDone"
         />
 
       <!--

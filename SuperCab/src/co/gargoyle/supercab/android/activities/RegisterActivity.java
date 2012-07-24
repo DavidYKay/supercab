@@ -1,18 +1,27 @@
 package co.gargoyle.supercab.android.activities;
 
+import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import co.gargoyle.supercab.android.R;
+import co.gargoyle.supercab.android.exceptions.FormIncompleteException;
+import co.gargoyle.supercab.android.exceptions.PasswordsDontMatchException;
 import co.gargoyle.supercab.android.model.UserProfile;
 import co.gargoyle.supercab.android.tasks.PostUserTask;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
+import co.gargoyle.supercab.android.utilities.StringUtils;
 
-public class RegisterActivity extends LoginActivity {
+//public class RegisterActivity extends LoginActivity {
+public class RegisterActivity extends RoboActivity {
   
   private static final String TAG = "RegisterActivity";
+  
+  protected ProgressDialog mProgressDialog;
   
   @InjectView(R.id.edit_username) EditText mEditUsername;
   @InjectView(R.id.edit_phone_number) EditText mEditPhoneNumber;
@@ -28,7 +37,7 @@ public class RegisterActivity extends LoginActivity {
 
     setContentView(R.layout.register);
 
-    mEditLastName.setOnEditorActionListener(mPasswordEnterListener);
+//    mEditLastName.setOnEditorActionListener(mPasswordEnterListener);
   }
 
   ////////////////////////////////////////////////////////////
@@ -41,11 +50,37 @@ public class RegisterActivity extends LoginActivity {
     attemptRegister();
   }
   
-  private UserProfile getProfileFromUi() {
-    String username = mEditUsername.getText().toString();
-    String password = mEditPassword.getText().toString();
+  private UserProfile getProfileFromUi() throws PasswordsDontMatchException, FormIncompleteException {
+    String password1 =  mEditPassword.getText().toString();
+    String password2 =  mConfirmPassword.getText().toString();
+
+    if (!password1.equals(password2)) {
+      throw new PasswordsDontMatchException("Your passwords don't match!");
+    }
 
     UserProfile user = new UserProfile();
+
+    String password =  password1;
+    if (StringUtils.stringIsEmpty(password)) {
+      throw new FormIncompleteException();
+    }
+    String username =  mEditUsername.getText().toString();
+    if (StringUtils.stringIsEmpty(username)) {
+      throw new FormIncompleteException();
+    }
+    String phoneNumber =  mEditPhoneNumber.getText().toString();
+    if (StringUtils.stringIsEmpty(phoneNumber)) {
+      throw new FormIncompleteException();
+    }
+
+    String lastName =  mEditLastName.getText().toString();
+    if (StringUtils.stringIsEmpty(lastName)) {
+      throw new FormIncompleteException();
+    }
+    String firstName =  mEditFirstName.getText().toString();
+    if (StringUtils.stringIsEmpty(firstName)) {
+      throw new FormIncompleteException();
+    }
 
     return user;
   }
@@ -55,7 +90,15 @@ public class RegisterActivity extends LoginActivity {
   ////////////////////////////////////////////////////////////
 
   private void attemptRegister() {
-    beginNetworkRegister(getProfileFromUi());
+    try {
+      beginNetworkRegister(getProfileFromUi());
+    } catch (PasswordsDontMatchException e) {
+      e.printStackTrace();
+      goBlooey(e);
+    } catch (FormIncompleteException e) {
+      e.printStackTrace();
+      goBlooey(e);
+    }
   }
   
   private void beginNetworkRegister(final UserProfile profile) {
@@ -82,6 +125,12 @@ public class RegisterActivity extends LoginActivity {
   private void saveProfileAndProceedToApp(UserProfile profile) {
     // TODO Auto-generated method stub
     
+  }
+  
+  void goBlooey(Throwable t) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+    builder.setTitle("Error!").setMessage(t.getMessage()).setPositiveButton("OK", null).show();
   }
   
 }
