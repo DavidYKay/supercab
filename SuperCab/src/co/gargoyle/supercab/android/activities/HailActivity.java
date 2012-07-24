@@ -128,6 +128,7 @@ public class HailActivity extends RoboMapActivity {
           updateAddressWithGeoPoint(center);
         } else {
           setAddressLabelActive(false);
+          mLastKnownAddress = null;
         }
       }
     });
