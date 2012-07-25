@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.UserCredentials;
 import co.gargoyle.supercab.android.model.UserModel;
+import co.gargoyle.supercab.android.network.UserRepresentation;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 
@@ -24,7 +25,7 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
   private static final String TAG = "GetUserTask";
 
   protected GetUserListener mListener;
-  protected ResourceException mException;
+  protected Exception mException;
 
   public GetUserTask(GetUserListener listener) {
     mListener = listener;
@@ -37,19 +38,22 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
 
     URI uri = getURI();
 
-    ClientResource fareProfile = new ClientResource(uri);
+    ClientResource clientResource = new ClientResource(uri);
 
-    fareProfile.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
+    clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
         creds.username, 
         creds.password);
+    
+//    UserResource fareProfile = clientResource.wrap(UserResource.class);
+
 
     try {
-      Representation rep = fareProfile.get();
-      if (fareProfile.getStatus().isSuccess()) {
+      Representation rep = clientResource.get();
+      if (clientResource.getStatus().isSuccess()) {
         try {
           Log.d(TAG, "response: " + rep.getText());
-          //          return true;
-          UserModel user = representationToUser(rep);
+          UserRepresentation userRep = new UserRepresentation(rep);
+          UserModel user = userRep.getUser();
           if (user == null) {
             return Optional.absent();
           } else {
@@ -57,6 +61,10 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
           }
         } catch (IOException e) {
           e.printStackTrace();
+          mException = e;
+        } catch (Exception e) {
+          e.printStackTrace();
+          mException = e;
         }
       }
     } catch (ResourceException e) {

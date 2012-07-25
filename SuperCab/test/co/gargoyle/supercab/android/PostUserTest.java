@@ -17,7 +17,6 @@ import co.gargoyle.supercab.android.tasks.PostUserTask;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
-import com.google.common.base.Optional;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
