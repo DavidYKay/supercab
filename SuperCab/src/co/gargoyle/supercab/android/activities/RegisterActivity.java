@@ -14,7 +14,7 @@ import android.widget.EditText;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.exceptions.FormIncompleteException;
 import co.gargoyle.supercab.android.exceptions.PasswordsDontMatchException;
-import co.gargoyle.supercab.android.model.UserProfile;
+import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.tasks.PostUserTask;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
 import co.gargoyle.supercab.android.utilities.AlertUtils;
@@ -68,7 +68,7 @@ public class RegisterActivity extends RoboActivity {
     attemptRegister();
   }
 
-  private UserProfile getProfileFromUi() throws PasswordsDontMatchException, FormIncompleteException {
+  private UserModel getProfileFromUi() throws PasswordsDontMatchException, FormIncompleteException {
     String password1 =  mEditPassword.getText().toString();
     String password2 =  mConfirmPassword.getText().toString();
 
@@ -76,7 +76,7 @@ public class RegisterActivity extends RoboActivity {
       throw new PasswordsDontMatchException("Your passwords don't match!");
     }
 
-    UserProfile user = new UserProfile();
+    UserModel user = new UserModel();
 
     String password =  password1;
     if (StringUtils.stringIsEmpty(password)) {
@@ -120,7 +120,7 @@ public class RegisterActivity extends RoboActivity {
     }
   }
 
-  private void beginNetworkRegister(final UserProfile profile) {
+  private void beginNetworkRegister(final UserModel profile) {
     PostUserTask task = new PostUserTask(new PostUserListener() {
 
       @Override
@@ -149,7 +149,7 @@ public class RegisterActivity extends RoboActivity {
   // Nav
   ////////////////////////////////////////////////////////////
 
-  private void saveProfileAndProceedToApp(UserProfile profile) {
+  private void saveProfileAndProceedToApp(UserModel profile) {
     // TODO Save profile ????
     proceedToApp();
   }

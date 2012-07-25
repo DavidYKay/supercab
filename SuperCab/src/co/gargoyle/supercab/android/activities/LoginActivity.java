@@ -18,7 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.model.UserCredentials;
-import co.gargoyle.supercab.android.model.UserProfile;
+import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.model.UserType;
 import co.gargoyle.supercab.android.tasks.GetUserTask;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
@@ -157,7 +157,7 @@ public class LoginActivity extends RoboActivity {
       }
 
       @Override
-      public void completed(Optional<UserProfile> user) {
+      public void completed(Optional<UserModel> user) {
         mProgressDialog.dismiss();
         if (user.isPresent()) {
           saveUserAndProceedToApp(user.get(), credentials);
@@ -178,7 +178,7 @@ public class LoginActivity extends RoboActivity {
   // Login Complete
   ////////////////////////////////////////////////////////////
 
-  private void proceedToApp(UserProfile user) {
+  private void proceedToApp(UserModel user) {
     Intent i;
     if (user.type == UserType.PASSENGER) {
         i = new Intent(LoginActivity.this, HailActivity.class);
@@ -189,7 +189,7 @@ public class LoginActivity extends RoboActivity {
     finish();
   }
 
-  private void saveUserAndProceedToApp(UserProfile user, UserCredentials credentials) {
+  private void saveUserAndProceedToApp(UserModel user, UserCredentials credentials) {
     mPreferenceUtils.saveCredentials(credentials);
 
     // finish login and proceed
@@ -200,7 +200,7 @@ public class LoginActivity extends RoboActivity {
   // Utils
   ////////////////////////////////////////////////////////////
 
-  private UserProfile loadUserFromDb() {
+  private UserModel loadUserFromDb() {
     // TODO Auto-generated method stub
     return null;
   }

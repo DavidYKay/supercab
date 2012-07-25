@@ -13,12 +13,12 @@ import com.google.common.base.Optional;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import co.gargoyle.supercab.android.model.UserProfile;
+import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 import co.gargoyle.supercab.android.utilities.ServerUtilities;
 
-public class PostUserTask extends AsyncTask<UserProfile, Integer, Boolean> {
+public class PostUserTask extends AsyncTask<UserModel, Integer, Boolean> {
   
   private static final String TAG = "PostUserTask";
   
@@ -30,17 +30,17 @@ public class PostUserTask extends AsyncTask<UserProfile, Integer, Boolean> {
   }
   
   @Override
-  protected Boolean doInBackground(UserProfile... credentialsList) {
-    UserProfile userProfile = credentialsList[0];
+  protected Boolean doInBackground(UserModel... credentialsList) {
+    UserModel userModel = credentialsList[0];
 
     URI uri = getURI();
 
     ClientResource userResource = new ClientResource(uri);
     userResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-                                     userProfile.username, 
-                                     userProfile.password);
+                                     userModel.username, 
+                                     userModel.password);
 
-    Optional<Representation> optional = ServerUtilities.convertToJsonRepresentation(userProfile);
+    Optional<Representation> optional = ServerUtilities.convertToJsonRepresentation(userModel);
     if (optional.isPresent()) {
       Representation userRepresentation = optional.get();
       try {

@@ -1,0 +1,15 @@
+{
+
+    "firstName": "",
+    "id": "2",
+    "lastName": "",
+    "resourceUri": "/api/v1/user/2/",
+    "type": "PASSENGER",
+    "userProfile": {
+        "id": "2",
+        "phoneNumber": null,
+        "resourceUri": "/api/v1/user_profile/2/"
+    },
+    "username": "passenger"
+
+}

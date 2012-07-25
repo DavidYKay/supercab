@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.restlet.data.ChallengeScheme;
+import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -12,25 +13,25 @@ import org.restlet.resource.ResourceException;
 import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.UserCredentials;
-import co.gargoyle.supercab.android.model.UserProfile;
+import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 
 import com.google.common.base.Optional;
 
-public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<UserProfile>> {
-  
+public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<UserModel>> {
+
   private static final String TAG = "GetUserTask";
 
   protected GetUserListener mListener;
   protected ResourceException mException;
 
-   public GetUserTask(GetUserListener listener) {
-     mListener = listener;
-   }
+  public GetUserTask(GetUserListener listener) {
+    mListener = listener;
+  }
 
   @Override
-  protected Optional<UserProfile> doInBackground(UserCredentials... credentialsList) {
+  protected Optional<UserModel> doInBackground(UserCredentials... credentialsList) {
     //User fare = fares[0];
     UserCredentials creds = credentialsList[0];
 
@@ -39,17 +40,21 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
     ClientResource fareProfile = new ClientResource(uri);
 
     fareProfile.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-                                     creds.username, 
-                                     creds.password);
+        creds.username, 
+        creds.password);
 
     try {
       Representation rep = fareProfile.get();
       if (fareProfile.getStatus().isSuccess()) {
         try {
           Log.d(TAG, "response: " + rep.getText());
-//          return true;
-          UserProfile user = representationToUser(rep);
-          return Optional.of(user);
+          //          return true;
+          UserModel user = representationToUser(rep);
+          if (user == null) {
+            return Optional.absent();
+          } else {
+            return Optional.of(user); 
+          }
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -62,7 +67,7 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
   }
 
   @Override
-  protected void onPostExecute(Optional<UserProfile> user) {
+  protected void onPostExecute(Optional<UserModel> user) {
     if (mException != null) {
       mListener.handleError(mException);
     } else {
@@ -86,9 +91,9 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
     }
   }
 
-  private UserProfile representationToUser(Representation rep) {
-    // TODO Auto-generated method stub
-    return null;
+  private UserModel representationToUser(Representation rep) {
+    JacksonRepresentation<UserModel> jRep = new JacksonRepresentation<UserModel>(rep, UserModel.class);
+    return jRep.getObject();
   }
 
 }

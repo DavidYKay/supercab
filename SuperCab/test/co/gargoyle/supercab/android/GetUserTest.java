@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import co.gargoyle.supercab.android.model.UserCredentials;
-import co.gargoyle.supercab.android.model.UserProfile;
+import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.tasks.GetUserTask;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 
@@ -35,7 +35,7 @@ public class GetUserTest {
       }
 
       @Override
-      public void completed(Optional<UserProfile> user) {
+      public void completed(Optional<UserModel> user) {
         assertTrue(user.isPresent());
 
         signal.countDown();

@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import android.content.Context;
-import co.gargoyle.supercab.android.model.UserProfile;
+import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.tasks.PostUserTask;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
@@ -22,7 +22,7 @@ import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-public class RegisterUserTest {
+public class PostUserTest {
   
   @Before
   public void runBeforeEveryTest() {
@@ -66,9 +66,9 @@ public class RegisterUserTest {
 
     PostUserTask task = new PostUserTask(listener);
     
-    UserProfile userProfile = new UserProfile();
+    UserModel userModel = new UserModel();
     
-    task.execute(userProfile);
+    task.execute(userModel);
 
     signal.await(10, TimeUnit.SECONDS);
   }

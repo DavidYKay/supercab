@@ -24,19 +24,19 @@ public class Fare implements Parcelable {
     mTimeRequested = (timeRequested);
   }
 
-  @JsonProperty("request_time")
+  @JsonProperty("requestTime")
   @JsonSerialize(using = CustomDateSerializer.class)
   public Date getTimeRequested() {
     return mTimeRequested;
   }
 
-  @JsonProperty("dropoff_location")
+  @JsonProperty("dropoffLocation")
   @JsonSerialize(using = CustomPickupPointSerializer.class)
   public PickupPoint getDestination() {
     return mDestination;
   }
 
-  @JsonProperty("pickup_location")
+  @JsonProperty("pickupLocation")
   @JsonSerialize(using = CustomPickupPointSerializer.class)
   public PickupPoint getSource() {
     return mSource;
