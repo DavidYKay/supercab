@@ -60,7 +60,8 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
     private T object;
 
     /** The object class to instantiate. */
-    private JavaType<T> objectClass;
+    //private JavaType<T> objectClass;
+    private Class<T> objectClass;
 
     /** The JSON representation to parse. */
     private Representation jsonRepresentation;

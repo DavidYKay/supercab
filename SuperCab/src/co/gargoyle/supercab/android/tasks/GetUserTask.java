@@ -5,7 +5,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.restlet.data.ChallengeScheme;
-import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -43,9 +42,9 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
     clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
         creds.username, 
         creds.password);
-    
+//    clientResource.setB(true);
+//    org.restlet.engine.Engine.setLogLevel();
 //    UserResource fareProfile = clientResource.wrap(UserResource.class);
-
 
     try {
       Representation rep = clientResource.get();
@@ -53,12 +52,8 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
         try {
           Log.d(TAG, "response: " + rep.getText());
           UserRepresentation userRep = new UserRepresentation(rep);
-          UserModel user = userRep.getUser();
-          if (user == null) {
-            return Optional.absent();
-          } else {
-            return Optional.of(user); 
-          }
+          Optional<UserModel> user = userRep.getUser();
+          return user;
         } catch (IOException e) {
           e.printStackTrace();
           mException = e;
@@ -99,9 +94,10 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
     }
   }
 
-  private UserModel representationToUser(Representation rep) {
-    JacksonRepresentation<UserModel> jRep = new JacksonRepresentation<UserModel>(rep, UserModel.class);
-    return jRep.getObject();
-  }
+//  private UserModel representationToUser(Representation rep) {
+//    JacksonRepresentation<UserModelResponse> jRep = new JacksonRepresentation<UserModelResponse>(rep, UserModelResponse.class);
+//    UserModelResponse response = jRep.getObject();
+//    return response.objects[0];
+//  }
 
 }

@@ -5,19 +5,26 @@ import org.restlet.representation.Representation;
 
 import co.gargoyle.supercab.android.model.ApiResponse;
 import co.gargoyle.supercab.android.model.UserModel;
+import co.gargoyle.supercab.android.model.UserModelResponse;
+
+import com.google.common.base.Optional;
 
 //public class UserRepresentation extends JacksonRepresentation<ApiResponse<UserModel>> {
-public class UserRepresentation extends JacksonRepresentation<ApiResponse> {
+public class UserRepresentation extends JacksonRepresentation<UserModelResponse> {
 
   public UserRepresentation(Representation jacksonRepresentation) throws Exception {
-    super(jacksonRepresentation, ApiResponse.class);
+    super(jacksonRepresentation, UserModelResponse.class);
 //    super(jacksonRepresentation, ApiResponse.class);
   }
 
-  public UserModel getUser() {
+  public Optional<UserModel> getUser() {
     ApiResponse<UserModel> response = getObject();
     UserModel user = response.objects[0];
-    return user;
+    if (user == null) {
+       return Optional.absent();
+    } else {
+      return Optional.of(user);
+    }
   }
 
   //    @Override
