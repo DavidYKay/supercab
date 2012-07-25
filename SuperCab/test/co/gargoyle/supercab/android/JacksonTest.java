@@ -1,24 +1,22 @@
 package co.gargoyle.supercab.android;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.util.HashMap;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.restlet.representation.Representation;
 
-import co.gargoyle.supercab.android.model.Fare;
+import co.gargoyle.supercab.android.model.ApiResponse;
 import co.gargoyle.supercab.android.model.UserModel;
-import co.gargoyle.supercab.android.utilities.ServerUtilities;
 import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.common.base.CharMatcher;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
@@ -87,22 +85,24 @@ public class JacksonTest {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    ObjectReader reader =  mapper.reader(UserModel.class);
-    UserModel user = reader.readValue(expected);
+    ObjectReader reader =  mapper.reader(ApiResponse.class);
+    ApiResponse user = reader.readValue(expected);
 
     ObjectWriter writer = mapper.writer();
     String result = writer.writeValueAsString(user);
     
     assertFalse(StringUtils.stringIsEmpty(result));
     
-    UserModel finalExpected = reader.readValue(expected);
-    UserModel finalResult = reader.readValue(result);
+    ApiResponse expectedResponse = reader.readValue(expected);
+    ApiResponse resultResponse   = reader.readValue(result);
+    
+    UserModel finalResult   = (UserModel) resultResponse.objects[0];
+    UserModel finalExpected = (UserModel) expectedResponse.objects[0];
     
     assertNotNull(finalResult.firstName);
     assertNotNull(finalResult.lastName);
 
     assertNotNull(finalResult.username);
-//    assertNotNull(finalResult.password);
     
     assertNotNull(finalResult.userProfile);
 
