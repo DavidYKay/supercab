@@ -13,10 +13,13 @@ import co.gargoyle.supercab.android.model.ApiResponse;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.utilities.StringUtils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
@@ -84,17 +87,21 @@ public class JacksonTest {
     
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+ 
+    TypeFactory factory = mapper.getTypeFactory();
+    TypeReference<ApiResponse<UserModel>> ref = new TypeReference<ApiResponse<UserModel>>() { };
+    JavaType responseType = factory.constructType(ref);
 
-    ObjectReader reader =  mapper.reader(ApiResponse.class);
-    ApiResponse user = reader.readValue(expected);
+    ObjectReader reader =  mapper.reader(responseType);
+    ApiResponse<UserModel> user = reader.readValue(expected);
 
     ObjectWriter writer = mapper.writer();
     String result = writer.writeValueAsString(user);
     
     assertFalse(StringUtils.stringIsEmpty(result));
     
-    ApiResponse expectedResponse = reader.readValue(expected);
-    ApiResponse resultResponse   = reader.readValue(result);
+    ApiResponse<UserModel> expectedResponse = reader.readValue(expected);
+    ApiResponse<UserModel> resultResponse   = reader.readValue(result);
     
     UserModel finalResult   = (UserModel) resultResponse.objects[0];
     UserModel finalExpected = (UserModel) expectedResponse.objects[0];

@@ -1,9 +1,9 @@
 package co.gargoyle.supercab.android.model;
 
-public class ApiResponse {
+public class ApiResponse<T> {
 
   public ApiMeta meta;
 //  public Object[] objects;
-  public UserModel[] objects;
+  public T[] objects;
 
 }
