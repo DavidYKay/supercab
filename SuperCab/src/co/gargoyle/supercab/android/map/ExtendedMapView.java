@@ -14,6 +14,7 @@ public class ExtendedMapView extends MapView {
     private static final long STOP_TIMER_DELAY = 1500; // 1.5 seconds
     private ScheduledThreadPoolExecutor mExecutor;
     private OnMoveListener mOnMoveListener;
+    @SuppressWarnings("rawtypes")
     private Future mStoppedMovingFuture;
 
     /**

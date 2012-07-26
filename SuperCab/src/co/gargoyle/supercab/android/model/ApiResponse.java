@@ -1,8 +1,0 @@
-package co.gargoyle.supercab.android.model;
-
-public class ApiResponse<T> {
-
-  public ApiMeta meta;
-  public T[] objects;
-
-}

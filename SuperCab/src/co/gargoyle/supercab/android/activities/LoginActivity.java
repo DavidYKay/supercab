@@ -19,7 +19,7 @@ import android.widget.TextView;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.model.UserCredentials;
 import co.gargoyle.supercab.android.model.UserModel;
-import co.gargoyle.supercab.android.model.UserType;
+import co.gargoyle.supercab.android.model.UserRole;
 import co.gargoyle.supercab.android.tasks.GetUserTask;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 import co.gargoyle.supercab.android.utilities.AlertUtils;
@@ -180,7 +180,7 @@ public class LoginActivity extends RoboActivity {
 
   private void proceedToApp(UserModel user) {
     Intent i;
-    if (user.type == UserType.PASSENGER) {
+    if (user.role == UserRole.passenger) {
         i = new Intent(LoginActivity.this, HailActivity.class);
     } else {
         i = new Intent(LoginActivity.this, FareListActivity.class);

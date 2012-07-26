@@ -25,6 +25,7 @@ import com.google.android.gcm.GCMRegistrar;
 
 public class LaunchActivity extends RoboActivity {
 
+  @SuppressWarnings("unused")
   private static final String TAG = "LaunchActivity";
 
   @InjectView(R.id.display) private TextView mDisplay;

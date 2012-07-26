@@ -6,18 +6,18 @@ import com.google.common.base.Objects;
 
 public class UserModel {
 
-  @JsonProperty("id")
-  public long superCabId;
+  @JsonProperty("_id")
+  public String superCabId;
 
-  public UserType type;
+  public UserRole role;
 
   public String firstName;
   public String lastName;
 
   public String username;
   public String password;
-
-  public UserProfile userProfile;
+  
+  public String phoneNumber;
 
   @Override
   public boolean equals(Object obj) {
@@ -29,29 +29,30 @@ public class UserModel {
     }
     final UserModel other = (UserModel) obj;
 
-    return   Objects.equal(this.lastName, other.lastName)
+    return   
+        Objects.equal(this.lastName, other.lastName)
         &&   Objects.equal(this.firstName, other.firstName)
         &&   Objects.equal(this.username, other.username)
         &&   Objects.equal(this.superCabId, other.superCabId)
-        &&   Objects.equal(this.userProfile, other.userProfile)
-        &&   Objects.equal(this.type, other.type);
+        &&   Objects.equal(this.phoneNumber, other.phoneNumber)
+        &&   Objects.equal(this.role, other.role);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(superCabId, type, firstName, username, password, userProfile);
+    return Objects.hashCode(superCabId, role, firstName, username, password, phoneNumber);
   }
 
   @Override
   public String toString() {
      return Objects.toStringHelper(this)
                 .addValue(superCabId)
-                .addValue(type)
+                .addValue(role)
                 .addValue(firstName)
                 .addValue(lastName)
                 .addValue(username)
                 .addValue(password)
-                .addValue(userProfile)
+                .addValue(phoneNumber)
                 .toString();
   }
 

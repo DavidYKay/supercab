@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.restlet.data.ChallengeScheme;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -16,11 +15,13 @@ import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.network.UserRepresentation;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
+import co.gargoyle.supercab.android.utilities.ServerUtilities;
 
 import com.google.common.base.Optional;
 
 public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<UserModel>> {
 
+  @SuppressWarnings("unused")
   private static final String TAG = "GetUserTask";
 
   protected GetUserListener mListener;
@@ -39,18 +40,24 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
 
     ClientResource clientResource = new ClientResource(uri);
 
-    clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-        creds.username, 
-        creds.password);
+    //clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
+    //    creds.username, 
+    //    creds.password);
+
 //    clientResource.setB(true);
 //    org.restlet.engine.Engine.setLogLevel();
 //    UserResource fareProfile = clientResource.wrap(UserResource.class);
 
+    //UserCredentials creds = new UserCredentials(cr
+
     try {
-      Representation rep = clientResource.get();
+      Optional<Representation> optional = ServerUtilities.convertToJsonRepresentation(creds);
+      Representation jacksonRep = optional.get();
+      Representation rep = clientResource.post(jacksonRep);
       if (clientResource.getStatus().isSuccess()) {
         try {
-          Log.d(TAG, "response: " + rep.getText());
+//          String response = rep.getText();
+//          Log.d(TAG, "response: " + response);
           UserRepresentation userRep = new UserRepresentation(rep);
           Optional<UserModel> user = userRep.getUser();
           return user;
@@ -85,7 +92,7 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
 
   protected URI getURI() {
     try {
-      String serverUrl = CommonUtilities.SERVER_URL + "/api/v1/user/";
+      String serverUrl = CommonUtilities.SERVER_URL + "/login";
       URI uri = new URI(serverUrl);
       return uri;
     } catch (URISyntaxException e) {

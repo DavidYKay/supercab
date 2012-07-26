@@ -9,7 +9,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import co.gargoyle.supercab.android.model.ApiResponse;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.utilities.StringUtils;
 
@@ -52,8 +51,8 @@ public class JacksonTest {
   
   @Test
   public void shouldConvertUserModelCorrectly() throws Exception {
-    //String expected = FixtureFactory.readFileAsString("../SuperCab-Test/fixtures/user.json");
-    String expected = FixtureFactory.readFileAsString("../SuperCab-Test/fixtures/user-simplified.json");
+    String expected = FixtureFactory.readFileAsString("../SuperCab-Test/fixtures/user.json");
+//    String expected = FixtureFactory.readFileAsString("../SuperCab-Test/fixtures/user-simplified.json");
     
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -75,45 +74,12 @@ public class JacksonTest {
     assertNotNull(finalResult.username);
 //    assertNotNull(finalResult.password);
     
-    assertNotNull(finalResult.userProfile);
+    assertNotNull(finalResult.phoneNumber);
     
     assertThat(finalExpected, is(equalTo(finalResult)));
 
   }
   
-  @Test
-  public void shouldConvertApiUserModelCorrectly() throws Exception {
-    String expected = FixtureFactory.readFileAsString("../SuperCab-Test/fixtures/user.json");
-    
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
- 
-    TypeFactory factory = mapper.getTypeFactory();
-    TypeReference<ApiResponse<UserModel>> ref = new TypeReference<ApiResponse<UserModel>>() { };
-    JavaType responseType = factory.constructType(ref);
-
-    ObjectReader reader =  mapper.reader(responseType);
-    ApiResponse<UserModel> user = reader.readValue(expected);
-
-    ObjectWriter writer = mapper.writer();
-    String result = writer.writeValueAsString(user);
-    
-    assertFalse(StringUtils.stringIsEmpty(result));
-    
-    ApiResponse<UserModel> expectedResponse = reader.readValue(expected);
-    ApiResponse<UserModel> resultResponse   = reader.readValue(result);
-    
-    UserModel finalResult   = (UserModel) resultResponse.objects[0];
-    UserModel finalExpected = (UserModel) expectedResponse.objects[0];
-    
-    assertNotNull(finalResult.firstName);
-    assertNotNull(finalResult.lastName);
-
-    assertNotNull(finalResult.username);
-    
-    assertNotNull(finalResult.userProfile);
-
-    assertThat(finalExpected, is(equalTo(finalResult)));
-  }
+  
   
 }

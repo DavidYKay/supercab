@@ -31,7 +31,9 @@ public final class CommonUtilities {
     //public static final String SERVER_URL = "http://192.168.0.107:8000/api";
     //public static final String SERVER_URL = "http://192.168.0.107:8080/push";
     //public static final String SERVER_URL = "http://192.168.0.108:8080";
-    public static final String SERVER_URL = "http://192.168.0.100:8000";
+    //public static final String SERVER_URL = "http://192.168.0.100:8080";
+    //
+    public static final String SERVER_URL = "http://192.168.1.207:8080";
 
     /**
      * Google API project id registered to use GCM.

@@ -3,23 +3,23 @@ package co.gargoyle.supercab.android.network;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 
-import co.gargoyle.supercab.android.model.ApiResponse;
 import co.gargoyle.supercab.android.model.UserModel;
-import co.gargoyle.supercab.android.model.UserModelResponse;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 
 //public class UserRepresentation extends JacksonRepresentation<ApiResponse<UserModel>> {
-public class UserRepresentation extends JacksonRepresentation<UserModelResponse> {
+public class UserRepresentation extends JacksonRepresentation<UserModel> {
 
   public UserRepresentation(Representation jacksonRepresentation) throws Exception {
-    super(jacksonRepresentation, UserModelResponse.class);
-//    super(jacksonRepresentation, ApiResponse.class);
+    super(jacksonRepresentation, UserModel.class);
+    ObjectMapper mapper = getObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
   public Optional<UserModel> getUser() {
-    ApiResponse<UserModel> response = getObject();
-    UserModel user = response.objects[0];
+    UserModel user = getObject();
     if (user == null) {
        return Optional.absent();
     } else {

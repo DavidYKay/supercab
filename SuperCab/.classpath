@@ -9,10 +9,10 @@
 	<classpathentry exported="true" kind="lib" path="lib/guice-3.0-no_aop.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.inject.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/roboguice-2.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/org.restlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.restlet.jar" sourcepath="/home/dk/workspace/example/android/restlet/restlet/modules/org.restlet/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/gcm.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.0.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-databind-2.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.0.4.jar" sourcepath="/home/dk/workspace/example/android/jackson/jackson-core"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-databind-2.0.4.jar" sourcepath="/home/dk/workspace/example/android/jackson/jackson-databind"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations-2.0.4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
