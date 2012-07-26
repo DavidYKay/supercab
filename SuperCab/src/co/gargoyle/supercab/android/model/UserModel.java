@@ -1,8 +1,10 @@
 package co.gargoyle.supercab.android.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.base.Objects;
 
-
+@JsonInclude(value=Include.NON_NULL) 
 public class UserModel extends SuperCabBaseModel {
 
   public UserRole role;

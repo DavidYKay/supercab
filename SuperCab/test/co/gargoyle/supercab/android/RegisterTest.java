@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import android.content.Context;
 import co.gargoyle.supercab.android.model.UserModel;
+import co.gargoyle.supercab.android.model.UserRole;
 import co.gargoyle.supercab.android.tasks.RegisterTask;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
@@ -39,7 +40,6 @@ public class RegisterTest {
     prefs.saveCredentials(null, null);
   }
 
-
   @Test
   public void shouldRegisterUser() throws Exception {
     // create a signal to let us know when our task is done.
@@ -63,8 +63,14 @@ public class RegisterTest {
     RegisterTask task = new RegisterTask(listener);
     
     UserModel userModel = new UserModel();
+    userModel.role = UserRole.passenger;
+    userModel.firstName = "Sean";
+    userModel.lastName = "Smith";
     
-    task.execute(userModel);
+    userModel.username = "seansmith";
+    userModel.password = "seansmith";
+    
+    userModel.phoneNumber = "+254123456789";
 
     signal.await(10, TimeUnit.SECONDS);
   }
