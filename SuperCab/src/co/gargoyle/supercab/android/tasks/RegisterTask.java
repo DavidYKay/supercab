@@ -18,19 +18,19 @@ import co.gargoyle.supercab.android.utilities.ServerUtilities;
 
 import com.google.common.base.Optional;
 
-public class PostUserTask extends AsyncTask<UserModel, Integer, UserModel> {
+public class RegisterTask extends AsyncTask<UserModel, Integer, Optional<UserModel>> {
   
   private static final String TAG = "PostUserTask";
   
   protected PostUserListener mListener;
-  protected ResourceException mException;
+  protected Exception mException;
 
-  public PostUserTask(PostUserListener listener) {
+  public RegisterTask(PostUserListener listener) {
     mListener = listener;
   }
   
   @Override
-  protected UserModel doInBackground(UserModel... credentialsList) {
+  protected Optional<UserModel> doInBackground(UserModel... credentialsList) {
     UserModel userModel = credentialsList[0];
 
     URI uri = getURI();
@@ -49,6 +49,10 @@ public class PostUserTask extends AsyncTask<UserModel, Integer, UserModel> {
             return user.getUser();
           } catch (IOException e) {
             e.printStackTrace();
+            mException = e;
+          } catch (Exception e) {
+            e.printStackTrace();
+            mException = e;
           }
         }
       } catch (ResourceException e) {
@@ -56,11 +60,11 @@ public class PostUserTask extends AsyncTask<UserModel, Integer, UserModel> {
       }
     }
 
-    return false;
+    return Optional.absent();
   }
   
   @Override
-  protected void onPostExecute(UserModel success) {
+  protected void onPostExecute(Optional<UserModel> success) {
     if (mException != null) {
       mListener.handleError(mException);
     } else {
@@ -75,7 +79,7 @@ public class PostUserTask extends AsyncTask<UserModel, Integer, UserModel> {
 
   protected URI getURI() {
     try {
-      String serverUrl = CommonUtilities.SERVER_URL + "/login";
+      String serverUrl = CommonUtilities.SERVER_URL + "/register";
       URI uri = new URI(serverUrl);
       return uri;
     } catch (URISyntaxException e) {

@@ -15,7 +15,7 @@ import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.exceptions.FormIncompleteException;
 import co.gargoyle.supercab.android.exceptions.PasswordsDontMatchException;
 import co.gargoyle.supercab.android.model.UserModel;
-import co.gargoyle.supercab.android.tasks.PostUserTask;
+import co.gargoyle.supercab.android.tasks.RegisterTask;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
 import co.gargoyle.supercab.android.utilities.AlertUtils;
 import co.gargoyle.supercab.android.utilities.StringUtils;
@@ -33,7 +33,7 @@ public class RegisterActivity extends RoboActivity {
 
   protected ProgressDialog mProgressDialog;
 
-  private Optional<PostUserTask> mRegisterTask = Optional.absent();
+  private Optional<RegisterTask> mRegisterTask = Optional.absent();
   private String mAlertMsg;
 
   @InjectView(R.id.edit_username) EditText mEditUsername;
@@ -121,7 +121,7 @@ public class RegisterActivity extends RoboActivity {
   }
 
   private void beginNetworkRegister(final UserModel profile) {
-    PostUserTask task = new PostUserTask(new PostUserListener() {
+    RegisterTask task = new RegisterTask(new PostUserListener() {
 
       @Override
       public void handleError(Throwable throwable) {
@@ -130,10 +130,13 @@ public class RegisterActivity extends RoboActivity {
       }
 
       @Override
-      public void completed(Boolean success) {
-        if (success) {
+      public void completed(Optional<UserModel> user) {
+        if (user.isPresent()) {
           mProgressDialog.dismiss();
           saveProfileAndProceedToApp(profile);
+        } else {
+          mProgressDialog.dismiss();
+          goBlooey(new Exception(""));
         }
       }
 

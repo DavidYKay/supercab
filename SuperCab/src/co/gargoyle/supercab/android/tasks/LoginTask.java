@@ -18,7 +18,7 @@ import co.gargoyle.supercab.android.utilities.ServerUtilities;
 
 import com.google.common.base.Optional;
 
-public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<UserModel>> {
+public class LoginTask extends AsyncTask<UserCredentials, Integer, Optional<UserModel>> {
 
   @SuppressWarnings("unused")
   private static final String TAG = "GetUserTask";
@@ -26,7 +26,7 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
   protected GetUserListener mListener;
   protected Exception mException;
 
-  public GetUserTask(GetUserListener listener) {
+  public LoginTask(GetUserListener listener) {
     mListener = listener;
   }
 

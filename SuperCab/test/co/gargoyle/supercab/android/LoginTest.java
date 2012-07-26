@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 
 import co.gargoyle.supercab.android.model.UserCredentials;
 import co.gargoyle.supercab.android.model.UserModel;
-import co.gargoyle.supercab.android.tasks.GetUserTask;
+import co.gargoyle.supercab.android.tasks.LoginTask;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
@@ -21,7 +21,7 @@ import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-public class GetUserTest {
+public class LoginTest {
 
   private PreferenceUtils mSettings;
   
@@ -52,7 +52,7 @@ public class GetUserTest {
         signal.countDown();
       }
     };
-    GetUserTask task = new GetUserTask(listener);
+    LoginTask task = new LoginTask(listener);
     
     UserCredentials credentials = new UserCredentials(
         "passenger",
