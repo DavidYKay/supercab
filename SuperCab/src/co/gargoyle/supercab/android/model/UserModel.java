@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
 
-public class UserModel {
+public class UserModel extends SuperCabBaseModel {
 
-  @JsonProperty("_id")
-  public String superCabId;
 
   public UserRole role;
 

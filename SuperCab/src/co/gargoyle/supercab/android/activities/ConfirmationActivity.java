@@ -70,11 +70,11 @@ public class ConfirmationActivity extends RoboActivity implements PostFareListen
   }
 
   @Override
-  public void completed(Optional<Long> fareId) {
+  public void completed(Optional<String> fareId) {
     if (!fareId.isPresent()) {
       mDriverLabel.setText("Error! Try again.");
     } else {
-      mFare.setSuperCabId(fareId.get());
+      mFare.superCabId = fareId.get();
       Toast.makeText(this,
                      "Finished uploading fare",
                      Toast.LENGTH_SHORT).show();

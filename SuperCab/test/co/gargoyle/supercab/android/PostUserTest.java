@@ -27,10 +27,8 @@ public class PostUserTest {
   public void runBeforeEveryTest() {
     Context context = Robolectric.application;
     PreferenceUtils prefs = new PreferenceUtils(context);
-    prefs.saveCredentials(
-        "admin",
-        "secret");
-
+    prefs.saveCredentials("admin", "secret");
+    prefs.saveToken("admin");
   }
 
   @After
