@@ -20,7 +20,7 @@ import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.model.UserCredentials;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.model.UserRole;
-import co.gargoyle.supercab.android.tasks.GetUserTask;
+import co.gargoyle.supercab.android.tasks.LoginTask;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
 import co.gargoyle.supercab.android.utilities.AlertUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
@@ -148,7 +148,7 @@ public class LoginActivity extends RoboActivity {
   }
 
   private void beginNetworkLogin(final UserCredentials credentials) {
-    GetUserTask task = new GetUserTask(new GetUserListener() {
+    LoginTask task = new LoginTask(new GetUserListener() {
 
       @Override
       public void handleError(Throwable throwable) {

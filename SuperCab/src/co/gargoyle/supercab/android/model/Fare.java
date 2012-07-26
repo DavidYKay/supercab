@@ -10,12 +10,11 @@ import co.gargoyle.supercab.android.model.json.CustomPickupPointSerializer;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-public class Fare implements Parcelable {
+public class Fare extends SuperCabBaseModel implements Parcelable {
 
   private PickupPoint mSource;
   private PickupPoint mDestination;
   private Date mTimeRequested;
-  private long mSuperCabId;
   
   public Fare(PickupPoint source, PickupPoint destination, Date timeRequested) {
     super();
@@ -30,27 +29,18 @@ public class Fare implements Parcelable {
     return mTimeRequested;
   }
 
-  @JsonProperty("dropoffLocation")
+  @JsonProperty("to")
   @JsonSerialize(using = CustomPickupPointSerializer.class)
   public PickupPoint getDestination() {
     return mDestination;
   }
 
-  @JsonProperty("pickupLocation")
+  @JsonProperty("from")
   @JsonSerialize(using = CustomPickupPointSerializer.class)
   public PickupPoint getSource() {
     return mSource;
   }
   
-  @JsonProperty("_id")
-  public long getSuperCabId() {
-    return mSuperCabId;
-  }
-  
-  public void setSuperCabId(long id) {
-    mSuperCabId = id;
-  }
-
   @Override
   public int describeContents() {
     return 0;

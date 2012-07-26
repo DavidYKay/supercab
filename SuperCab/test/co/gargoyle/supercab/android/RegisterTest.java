@@ -13,24 +13,24 @@ import org.junit.runner.RunWith;
 
 import android.content.Context;
 import co.gargoyle.supercab.android.model.UserModel;
-import co.gargoyle.supercab.android.tasks.PostUserTask;
+import co.gargoyle.supercab.android.model.UserRole;
+import co.gargoyle.supercab.android.tasks.RegisterTask;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
+import com.google.common.base.Optional;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-public class PostUserTest {
+public class RegisterTest {
   
   @Before
   public void runBeforeEveryTest() {
     Context context = Robolectric.application;
     PreferenceUtils prefs = new PreferenceUtils(context);
-    prefs.saveCredentials(
-        "admin",
-        "secret");
-
+    prefs.saveCredentials("admin", "secret");
+    prefs.saveToken("admin");
   }
 
   @After
@@ -40,10 +40,8 @@ public class PostUserTest {
     prefs.saveCredentials(null, null);
   }
 
-
   @Test
-  public void shouldUploadUser() throws Exception {
-    fail("API not currently implemented correctly!");
+  public void shouldRegisterUser() throws Exception {
     // create a signal to let us know when our task is done.
     final CountDownLatch signal = new CountDownLatch(1);
 
@@ -56,17 +54,23 @@ public class PostUserTest {
       }
 
       @Override
-      public void completed(Boolean success) {
-        assertTrue(success);
+      public void completed(Optional<UserModel> user) {
+        assertTrue(user.isPresent());
         signal.countDown();
       }
     };
 
-    PostUserTask task = new PostUserTask(listener);
+    RegisterTask task = new RegisterTask(listener);
     
     UserModel userModel = new UserModel();
+    userModel.role = UserRole.passenger;
+    userModel.firstName = "Sean";
+    userModel.lastName = "Smith";
     
-    task.execute(userModel);
+    userModel.username = "seansmith";
+    userModel.password = "seansmith";
+    
+    userModel.phoneNumber = "+254123456789";
 
     signal.await(10, TimeUnit.SECONDS);
   }

@@ -24,50 +24,52 @@ import android.content.Intent;
  */
 public final class CommonUtilities {
 
-    /**
-     * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
-     */
-//    static final String SERVER_URL = null;
-    //public static final String SERVER_URL = "http://192.168.0.107:8000/api";
-    //public static final String SERVER_URL = "http://192.168.0.107:8080/push";
-    //public static final String SERVER_URL = "http://192.168.0.108:8080";
-    //public static final String SERVER_URL = "http://192.168.0.100:8080";
-    //
-    public static final String SERVER_URL = "http://192.168.1.207:8080";
+  /**
+   * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
+   */
+  //    static final String SERVER_URL = null;
+  //public static final String SERVER_URL = "http://192.168.0.107:8000/api";
+  //public static final String SERVER_URL = "http://192.168.0.107:8080/push";
+  //public static final String SERVER_URL = "http://192.168.0.108:8080";
 
-    /**
-     * Google API project id registered to use GCM.
-     */
-    public static final String SENDER_ID = "1070528085113";
+  public static final String SERVER_URL = "http://192.168.0.100:8080";
 
-    /**
-     * Tag used on log messages.
-     */
-    static final String TAG = "GCMDemo";
+  // iHub
+  //public static final String SERVER_URL = "http://192.168.1.207:8080";
 
-    /**
-     * Intent used to display a message in the screen.
-     */
-    public static final String DISPLAY_MESSAGE_ACTION =
-            "com.google.android.gcm.demo.app.DISPLAY_MESSAGE";
+  /**
+   * Google API project id registered to use GCM.
+   */
+  public static final String SENDER_ID = "1070528085113";
 
-    /**
-     * Intent's extra that contains the message to be displayed.
-     */
-    public static final String EXTRA_MESSAGE = "message";
+  /**
+   * Tag used on log messages.
+   */
+  static final String TAG = "GCMDemo";
 
-    /**
-     * Notifies UI to display a message.
-     * <p>
-     * This method is defined in the common helper because it's used both by
-     * the UI and the background service.
-     *
-     * @param context application's context.
-     * @param message message to be displayed.
-     */
-    public static void displayMessage(Context context, String message) {
-        Intent intent = new Intent(DISPLAY_MESSAGE_ACTION);
-        intent.putExtra(EXTRA_MESSAGE, message);
-        context.sendBroadcast(intent);
-    }
+  /**
+   * Intent used to display a message in the screen.
+   */
+  public static final String DISPLAY_MESSAGE_ACTION =
+      "com.google.android.gcm.demo.app.DISPLAY_MESSAGE";
+
+  /**
+   * Intent's extra that contains the message to be displayed.
+   */
+  public static final String EXTRA_MESSAGE = "message";
+
+  /**
+   * Notifies UI to display a message.
+   * <p>
+   * This method is defined in the common helper because it's used both by
+   * the UI and the background service.
+   *
+   * @param context application's context.
+   * @param message message to be displayed.
+   */
+  public static void displayMessage(Context context, String message) {
+    Intent intent = new Intent(DISPLAY_MESSAGE_ACTION);
+    intent.putExtra(EXTRA_MESSAGE, message);
+    context.sendBroadcast(intent);
+  }
 }

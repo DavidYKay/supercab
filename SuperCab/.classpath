@@ -14,5 +14,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.0.4.jar" sourcepath="/home/dk/workspace/example/android/jackson/jackson-core"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-databind-2.0.4.jar" sourcepath="/home/dk/workspace/example/android/jackson/jackson-databind"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations-2.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/ormlite-android-4.41.jar"/>
+	<classpathentry kind="lib" path="lib/ormlite-core-4.41.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

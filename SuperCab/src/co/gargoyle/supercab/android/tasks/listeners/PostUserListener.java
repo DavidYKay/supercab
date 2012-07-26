@@ -1,8 +1,12 @@
 package co.gargoyle.supercab.android.tasks.listeners;
 
+import co.gargoyle.supercab.android.model.UserModel;
+
+import com.google.common.base.Optional;
+
 public interface PostUserListener {
   
-  public void completed(Boolean success);
+  public void completed(Optional<UserModel> user);
 
   public void handleError(Throwable throwable);
 

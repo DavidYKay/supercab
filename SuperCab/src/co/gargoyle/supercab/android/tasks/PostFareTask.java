@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Form;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -13,7 +13,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.Fare;
-import co.gargoyle.supercab.android.model.UserCredentials;
 import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
@@ -21,32 +20,40 @@ import co.gargoyle.supercab.android.utilities.ServerUtilities;
 
 import com.google.common.base.Optional;
 
-public class PostFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
+public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
 
    private PostFareListener mListener;
    private Exception mException;
    private Context mContext;
+   
+   private PreferenceUtils mPreferenceUtils;
 
    public PostFareTask(Context context, PostFareListener listener) {
      mListener = listener;
      mContext = context;
+     mPreferenceUtils = new PreferenceUtils(mContext);
    }
 
   private static final String TAG = "UploadFareTask";
 
   @Override
-  protected Optional<Long> doInBackground(Fare... fares) {
+  protected Optional<String> doInBackground(Fare... fares) {
     Fare fare = fares[0];
 
     URI uri = getURI();
 
     ClientResource fareProfile = new ClientResource(uri);
 
-    Optional<UserCredentials> credentials = new PreferenceUtils(mContext).getCredentials();
-    if (credentials.isPresent()) {
-      fareProfile.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-                                       credentials.get().username,
-                                       credentials.get().password);
+    Optional<String> token = mPreferenceUtils.getToken();
+    if (token.isPresent()) {
+
+      String tokString = token.get();
+      Form headers  = (Form) fareProfile.getRequestAttributes().get("org.restlet.http.headers");
+      if (headers == null) {     
+        headers = new Form();
+        fareProfile.getRequestAttributes().put("org.restlet.http.headers", headers);
+      }
+      headers.set("X-SuperCab-Token", tokString);
     }
 
     try {
@@ -58,12 +65,17 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
         mException = e1;
         return Optional.absent();
       }
-      //Representation rep = fareProfile.post();
       Representation rep = fareProfile.post(jacksonRep);
       if (fareProfile.getStatus().isSuccess()) {
         try {
           Log.d(TAG, "response: " + rep.getText());
-          return Optional.of(0L);
+          FareRepresentation receivedFare = new FareRepresentation(rep);
+          Optional<Fare> optionalFare = receivedFare.getFare();
+          if (optionalFare.isPresent()) {
+            return Optional.of(optionalFare.get().superCabId);
+          } else {
+            return Optional.absent();
+          }
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -77,7 +89,7 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
   }
 
   @Override
-  protected void onPostExecute(Optional<Long> fareId) {
+  protected void onPostExecute(Optional<String> fareId) {
     if (mException != null) {
       mListener.handleError(mException);
     }
@@ -91,8 +103,8 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<Long>> {
 
   private URI getURI() {
     try {
-      //String serverUrl = CommonUtilities.SERVER_URL + "/fare/new";
-      String serverUrl = CommonUtilities.SERVER_URL + "/api/v1/fare/";
+      String serverUrl = CommonUtilities.SERVER_URL + "/fare";
+      //String serverUrl = CommonUtilities.SERVER_URL + "/api/v1/fare/";
       URI uri = new URI(serverUrl);
       return uri;
     } catch (URISyntaxException e) {

@@ -35,7 +35,8 @@ public class PostFareTest {
     prefs.saveCredentials(
         "passenger",
         "passenger");
-
+    //prefs.saveToken("passenger");
+    prefs.saveToken("9e2b5e29-b37c-4df2-bee3-6290c14be56b");
   }
 
   @After
@@ -56,7 +57,7 @@ public class PostFareTest {
 
     PostFareListener listener = new PostFareListener() {
       @Override
-      public void completed(Optional<Long> fareId) {
+      public void completed(Optional<String> fareId) {
         assertTrue(fareId.isPresent());
         signal.countDown();
       }

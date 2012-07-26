@@ -1,13 +1,11 @@
 package co.gargoyle.supercab.android.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.base.Objects;
 
-
-public class UserModel {
-
-  @JsonProperty("_id")
-  public String superCabId;
+@JsonInclude(value=Include.NON_NULL) 
+public class UserModel extends SuperCabBaseModel {
 
   public UserRole role;
 
@@ -18,6 +16,8 @@ public class UserModel {
   public String password;
   
   public String phoneNumber;
+  
+  public String token;
 
   @Override
   public boolean equals(Object obj) {

@@ -19,8 +19,8 @@ public class CustomPickupPointSerializer extends JsonSerializer<PickupPoint> {
     Address address = pickupPoint.getAddress();
         // latitude
     generator.writeStartObject();
-    generator.writeNumberField("latitude", address.getLatitude());
-    generator.writeNumberField("longitude", address.getLongitude());
+    generator.writeNumberField("lat", address.getLatitude());
+    generator.writeNumberField("lon", address.getLongitude());
     generator.writeStringField("address", address.getAddressLine(0));
     //latitude = models.FloatField()
     //longitude = models.FloatField()
