@@ -77,7 +77,7 @@ public class PostUserTask extends AsyncTask<UserModel, Integer, Boolean> {
 
   protected URI getURI() {
     try {
-      String serverUrl = CommonUtilities.SERVER_URL + "/api/v1/user/";
+      String serverUrl = CommonUtilities.SERVER_URL + "/login";
       URI uri = new URI(serverUrl);
       return uri;
     } catch (URISyntaxException e) {

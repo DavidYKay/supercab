@@ -41,7 +41,6 @@ public class PostUserTest {
 
   @Test
   public void shouldUploadUser() throws Exception {
-    fail("API not currently implemented correctly!");
     // create a signal to let us know when our task is done.
     final CountDownLatch signal = new CountDownLatch(1);
 
