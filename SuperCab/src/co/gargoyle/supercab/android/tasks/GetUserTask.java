@@ -9,7 +9,6 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import co.gargoyle.supercab.android.model.UserCredentials;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.network.UserRepresentation;
@@ -33,22 +32,11 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
 
   @Override
   protected Optional<UserModel> doInBackground(UserCredentials... credentialsList) {
-    //User fare = fares[0];
     UserCredentials creds = credentialsList[0];
 
     URI uri = getURI();
 
     ClientResource clientResource = new ClientResource(uri);
-
-    //clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-    //    creds.username, 
-    //    creds.password);
-
-//    clientResource.setB(true);
-//    org.restlet.engine.Engine.setLogLevel();
-//    UserResource fareProfile = clientResource.wrap(UserResource.class);
-
-    //UserCredentials creds = new UserCredentials(cr
 
     try {
       Optional<Representation> optional = ServerUtilities.convertToJsonRepresentation(creds);
@@ -56,8 +44,6 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
       Representation rep = clientResource.post(jacksonRep);
       if (clientResource.getStatus().isSuccess()) {
         try {
-//          String response = rep.getText();
-//          Log.d(TAG, "response: " + response);
           UserRepresentation userRep = new UserRepresentation(rep);
           Optional<UserModel> user = userRep.getUser();
           return user;
@@ -100,11 +86,5 @@ public class GetUserTask extends AsyncTask<UserCredentials, Integer, Optional<Us
       throw new RuntimeException("Programmer mistyped the URI!");
     }
   }
-
-//  private UserModel representationToUser(Representation rep) {
-//    JacksonRepresentation<UserModelResponse> jRep = new JacksonRepresentation<UserModelResponse>(rep, UserModelResponse.class);
-//    UserModelResponse response = jRep.getObject();
-//    return response.objects[0];
-//  }
 
 }

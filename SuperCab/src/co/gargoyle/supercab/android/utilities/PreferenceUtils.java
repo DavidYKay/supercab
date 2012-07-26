@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
-
 import co.gargoyle.supercab.android.model.UserCredentials;
 
 import com.google.common.base.Optional;
@@ -63,5 +62,25 @@ public class PreferenceUtils {
     editor.putString(PreferenceConstants.KEY_USERNAME, username);
     editor.putString(PreferenceConstants.KEY_PASSWORD, password);
     editor.commit();
+  }
+  
+  public void saveToken(String token) {
+    SharedPreferences.Editor editor = mSettings.edit();
+    editor.putString(PreferenceConstants.KEY_TOKEN, token);
+    editor.commit();
+  }
+  
+  public Optional<String> getToken() {
+    String token = mSettings.getString(PreferenceConstants.KEY_TOKEN, null);
+    if (token == null) {
+      return Optional.absent();
+    } else {
+      return Optional.of(token);
+    }
+  }
+  
+  public boolean hasToken() {
+    Optional<String> token = getToken();
+    return token.isPresent();
   }
 }

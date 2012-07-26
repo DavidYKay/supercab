@@ -18,6 +18,8 @@ public class UserModel {
   public String password;
   
   public String phoneNumber;
+  
+  public String token;
 
   @Override
   public boolean equals(Object obj) {

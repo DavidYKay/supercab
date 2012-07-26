@@ -2,6 +2,7 @@ package co.gargoyle.supercab.android.utilities;
 
 public class PreferenceConstants {
   
+  public static final String KEY_TOKEN = "token";
   public static String KEY_INFO = "info";
   public static String KEY_LAST_VERSION = "lastVersion";
   public static String KEY_FIRST_RUN = "firstRun";
