@@ -4,21 +4,21 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.restlet.data.ChallengeScheme;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
-import com.google.common.base.Optional;
-
 import android.os.AsyncTask;
 import android.util.Log;
 import co.gargoyle.supercab.android.model.UserModel;
+import co.gargoyle.supercab.android.network.UserRepresentation;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 import co.gargoyle.supercab.android.utilities.ServerUtilities;
 
-public class PostUserTask extends AsyncTask<UserModel, Integer, Boolean> {
+import com.google.common.base.Optional;
+
+public class PostUserTask extends AsyncTask<UserModel, Integer, UserModel> {
   
   private static final String TAG = "PostUserTask";
   
@@ -30,15 +30,12 @@ public class PostUserTask extends AsyncTask<UserModel, Integer, Boolean> {
   }
   
   @Override
-  protected Boolean doInBackground(UserModel... credentialsList) {
+  protected UserModel doInBackground(UserModel... credentialsList) {
     UserModel userModel = credentialsList[0];
 
     URI uri = getURI();
 
     ClientResource userResource = new ClientResource(uri);
-    userResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-                                     userModel.username, 
-                                     userModel.password);
 
     Optional<Representation> optional = ServerUtilities.convertToJsonRepresentation(userModel);
     if (optional.isPresent()) {
@@ -47,8 +44,9 @@ public class PostUserTask extends AsyncTask<UserModel, Integer, Boolean> {
         Representation rep = userResource.post(userRepresentation);
         if (userResource.getStatus().isSuccess()) {
           try {
+            UserRepresentation user = new UserRepresentation(rep);
             Log.d(TAG, "response: " + rep.getText());
-            return true;
+            return user.getUser();
           } catch (IOException e) {
             e.printStackTrace();
           }
@@ -62,7 +60,7 @@ public class PostUserTask extends AsyncTask<UserModel, Integer, Boolean> {
   }
   
   @Override
-  protected void onPostExecute(Boolean success) {
+  protected void onPostExecute(UserModel success) {
     if (mException != null) {
       mListener.handleError(mException);
     } else {

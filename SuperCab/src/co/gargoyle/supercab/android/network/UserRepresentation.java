@@ -12,8 +12,8 @@ import com.google.common.base.Optional;
 //public class UserRepresentation extends JacksonRepresentation<ApiResponse<UserModel>> {
 public class UserRepresentation extends JacksonRepresentation<UserModel> {
 
-  public UserRepresentation(Representation jacksonRepresentation) throws Exception {
-    super(jacksonRepresentation, UserModel.class);
+  public UserRepresentation(Representation representation) throws Exception {
+    super(representation, UserModel.class);
     ObjectMapper mapper = getObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
