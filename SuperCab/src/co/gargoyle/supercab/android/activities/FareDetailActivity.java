@@ -70,7 +70,6 @@ public class FareDetailActivity extends RoboActivity {
 
     // TODO: PUT fare to server, letting people know that we're accepting it
     PutFareTask task = new PutFareTask(this, new PutFareListener(){
-
       @Override
       public void completed(Optional<Fare> fare) {
         if (fare.isPresent()) {

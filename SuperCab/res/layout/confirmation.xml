@@ -198,5 +198,6 @@
     android:text="@string/cancel"
     android:textSize="18sp"
     android:textStyle="bold"
+    android:onClick="onCancelButtonClick"
     />
 </LinearLayout>

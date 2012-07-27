@@ -13,6 +13,7 @@ import org.restlet.resource.ResourceException;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import co.gargoyle.supercab.android.enums.FareStatus;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.tasks.listeners.GetFaresListener;
 import co.gargoyle.supercab.android.utilities.CommonUtils;
@@ -40,8 +41,12 @@ public class GetFaresTask extends AsyncTask<Map<String, Object>, Integer, List<F
   }
 
   @Override
-  protected List<Fare> doInBackground(Map<String, Object>... params) {
-    URI uri = getURI();
+  protected List<Fare> doInBackground(Map<String, Object>... paramsList) {
+
+    Map<String, Object> params = paramsList[0];
+
+    FareStatus status = (FareStatus) params.get("status");
+    URI uri = getURI(status);
 
     ClientResource fareProfile = new ClientResource(uri);
     ServerUtils.addAuthHeaderToClientResource(mContext, fareProfile);
@@ -79,10 +84,18 @@ public class GetFaresTask extends AsyncTask<Map<String, Object>, Integer, List<F
   protected void onProgressUpdate(Integer... values) {
 
   }
-
+  
   private URI getURI() {
+    return getURI(null);
+  }
+
+  private URI getURI(FareStatus status) {
     try {
       String serverUrl = CommonUtils.SERVER_URL + "/fare";
+      if (status != null) {
+        serverUrl += status.toString();
+      }
+
       URI uri = new URI(serverUrl);
       return uri;
     } catch (URISyntaxException e) {

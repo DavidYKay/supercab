@@ -19,6 +19,7 @@ import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.adapters.FareListAdapter;
 import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
+import co.gargoyle.supercab.android.enums.FareStatus;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.tasks.GetFaresTask;
@@ -151,6 +152,7 @@ public class FareListActivity extends RoboListActivity {
 
     });
     Map<String, Object> params = new HashMap<String, Object>();
+    params.put("status", FareStatus.waiting);
     task.execute(params);
   }
   

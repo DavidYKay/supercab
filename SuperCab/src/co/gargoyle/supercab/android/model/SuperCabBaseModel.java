@@ -11,7 +11,7 @@ public abstract class SuperCabBaseModel {
   
   @JsonIgnore
   @DatabaseField(generatedId=true)
-  public long id;
+  public int id;
   
   @JsonProperty("_id")
   @DatabaseField

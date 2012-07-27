@@ -4,7 +4,6 @@ import roboguice.activity.RoboMapActivity;
 import android.os.Bundle;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 
-import com.google.android.maps.MapController;
 import com.google.inject.Inject;
 
 public abstract class AbstractMapActivity extends RoboMapActivity {
