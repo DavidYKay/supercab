@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -54,7 +55,11 @@ public class FareListActivity extends RoboListActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
     setContentView(R.layout.fare_list);
+      
+    setProgressBarIndeterminateVisibility(true);
 
     setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
 
@@ -77,7 +82,7 @@ public class FareListActivity extends RoboListActivity {
   ////////////////////////////////////////////////////////////
   
   private static final int MENU_LOGOUT = Menu.FIRST;
-  private static final int MENU_SHOW_HISTORY = Menu.FIRST + 1;
+  private static final int MENU_REFRESH = Menu.FIRST + 1;
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -85,8 +90,8 @@ public class FareListActivity extends RoboListActivity {
 
     menu.add(0, MENU_LOGOUT, 0, getString(R.string.logout))
         .setIcon(android.R.drawable.ic_menu_delete);
-    //menu.add(0, MENU_SHOW_HISTORY, 1, getString(R.string.change_view)).setIcon(
-    //    android.R.drawable.ic_menu_preferences);
+    menu.add(0, MENU_REFRESH, 1, getString(R.string.refresh)).setIcon(
+        R.drawable.ic_menu_refresh);
 
     return true;
   }
@@ -97,8 +102,8 @@ public class FareListActivity extends RoboListActivity {
       case MENU_LOGOUT:
         logout();
         return true;
-      case MENU_SHOW_HISTORY:
-//        showSentAndUnsentChoices();
+      case MENU_REFRESH:
+        refresh();
         return true;
     }
     return super.onOptionsItemSelected(item);
@@ -130,6 +135,10 @@ public class FareListActivity extends RoboListActivity {
     }
   }
   
+  private void refresh() {
+    getData();
+  }
+  
   @SuppressWarnings("unchecked")
   private void getData() {
     GetFaresTask task = new GetFaresTask(this, new GetFaresListener() {
@@ -137,20 +146,25 @@ public class FareListActivity extends RoboListActivity {
       @Override
       public void completed(List<Fare> fares) {
         setListAdapter(new FareListAdapter(getLayoutInflater(), fares));
+        setProgressBarIndeterminateVisibility(false);
       }
 
       @Override
       public void handleError(Throwable throwable) {
+        setProgressBarIndeterminateVisibility(false);
         goBlooey(throwable);
       }
 
       @Override
       public void unauthorized() {
+        setProgressBarIndeterminateVisibility(false);
         Toast.makeText(FareListActivity.this, "Login was bad!", Toast.LENGTH_LONG).show();
         logout();
       }
 
     });
+
+    setProgressBarIndeterminateVisibility(true);
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("status", FareStatus.waiting);
     task.execute(params);
