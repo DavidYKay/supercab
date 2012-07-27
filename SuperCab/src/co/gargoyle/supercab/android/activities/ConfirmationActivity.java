@@ -39,7 +39,7 @@ public class ConfirmationActivity extends RoboActivity implements PostFareListen
     Fare fare = i.getParcelableExtra(HailActivity.KEY_FARE); 
 
     //DateFormat.getTimeFormat
-    Date time = fare.getTimeRequested();
+    Date time = fare.timeRequested;
     CharSequence timeString = DateUtils.getRelativeTimeSpanString(
         time.getTime(),
         System.currentTimeMillis(),
@@ -49,8 +49,8 @@ public class ConfirmationActivity extends RoboActivity implements PostFareListen
 
     mTimeLabel.setText(timeString);
 
-    mFromLabel.setText(getAddressLine(fare.getSource()));
-    mToLabel.setText(getAddressLine(fare.getDestination()));
+    mFromLabel.setText(getAddressLine(fare.source));
+    mToLabel.setText(getAddressLine(fare.destination));
 
     mFare = fare;
     
@@ -60,7 +60,7 @@ public class ConfirmationActivity extends RoboActivity implements PostFareListen
   }
   
   private String getAddressLine(PickupPoint point) {
-    return point.getAddress().getAddressLine(0);
+    return point.address.getAddressLine(0);
   }
   
 

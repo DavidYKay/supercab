@@ -14,11 +14,11 @@ public class PickupDropoffItemFactory {
   }
 
   public PickupDropoffItem itemFromPickup(PickupPoint pickup) {
-    Drawable marker = (pickup.getFareType() == FareType.PICKUP) ? mPickupMarker : mDropoffMarker ;
+    Drawable marker = (pickup.fareType == FareType.PICKUP) ? mPickupMarker : mDropoffMarker ;
     return new PickupDropoffItem(pickup, marker);
 //    return itemFromStuff(
-//        pickup.getAddress(),
-//        pickup.getFareType(),
+//        pickup.address,
+//        pickup.fareType,
 //        marker
 //        );
   }

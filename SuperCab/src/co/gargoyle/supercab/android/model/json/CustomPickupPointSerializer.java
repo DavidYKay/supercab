@@ -16,7 +16,7 @@ public class CustomPickupPointSerializer extends JsonSerializer<PickupPoint> {
   public void serialize(PickupPoint pickupPoint, JsonGenerator generator, SerializerProvider provider)
       throws IOException, JsonProcessingException {
 
-    Address address = pickupPoint.getAddress();
+    Address address = pickupPoint.address;
         // latitude
     generator.writeStartObject();
     generator.writeNumberField("lat", address.getLatitude());

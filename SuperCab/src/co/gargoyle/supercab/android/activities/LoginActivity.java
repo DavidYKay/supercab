@@ -1,5 +1,7 @@
 package co.gargoyle.supercab.android.activities;
 
+import java.util.List;
+
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
@@ -17,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import co.gargoyle.supercab.android.R;
+import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
 import co.gargoyle.supercab.android.model.UserCredentials;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.model.UserRole;
@@ -27,6 +30,8 @@ import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 
 public class LoginActivity extends RoboActivity {
 
@@ -55,8 +60,11 @@ public class LoginActivity extends RoboActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    if (isLoggedIn()) {
-      proceedToApp(loadUserFromDb());
+    Optional<UserModel> user = loadUserFromDb();
+    if (isLoggedIn() && user.isPresent()) {
+      if (user.isPresent()) {
+        proceedToApp(user.get());
+      }
     } else {
       setContentView(R.layout.login);
 
@@ -191,6 +199,7 @@ public class LoginActivity extends RoboActivity {
   }
 
   private void saveUserAndProceedToApp(UserModel user, UserCredentials credentials) {
+    saveUserToDb(user);
     mPreferenceUtils.saveCredentials(credentials);
     mPreferenceUtils.saveToken(user.token);
 
@@ -201,16 +210,50 @@ public class LoginActivity extends RoboActivity {
   ////////////////////////////////////////////////////////////
   // Utils
   ////////////////////////////////////////////////////////////
+  
+  private int saveUserToDb(UserModel user) {
+    RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
+    int result = dao.create(user);
+    return result;
+  }
 
-  private UserModel loadUserFromDb() {
-    // TODO Auto-generated method stub
-    return null;
+  private Optional<UserModel> loadUserFromDb() {
+    RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
+    //UserModel user = dao.queryAll(null);
+    List<UserModel> users = dao.queryForAll();
+    if (users.size() == 0) {
+      return Optional.absent();
+    } else {
+      return Optional.of(users.get(0));
+    }
   }
 
   void goBlooey(Throwable t) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
     builder.setTitle("Exception!").setMessage(t.toString()).setPositiveButton("OK", null).show();
+  }
+
+  ////////////////////////////////////////////////////////////
+  // ORMLite
+  ////////////////////////////////////////////////////////////
+
+  private SCOrmLiteHelper databaseHelper;
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (databaseHelper != null) {
+      OpenHelperManager.releaseHelper();
+      databaseHelper = null;
+    }
+  }
+
+  private SCOrmLiteHelper getHelper() {
+    if (databaseHelper == null) {
+      databaseHelper =
+          OpenHelperManager.getHelper(this, SCOrmLiteHelper.class);
+    }
+    return databaseHelper;
   }
 
 }

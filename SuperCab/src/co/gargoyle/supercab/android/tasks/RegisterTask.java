@@ -9,7 +9,6 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.network.UserRepresentation;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
@@ -20,6 +19,7 @@ import com.google.common.base.Optional;
 
 public class RegisterTask extends AsyncTask<UserModel, Integer, Optional<UserModel>> {
   
+  @SuppressWarnings("unused")
   private static final String TAG = "PostUserTask";
   
   protected PostUserListener mListener;

@@ -1,7 +1,6 @@
 package co.gargoyle.supercab.android.map;
 
 import android.graphics.drawable.Drawable;
-import co.gargoyle.supercab.android.enums.FareType;
 import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 
@@ -14,9 +13,9 @@ public class PickupDropoffItem extends OverlayItem {
 
   public PickupDropoffItem(PickupPoint pickup, Drawable marker) {
     super(
-        GeoUtils.addressToGeoPoint(pickup.getAddress()),
-        pickup.getFareType().toString(), 
-        pickup.getAddress().getAddressLine(0));
+        GeoUtils.addressToGeoPoint(pickup.address),
+        pickup.fareType.toString(), 
+        pickup.address.getAddressLine(0));
 
     mPickup = pickup;
     mMarker = marker;
@@ -25,14 +24,6 @@ public class PickupDropoffItem extends OverlayItem {
   public Drawable getMarker(int stateBitset)
   {
     return mMarker;
-  }
-
-  public FareType getFareType() {
-    return mPickup.getFareType();
-  }
-  
-  public PickupPoint getPickup() {
-    return mPickup;
   }
 
   @Override
