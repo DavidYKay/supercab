@@ -612,6 +612,8 @@ public class HailActivity extends RoboMapActivity {
     Intent i = new Intent(HailActivity.this, ConfirmationActivity.class);
     i.putExtra(KEY_FARE, fare);
     startActivity(i);
+
+    finish();
   }
   
   ////////////////////////////////////////////////////////////
