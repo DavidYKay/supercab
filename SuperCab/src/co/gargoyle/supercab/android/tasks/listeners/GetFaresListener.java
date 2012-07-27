@@ -9,5 +9,7 @@ public interface GetFaresListener {
   public void completed(List<Fare> fares);
 
   public void handleError(Throwable throwable);
+  
+  public void unauthorized();
 
 }

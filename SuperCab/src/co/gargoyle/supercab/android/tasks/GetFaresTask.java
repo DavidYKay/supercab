@@ -45,9 +45,8 @@ public class GetFaresTask extends AsyncTask<Map<String, Object>, Integer, List<F
 
     ClientResource fareProfile = new ClientResource(uri);
     ServerUtils.addAuthHeaderToClientResource(mContext, fareProfile);
-
-    Representation rep = fareProfile.get();
     try {
+      Representation rep = fareProfile.get();
       if (fareProfile.getStatus().isSuccess()) {
         List<Fare> fares = parseFaresFromRepresentation(rep);
         return fares;
@@ -63,7 +62,15 @@ public class GetFaresTask extends AsyncTask<Map<String, Object>, Integer, List<F
   @Override
   protected void onPostExecute(List<Fare> fares) {
     mListener.completed(fares);
+    
     if (mException != null) {
+      if (mException instanceof ResourceException) {
+        ResourceException resEx = (ResourceException) mException;
+        if (resEx.getStatus().getCode() == 401) {
+          mListener.unauthorized();
+          return;
+        }
+      }
       mListener.handleError(mException);
     }
   }

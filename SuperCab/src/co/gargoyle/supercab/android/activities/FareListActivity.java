@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.adapters.FareListAdapter;
 import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
@@ -140,6 +141,12 @@ public class FareListActivity extends RoboListActivity {
       @Override
       public void handleError(Throwable throwable) {
         goBlooey(throwable);
+      }
+
+      @Override
+      public void unauthorized() {
+        Toast.makeText(FareListActivity.this, "Login was bad!", Toast.LENGTH_LONG).show();
+        logout();
       }
 
     });

@@ -57,6 +57,7 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
 
   @Override
   public void writeToParcel(Parcel out, int flags) {
+    out.writeString(superCabId);
     out.writeParcelable(source, flags);
     out.writeParcelable(destination, flags);
     out.writeSerializable(timeRequested);
@@ -73,6 +74,7 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
   };
 
   private Fare(Parcel in) {
+    superCabId    = in.readString();
     source        = in.readParcelable(Fare.class.getClassLoader());
     destination   = in.readParcelable(Fare.class.getClassLoader());
     timeRequested = (Date) in.readSerializable();
