@@ -44,6 +44,7 @@ public class ConfirmationActivity extends AbstractMapActivity implements PostFar
   private Fare mFare;
   private SCOrmLiteHelper databaseHelper;
 
+  @SuppressWarnings("rawtypes")
   private HashSet<AsyncTask> mTasks = new HashSet<AsyncTask>();
 
   protected ProgressDialog mProgressDialog;

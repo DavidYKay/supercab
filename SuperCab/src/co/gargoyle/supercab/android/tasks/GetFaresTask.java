@@ -93,7 +93,7 @@ public class GetFaresTask extends AsyncTask<Map<String, Object>, Integer, List<F
     try {
       String serverUrl = CommonUtils.SERVER_URL + "/fare";
       if (status != null) {
-        serverUrl += status.toString();
+        serverUrl += "/status/" + status.toString();
       }
 
       URI uri = new URI(serverUrl);
