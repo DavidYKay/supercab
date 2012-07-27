@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -35,13 +34,7 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedDelete;
 
 public class FareListActivity extends RoboListActivity {
-
-  private static final String[] items={"lorem", "ipsum", "dolor",
-    "sit", "amet", "consectetuer", "adipiscing", "elit", "morbi", "vel",
-    "ligula", "vitae", "arcu", "aliquet", "mollis",
-    "etiam", "vel", "erat", "placerat", "ante",
-    "porttitor", "sodales", "pellentesque", "augue", "purus"}; 
-
+  
   @SuppressWarnings("unused")
   @Inject private BroadcastUtils mBroadcastUtils;
 
@@ -61,7 +54,7 @@ public class FareListActivity extends RoboListActivity {
       
     setProgressBarIndeterminateVisibility(true);
 
-    setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
+    //setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
 
     getData();
   }

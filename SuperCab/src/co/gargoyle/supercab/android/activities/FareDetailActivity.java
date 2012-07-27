@@ -72,8 +72,9 @@ public class FareDetailActivity extends RoboActivity {
       public void completed(Optional<Fare> fare) {
         if (fare.isPresent()) {
           Toast.makeText(FareDetailActivity.this, "Fare Accepted!", Toast.LENGTH_SHORT).show();
-
-          startActivity(new Intent(FareDetailActivity.this, DrivingActivity.class));
+          Intent i = new Intent(FareDetailActivity.this, DrivingActivity.class);
+          i.putExtra(HailActivity.KEY_FARE, fare.get());
+          startActivity(i);
           finish();
         } else {
           // Something happened. better not risk it

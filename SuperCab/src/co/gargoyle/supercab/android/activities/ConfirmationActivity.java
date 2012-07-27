@@ -55,7 +55,7 @@ public class ConfirmationActivity extends AbstractMapActivity {
 
   protected ProgressDialog mProgressDialog;
 
-  private FareStatus mMode;
+
 
   ////////////////////////////////////////////////////////////
   // Activity Lifecycle
@@ -133,17 +133,8 @@ public class ConfirmationActivity extends AbstractMapActivity {
   // Main Methods
   ////////////////////////////////////////////////////////////
 
-  private static final HashMap<FareStatus, Integer> sTextForMode = new HashMap<FareStatus, Integer>();
-
-  static {
-    sTextForMode.put(FareStatus.waiting, R.string.mode_passenger_waiting);
-    sTextForMode.put(FareStatus.accepted, R.string.mode_passenger_accepted);
-    sTextForMode.put(FareStatus.active, R.string.mode_passenger_active);
-    sTextForMode.put(FareStatus.complete, R.string.mode_passenger_complete);
-  }
-
   private void setMode(FareStatus status) {
-    mMode = status;
+    updateFareStatus(status);
 
     // Update the GUI
     mDriverLabel.setText(getString(sTextForMode.get(status)));
@@ -181,6 +172,13 @@ public class ConfirmationActivity extends AbstractMapActivity {
 
     setProgressBarIndeterminateVisibility(true);
     task.execute(mFare.superCabId);
+  }
+  
+  private void updateFareStatus(FareStatus status) {
+    if (!mFare.status.equals(status)) {
+      mFare.status = status;
+      updateFare(mFare);
+    }
   }
   
   private void updateFare(Fare fare) {
@@ -342,4 +340,13 @@ public class ConfirmationActivity extends AbstractMapActivity {
     return null;
   }
 
+
+  private static final HashMap<FareStatus, Integer> sTextForMode = new HashMap<FareStatus, Integer>();
+
+  static {
+    sTextForMode.put(FareStatus.waiting, R.string.mode_passenger_waiting);
+    sTextForMode.put(FareStatus.accepted, R.string.mode_passenger_accepted);
+    sTextForMode.put(FareStatus.active, R.string.mode_passenger_active);
+    sTextForMode.put(FareStatus.complete, R.string.mode_passenger_complete);
+  }
 }
