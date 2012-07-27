@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -26,6 +25,7 @@ import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.tasks.GetFaresTask;
 import co.gargoyle.supercab.android.tasks.listeners.GetFaresListener;
 import co.gargoyle.supercab.android.utilities.BroadcastUtils;
+import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
 import com.google.inject.Inject;
@@ -35,13 +35,7 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedDelete;
 
 public class FareListActivity extends RoboListActivity {
-
-  private static final String[] items={"lorem", "ipsum", "dolor",
-    "sit", "amet", "consectetuer", "adipiscing", "elit", "morbi", "vel",
-    "ligula", "vitae", "arcu", "aliquet", "mollis",
-    "etiam", "vel", "erat", "placerat", "ante",
-    "porttitor", "sodales", "pellentesque", "augue", "purus"}; 
-
+  
   @SuppressWarnings("unused")
   @Inject private BroadcastUtils mBroadcastUtils;
 
@@ -59,9 +53,7 @@ public class FareListActivity extends RoboListActivity {
 
     setContentView(R.layout.fare_list);
       
-    setProgressBarIndeterminateVisibility(true);
-
-    setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
+    //setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
 
     getData();
   }
@@ -73,7 +65,7 @@ public class FareListActivity extends RoboListActivity {
     Fare fare = (Fare) adapter.getItem(position);
 
     Intent i = new Intent(FareListActivity.this, FareDetailActivity.class);
-    i.putExtra(HailActivity.KEY_FARE, fare);
+    i.putExtra(Constants.KEY_FARE, fare);
     startActivity(i);
   }
 

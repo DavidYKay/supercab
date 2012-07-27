@@ -18,7 +18,7 @@
     >
 
     <TextView
-      android:id="@+id/app_logo"
+      android:id="@+id/fare_status"
       android:layout_width="wrap_content"
       android:layout_height="fill_parent"
       android:layout_alignParentLeft="true"
@@ -57,6 +57,7 @@
     >
 
     <LinearLayout
+      android:id="@+id/pickup_bar"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
@@ -87,12 +88,15 @@
         android:gravity="center"
         />
     </LinearLayout>
+
     <LinearLayout
+      android:id="@+id/dropoff_bar"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
-      >
 
+      android:visibility="gone"
+      >
       <TextView
         android:id="@+id/confirmation_dropoff_label"
         android:layout_marginLeft="5dp"
@@ -125,24 +129,24 @@
       android:orientation="horizontal"
       >
       <Button
-        android:id="@+id/cancel_confirm_button"
+        android:id="@+id/cancel_fare_button"
         android:layout_width="0px"
         android:layout_height="48dp"
         android:layout_weight="50"
         android:layout_alignParentBottom="true"
         android:text="@string/cancel"
         android:textSize="24dp"
-        android:onClick="onCancelConfirmButtonClicked"
+        android:onClick="onCancelFareButtonClicked"
         />
       <Button
-        android:id="@+id/confirm_button"
+        android:id="@+id/arrived_button"
         android:layout_width="0px"
         android:layout_height="48dp"
         android:layout_weight="50"
         android:layout_alignParentBottom="true"
-        android:text="@string/confirm"
+        android:text="@string/arrived"
         android:textSize="24dp"
-        android:onClick="onConfirmButtonClicked"
+        android:onClick="onArrivedButtonClicked"
         />
     </LinearLayout>
   </LinearLayout>

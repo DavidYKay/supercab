@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
@@ -14,6 +15,7 @@ import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.tasks.PutFareTask;
 import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
 import co.gargoyle.supercab.android.utilities.BroadcastUtils;
+import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.google.common.base.Optional;
@@ -40,11 +42,13 @@ public class FareDetailActivity extends RoboActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
     setContentView(R.layout.fare_detail);
     
     Intent i = getIntent();
-    Fare fare = i.getParcelableExtra(HailActivity.KEY_FARE); 
+    Fare fare = i.getParcelableExtra(Constants.KEY_FARE); 
     mFare = fare;
 
     populateUi(mFare);
@@ -70,10 +74,12 @@ public class FareDetailActivity extends RoboActivity {
     PutFareTask task = new PutFareTask(this, new PutFareListener(){
       @Override
       public void completed(Optional<Fare> fare) {
+        setProgressBarIndeterminateVisibility(false);
         if (fare.isPresent()) {
           Toast.makeText(FareDetailActivity.this, "Fare Accepted!", Toast.LENGTH_SHORT).show();
-
-          startActivity(new Intent(FareDetailActivity.this, DrivingActivity.class));
+          Intent i = new Intent(FareDetailActivity.this, DrivingActivity.class);
+          i.putExtra(Constants.KEY_FARE_ID, fare.get().superCabId);
+          startActivity(i);
           finish();
         } else {
           // Something happened. better not risk it
@@ -82,9 +88,11 @@ public class FareDetailActivity extends RoboActivity {
 
       @Override
       public void handleError(Throwable exception) {
+        setProgressBarIndeterminateVisibility(false);
         goBlooey(exception);
       }
     });
+    setProgressBarIndeterminateVisibility(true);
     task.execute(mFare);
   }
 

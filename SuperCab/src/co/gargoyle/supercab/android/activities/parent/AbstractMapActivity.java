@@ -8,6 +8,9 @@ import com.google.inject.Inject;
 
 public abstract class AbstractMapActivity extends RoboMapActivity {
   
+  public static final int ZOOM_LEVEL_CITY         = 15;
+  public static final int ZOOM_LEVEL_NEIGHBORHOOD = 20;
+  
   @Inject protected GeoUtils mGeoUtils;
   
   @Override

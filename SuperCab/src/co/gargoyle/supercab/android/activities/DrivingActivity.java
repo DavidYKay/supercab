@@ -1,28 +1,17 @@
 package co.gargoyle.supercab.android.activities;
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Parcel;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
@@ -31,19 +20,19 @@ import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
 import co.gargoyle.supercab.android.enums.FareStatus;
 import co.gargoyle.supercab.android.enums.PointType;
 import co.gargoyle.supercab.android.map.ExtendedMapView;
-import co.gargoyle.supercab.android.map.ExtendedMapView.OnMoveListener;
 import co.gargoyle.supercab.android.map.PickupDropoffItem;
 import co.gargoyle.supercab.android.map.PickupDropoffOverlay;
 import co.gargoyle.supercab.android.map.PickupDropoffOverlayTapListener;
 import co.gargoyle.supercab.android.model.Fare;
-import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.model.UserModel;
+import co.gargoyle.supercab.android.tasks.PutFareTask;
+import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
+import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
-import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
@@ -51,8 +40,6 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedDelete;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
 
 public class DrivingActivity extends AbstractMapActivity {
 
@@ -61,21 +48,8 @@ public class DrivingActivity extends AbstractMapActivity {
   private static final String TAG = "DrivingActivity";
   private static final String LOCATION_TAG = "location";
 
-  private static final int TEXT_ACTIVE_COLOR   = R.color.text_active;
-  private static final int TEXT_INACTIVE_COLOR = R.color.text_inactive;
-
-  private static final int ZOOM_LEVEL_CITY         = 15;
-  private static final int ZOOM_LEVEL_NEIGHBORHOOD = 20;
-
-  @InjectView(R.id.bottom_bar_pickup) private View mPickupBar;
-  @InjectView(R.id.bottom_bar_confirmation) private View mConfirmationBar;
-  @InjectView(R.id.location_hint) private ImageView mPinHint;
-  @InjectView(R.id.location_text) private TextView mAddressText;
-  @InjectView(R.id.hail_button) private Button mHailButton;
+  @InjectView(R.id.fare_status) private TextView mFareStatusLabel;
   @InjectView(R.id.map) private ExtendedMapView mMapView;
-
-  @InjectView(R.id.confirmation_pickup_text) private TextView mConfirmationPickupText;
-  @InjectView(R.id.confirmation_dropoff_text) private TextView mConfirmationDropoffText;
 
   @Inject private GeoUtils mGeoUtils;
 
@@ -83,11 +57,12 @@ public class DrivingActivity extends AbstractMapActivity {
   private MyLocationOverlay mMyLocationOverlay;
   private MapController mMapController;
 
+  @SuppressWarnings("unused")
   private Handler mHandler;
 
-  private Address mLastKnownAddress;
+  private Fare mFare;
+
   private Location mLastKnownLocation;
-  private PointType mMode = PointType.PICKUP;
   private boolean mHasGeolocated;
 
   @Inject private PreferenceUtils mPreferenceUtils;
@@ -98,57 +73,49 @@ public class DrivingActivity extends AbstractMapActivity {
 
     Log.i(TAG, "Starting up, creating directories");
 
+    Intent i = getIntent();
+    Fare fare = i.getParcelableExtra(Constants.KEY_FARE); 
 
-    Optional<Fare> pendingFare = getFareFromDb();
-    if (pendingFare.isPresent()) {
-      proceedToConfirmation(pendingFare.get());
-    } else {
-      setContentView(R.layout.hail);
+    //Optional<Fare> fare = getFareFromDb(fareId);
 
-      mMapView.setBuiltInZoomControls(true);
-
-      mMapController = mMapView.getController();
-      mMapController.setZoom(ZOOM_LEVEL_NEIGHBORHOOD); // Fixed Zoom Level
-
-      mMyLocationOverlay = new MyLocationOverlay(this, mMapView) {
-        @Override
-        public synchronized void onLocationChanged(Location location) {
-          super.onLocationChanged(location);
-          checkAndUpdateLastKnownLocation(location);
-        }
-      };
-
-      mPickupDropoffOverlay = new PickupDropoffOverlay(
-          getBoundedPinForMapOverlayWithMode(PointType.PICKUP),
-          getBoundedPinForMapOverlayWithMode(PointType.DROPOFF)
-          );
-
-      mPickupDropoffOverlay.setTapListener(new PickupDropoffOverlayTapListener() {
-        @Override
-        public void itemWasTapped(PickupDropoffItem item) {
-          Toast.makeText(DrivingActivity.this,
-                         item.getTitle(),
-                         Toast.LENGTH_SHORT).show();
-        }
-      });
-      mMapView.getOverlays().add(mPickupDropoffOverlay);
-
-      mMapView.getOverlays().add(mMyLocationOverlay);
-
-      mMapView.setOnMoveListener(new OnMoveListener() {
-        public void onMove(MapView mapView, GeoPoint center, boolean stopped) {
-          Log.d(TAG, String.format("onMove center: %s stopped: %b", center.toString(), stopped));
-          if (stopped) {
-            updateAddressWithGeoPoint(center);
-          } else {
-            setAddressLabelActive(false);
-            mLastKnownAddress = null;
-          }
-        }
-      });
-
-      centerMapAction();
+    if (fare == null) {
+      Toast.makeText(DrivingActivity.this, "Error! No fare found.", Toast.LENGTH_SHORT).show();
+      finish();
     }
+    mFare = fare;
+
+    setContentView(R.layout.driving);
+
+    mMapView.setBuiltInZoomControls(true);
+
+    mMapController = mMapView.getController();
+    mMapController.setZoom(ZOOM_LEVEL_CITY); // Fixed Zoom Level
+
+    mMyLocationOverlay = new MyLocationOverlay(this, mMapView) {
+      @Override
+      public synchronized void onLocationChanged(Location location) {
+        super.onLocationChanged(location);
+        checkAndUpdateLastKnownLocation(location);
+      }
+    };
+    mMapView.getOverlays().add(mMyLocationOverlay);
+
+    mPickupDropoffOverlay = new PickupDropoffOverlay(
+        getBoundedPinForMapOverlayWithMode(PointType.PICKUP),
+        getBoundedPinForMapOverlayWithMode(PointType.DROPOFF)
+        );
+
+    mPickupDropoffOverlay.setTapListener(new PickupDropoffOverlayTapListener() {
+      @Override
+      public void itemWasTapped(PickupDropoffItem item) {
+        Toast.makeText(DrivingActivity.this,
+                       item.getTitle(),
+                       Toast.LENGTH_SHORT).show();
+      }
+    });
+    mMapView.getOverlays().add(mPickupDropoffOverlay);
+
+    centerMapAction();
   }
 
   ////////////////////////////////////////////////////////////
@@ -188,19 +155,10 @@ public class DrivingActivity extends AbstractMapActivity {
   // return true;
   // }
 
-  public void onHailButtonClicked(View view) {
-    Log.i(TAG, "onHailButtonClicked()");
+  public void onArrivedButtonClicked(View view) {
+    Log.i(TAG, "onArrivedButtonClicked()");
 
-    if (isUiThread()) {
-      addPickupDropoffAtCurrentAddress();
-    } else {
-      Runnable updateUITimerTask = new Runnable() {
-        public void run() {
-          addPickupDropoffAtCurrentAddress();
-        }
-      };
-      mHandler.post(updateUITimerTask);
-    }
+    onFareArrived();
   }
 
   public void onProfileButtonClicked(View view) {
@@ -218,78 +176,22 @@ public class DrivingActivity extends AbstractMapActivity {
   public void onConfirmButtonClicked(View view) {
     Log.i(TAG, "onConfirmButtonClicked()");
 
-    Fare fare = getFareFromUi();
-    saveFareToDb(fare);
-    proceedToConfirmation(fare);
   }
 
-  public void onCancelConfirmButtonClicked(View view) {
-    Log.i(TAG, "onCancelConfirmButtonClicked()");
+  public void onCancelFareButtonClicked(View view) {
+    Log.i(TAG, "onCancelFareButtonClicked()");
 
-    // Clear pins, reset to 0
-    setMode(PointType.PICKUP);
   }
 
   ////////////////////////////////////////////////////////////
   // Mode Management
   ////////////////////////////////////////////////////////////
 
-  private void setMode(PointType mode) {
-
-    if (mMode == PointType.WAITING && mode == PointType.PICKUP) {
-      // Complete reset
-      enterStandardMode();
-      mPickupDropoffOverlay.clear();
-    }
-
-    mMode = mode;
-
-    mPinHint.setImageDrawable(getPinDrawableForMode(mode));
-
-    mHailButton.setText(getHailTextForMode(mode));
-    mHailButton.invalidate();
-
-    if (mode == PointType.WAITING) {
-      enterConfirmationMode();
-    } else {
-      // NOP
-    }
-  }
-
-  private void enterStandardMode() {
-    setBottomBarConfirmation(false);
-    centerMapAction();
-  }
-
-  private void enterConfirmationMode() {
-    Toast.makeText(DrivingActivity.this, "Confirm???", Toast.LENGTH_SHORT).show();
-    zoomMapToFitBothPins();
-
-    populateBottomBar();
-    setBottomBarConfirmation(true);
-  }
 
   ////////////////////////////////////////////////////////////
   // View Management
   ////////////////////////////////////////////////////////////
 
-  private void populateBottomBar() {
-    PickupPoint source = mPickupDropoffOverlay.get(0);
-    PickupPoint destination = mPickupDropoffOverlay.get(1);
-
-    mConfirmationPickupText.setText(source.address);
-    mConfirmationDropoffText.setText(destination.address);
-  }
-
-  private void setBottomBarConfirmation(boolean confirmation) {
-    if (confirmation) {
-      mPickupBar.setVisibility(View.GONE);
-      mConfirmationBar.setVisibility(View.VISIBLE);
-    } else {
-      mPickupBar.setVisibility(View.VISIBLE);
-      mConfirmationBar.setVisibility(View.GONE);
-    }
-  }
 
   ////////////////////////////////////////////////////////////
   // Map Management
@@ -335,15 +237,6 @@ public class DrivingActivity extends AbstractMapActivity {
     }
   }
 
-  private void zoomMapToFitBothPins() {
-    mMapController.zoomToSpan(mPickupDropoffOverlay.getLatSpanE6(), mPickupDropoffOverlay.getLonSpanE6());
-
-    Optional<GeoPoint> result = mPickupDropoffOverlay.getCenterPoint();
-    if (result.isPresent()) {
-      mMapController.animateTo(result.get());
-    }
-  }
-
   private void checkAndUpdateLastKnownLocation(Location location) {
     if (isValidLocation(location)) {
       if (mGeoUtils.isBetterLocation(location, mLastKnownLocation)) {
@@ -381,145 +274,13 @@ public class DrivingActivity extends AbstractMapActivity {
     return true;
   }
 
-  private Optional<Address> geoCodeNewPoint(GeoPoint center) {
-    Geocoder geocoder = new Geocoder(this);
-    Location location = mGeoUtils.geoPointToLocation(center);
-    try {
-      List<Address> addresses = geocoder.getFromLocation(location.getLatitude(),
-          location.getLongitude(), 1);
-      Address address = addresses.get(0);
-      return Optional.of(address);
-    } catch (IOException e) {
-      e.printStackTrace();
-      return Optional.absent();
-    }
-  }
-
-  private void addPickupDropoffAtCurrentAddress() {
-    boolean success = addPickupAtCurrentAddress(mMode);
-    if (!success) {
-      return;
-    }
-
-    if (mMode == PointType.PICKUP) {
-      setMode(PointType.DROPOFF);
-    } else if (mMode == PointType.DROPOFF) {
-      setMode(PointType.WAITING);
-    } else {
-      throw new RuntimeException("Can't pickup, dropoff, pickup.");
-      //setMode(FareType.PICKUP);
-    }
-  }
-
-  private boolean addPickupAtCurrentAddress(PointType pointType) {
-    Address address = copyAddress(mLastKnownAddress);
-    if (address == null) {
-      return false;
-    } else {
-
-      // Modify address to new location.
-      GeoPoint geoPoint = mMapView.getMapCenter();
-
-      address.setLatitude(GeoUtils.integerToDoubleValue(geoPoint.getLatitudeE6()));
-      address.setLongitude(GeoUtils.integerToDoubleValue(geoPoint.getLongitudeE6()));
-
-      PickupPoint testPickup = new PickupPoint(pointType, address);
-
-      mPickupDropoffOverlay.addPickup(testPickup);
-      mMapView.invalidate();
-      return true;
-    }
-  }
-
   ////////////////////////////////////////////////////////////
   // Address Text Management
   ////////////////////////////////////////////////////////////
 
-  private void setAddressLabelLoading() {
-    setAddressLabelActive(false);
-
-    final String newText = getResources().getString(R.string.loading_address);
-    Runnable updateUITimerTask = new Runnable() {
-      public void run() {
-        mAddressText.setText(newText);
-      }
-    };
-    mHandler.post(updateUITimerTask);
-  }
-
-  private void setAddressLabelActive(final boolean active) {
-    final int newColor;
-    if (active) {
-      newColor = getResources().getColor(TEXT_ACTIVE_COLOR);
-    } else {
-      newColor = getResources().getColor(TEXT_INACTIVE_COLOR);
-    }
-
-    if (newColor == mAddressText.getCurrentTextColor()) {
-      return;
-    } else {
-      Runnable updateUITimerTask = new Runnable() {
-        public void run() {
-          mAddressText.setTextColor(newColor);
-          mAddressText.invalidate();
-        }
-      };
-      mHandler.post(updateUITimerTask);
-    }
-  }
-
-  private void updateAddressTextOnUiThread(final CharSequence newText) {
-    Runnable updateUITimerTask = new Runnable() {
-      public void run() {
-        mAddressText.setText(newText);
-        setAddressLabelActive(true);
-      }
-    };
-    mHandler.post(updateUITimerTask);
-  }
-
-  private void updateAddressWithGeoPoint(GeoPoint center) {
-    Log.d("address", "updateAddressWithGeoPoint()");
-    setAddressLabelLoading();
-
-    Optional<Address> address = geoCodeNewPoint(center);
-
-    if (!address.isPresent()) {
-      return;
-    }
-
-    mLastKnownAddress = address.get();
-
-    String addressString = mLastKnownAddress.getAddressLine(0);
-    Log.d("address", "current address text: " + mAddressText.getText().toString());
-    Log.d("address", "new address text: " + addressString);
-    updateAddressTextOnUiThread(addressString);
-  }
-
   ////////////////////////////////////////////////////////////
   // Resources
   ////////////////////////////////////////////////////////////
-
-  private HashMap<PointType, Bitmap> getPinOverlayMappings() {
-    HashMap<PointType, Bitmap> mappings = new HashMap<PointType, Bitmap>();
-
-    PointType[] modes = new PointType[] {
-      PointType.PICKUP,
-      PointType.DROPOFF
-    };
-
-    for (PointType mode : modes) {
-      mappings.put(mode, getPinBitmapForMode(mode));
-    }
-
-    return mappings;
-  }
-
-  private Bitmap getPinBitmapForMode(PointType mode) {
-    Drawable drawable = getPinDrawableForMode(mode);
-    Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-    return bitmap;
-  }
 
   private Drawable getPinDrawableForMode(PointType mode) {
     Drawable newPin;
@@ -538,87 +299,46 @@ public class DrivingActivity extends AbstractMapActivity {
     return pin;
   }
 
-  private String getHailTextForMode(PointType mode) {
-    String prompt;
-    if (mode == PointType.PICKUP) {
-      prompt = getResources().getString(R.string.pick_me_up_here);
-    } else {
-      prompt = getResources().getString(R.string.drop_me_off_here);
-    }
-    return prompt;
-  }
-
   ////////////////////////////////////////////////////////////
   // Fare
   ////////////////////////////////////////////////////////////
 
-  private Optional<Fare> getFareFromDb() {
-    RuntimeExceptionDao <Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
+  private void onFareArrived() {
+    mFare.status = FareStatus.active;
 
-    QueryBuilder<Fare, Integer> builder = dao.queryBuilder();
-    
-    Where<Fare, Integer> where = builder.where();
-    try {
-      where.eq("status", FareStatus.waiting);
-      builder.setWhere(where);
-      
-      // get all fares that are waiting
-      List<Fare> fares = dao.query(builder.prepare());
-
-      if (fares.size() > 0) {
-        return Optional.of(fares.get(0));
-      } else {
-        return Optional.absent();
+    PutFareTask task = new PutFareTask(this, new PutFareListener() {
+      @Override
+      public void completed(Optional<Fare> fare) {
+        if (fare.isPresent()) {
+          Toast.makeText(DrivingActivity.this, "Customer Notified!", Toast.LENGTH_SHORT).show();
+          mFare = fare.get();
+          setStatus(mFare.status);
+        } else {
+          // Something happened. better not risk it
+        }
       }
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return Optional.absent();
-  }
 
-  private void saveFareToDb(Fare fare) {
-    RuntimeExceptionDao <Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
-    dao.create(fare);
+      @Override
+      public void handleError(Throwable exception) {
+        goBlooey(exception);
+      }
+    });
+    task.execute(mFare);
+
   }
   
-  private Fare getFareFromUi() {
-    PickupPoint source = mPickupDropoffOverlay.get(0);
-    PickupPoint destination = mPickupDropoffOverlay.get(1);
-    Date timeRequested = new Date();
-
-    Fare fare = new Fare(source, destination, timeRequested);
-    fare.status = FareStatus.waiting;
-
-    return fare;
-  }
-
   ////////////////////////////////////////////////////////////
   // Util
   ////////////////////////////////////////////////////////////
 
-
-  private boolean isUiThread() {
-    if (Looper.myLooper() != null && Looper.myLooper() == Looper.getMainLooper()) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  private Address copyAddress(Address origAddress) {
-    Parcel p = Parcel.obtain();
-    p.writeValue(origAddress);
-    p.setDataPosition(0);
-    Address newAddress = (Address)p.readValue(Address.class.getClassLoader());
-    p.recycle();
-    return newAddress;
-  }
-  
   ////////////////////////////////////////////////////////////
   // Logout
   ////////////////////////////////////////////////////////////
   
+  protected void setStatus(FareStatus status) {
+    mFareStatusLabel.setText(getString(sTextForMode.get(status)));
+  }
+
   private void logout() {
     RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
     DeleteBuilder<UserModel, Integer> builder = dao.deleteBuilder();
@@ -640,14 +360,6 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // Nav
   ////////////////////////////////////////////////////////////
-  
-  private void proceedToConfirmation(Fare fare) {
-    Intent i = new Intent(DrivingActivity.this, ConfirmationActivity.class);
-    i.putExtra(KEY_FARE, fare);
-    startActivity(i);
-
-    finish();
-  }
   
   ////////////////////////////////////////////////////////////
   // ORMLite
@@ -680,4 +392,13 @@ public class DrivingActivity extends AbstractMapActivity {
 
     builder.setTitle("Exception!").setMessage(t.toString()).setPositiveButton("OK", null).show();
   }
+  
+  private static final HashMap<FareStatus, Integer> sTextForMode = new HashMap<FareStatus, Integer>();
+
+  static {
+    sTextForMode.put(FareStatus.waiting  , R.string.mode_driver_waiting);
+    sTextForMode.put(FareStatus.accepted , R.string.mode_driver_accepted);
+    sTextForMode.put(FareStatus.active   , R.string.mode_driver_active);
+    sTextForMode.put(FareStatus.complete , R.string.mode_driver_complete);
+    }
 }
