@@ -179,6 +179,7 @@ public class LoginActivity extends RoboActivity {
   ////////////////////////////////////////////////////////////
 
   private void proceedToApp(UserModel user) {
+    
     Intent i;
     if (user.role == UserRole.passenger) {
         i = new Intent(LoginActivity.this, HailActivity.class);
@@ -191,6 +192,7 @@ public class LoginActivity extends RoboActivity {
 
   private void saveUserAndProceedToApp(UserModel user, UserCredentials credentials) {
     mPreferenceUtils.saveCredentials(credentials);
+    mPreferenceUtils.saveToken(user.token);
 
     // finish login and proceed
     proceedToApp(user);
