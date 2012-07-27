@@ -585,6 +585,7 @@ public class HailActivity extends RoboMapActivity {
       int result = dao.delete(deleteAll);
       mPreferenceUtils.clearUser();
 
+      startActivity(new Intent(HailActivity.this, LoginActivity.class));
       finish();
     } catch (SQLException e) {
       e.printStackTrace();

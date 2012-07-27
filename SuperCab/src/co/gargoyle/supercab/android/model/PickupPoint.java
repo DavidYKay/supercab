@@ -4,9 +4,8 @@ import android.location.Address;
 import android.os.Parcel;
 import android.os.Parcelable;
 import co.gargoyle.supercab.android.enums.FareType;
-import co.gargoyle.supercab.android.model.json.CustomAddressSerializer;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -14,11 +13,12 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "pickups")
 public class PickupPoint extends SuperCabBaseModel implements Parcelable {
 
+  @JsonIgnore
   @DatabaseField
   public FareType fareType;
   	
-  @JsonSerialize(using = CustomAddressSerializer.class)
-//  @Databas
+  //@JsonSerialize(using = CustomAddressSerializer.class)
+  //@JsonDeserialize(using = CustomAddressDeserializer.class)
 //  @DatabaseField(persisterClass = CustomAddressPersister.class)
   public Address address;
   
@@ -33,7 +33,23 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
 
   @Override
   public boolean equals(Object o) {
-    return Objects.equal(this, o);
+    if (o == null) {
+      return false;
+    }
+    if (!(o instanceof PickupPoint)) {
+      return false;
+    }
+    PickupPoint other = (PickupPoint) o;
+    if (
+        Objects.equal(this.superCabId, other.superCabId) &&
+        Objects.equal(this.fareType, other.fareType) &&
+        Objects.equal(this.address.getLatitude(), other.address.getLatitude()) &&
+        Objects.equal(this.address.getLongitude(), other.address.getLongitude()) &&
+        Objects.equal(this.address.getAddressLine(0), other.address.getAddressLine(0))
+        ) {
+      return true;
+    }
+    return false;
   }
 
   @Override
