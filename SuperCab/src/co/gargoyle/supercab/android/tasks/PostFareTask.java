@@ -14,9 +14,9 @@ import android.os.AsyncTask;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.network.FareRepresentation;
 import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
-import co.gargoyle.supercab.android.utilities.CommonUtilities;
+import co.gargoyle.supercab.android.utilities.CommonUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
-import co.gargoyle.supercab.android.utilities.ServerUtilities;
+import co.gargoyle.supercab.android.utilities.ServerUtils;
 
 import com.google.common.base.Optional;
 
@@ -61,7 +61,7 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
     try {
       Representation jacksonRep;
       try {
-        jacksonRep = ServerUtilities.convertFareToJsonRepresentation(fare);
+        jacksonRep = ServerUtils.convertFareToJsonRepresentation(fare);
       } catch (IOException e1) {
         e1.printStackTrace();
         mException = e1;
@@ -102,7 +102,7 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
 
   private URI getURI() {
     try {
-      String serverUrl = CommonUtilities.SERVER_URL + "/fare";
+      String serverUrl = CommonUtils.SERVER_URL + "/fare";
       //String serverUrl = "http://requestb.in/pijt1epi";
       URI uri = new URI(serverUrl);
       return uri;

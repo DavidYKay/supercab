@@ -22,7 +22,7 @@ import android.content.Intent;
  * Helper class providing methods and constants common to other classes in the
  * app.
  */
-public final class CommonUtilities {
+public final class CommonUtils {
 
   /**
    * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)

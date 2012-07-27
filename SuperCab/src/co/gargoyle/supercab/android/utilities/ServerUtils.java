@@ -41,7 +41,7 @@ import com.google.common.base.Optional;
 /**
  * Helper class used to communicate with the demo server.
  */
-public final class ServerUtilities {
+public final class ServerUtils {
   
 
   private static final String TAG = "ServerUtilities";
@@ -57,7 +57,7 @@ public final class ServerUtilities {
   public static boolean register(final Context context, final String regId) {
     Log.i(TAG, "registering device (regId = " + regId + ")");
     //String serverUrl = CommonUtilities.SERVER_URL + "/device/";
-    String serverUrl = CommonUtilities.SERVER_URL + "/push/register";
+    String serverUrl = CommonUtils.SERVER_URL + "/push/register";
     Map<String, String> params = new HashMap<String, String>();
     params.put("push_id", regId);
     long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
@@ -67,12 +67,12 @@ public final class ServerUtilities {
     for (int i = 1; i <= MAX_ATTEMPTS; i++) {
       Log.d(TAG, "Attempt #" + i + " to register");
       try {
-        CommonUtilities.displayMessage(context, context.getString(R.string.server_registering, i, MAX_ATTEMPTS));
+        CommonUtils.displayMessage(context, context.getString(R.string.server_registering, i, MAX_ATTEMPTS));
         //post(serverUrl, params);
         postRestlet(serverUrl, params);
         GCMRegistrar.setRegisteredOnServer(context, true);
         String message = context.getString(R.string.server_registered);
-        CommonUtilities.displayMessage(context, message);
+        CommonUtils.displayMessage(context, message);
         return true;
       } catch (IOException e) {
         // Here we are simplifying and retrying on any error; in a real
@@ -96,7 +96,7 @@ public final class ServerUtilities {
       }
     }
     String message = context.getString(R.string.server_register_error, MAX_ATTEMPTS);
-    CommonUtilities.displayMessage(context, message);
+    CommonUtils.displayMessage(context, message);
     return false;
   }
 

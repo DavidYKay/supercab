@@ -1,9 +1,9 @@
 package co.gargoyle.supercab.android.activities;
 
-import static co.gargoyle.supercab.android.utilities.CommonUtilities.DISPLAY_MESSAGE_ACTION;
-import static co.gargoyle.supercab.android.utilities.CommonUtilities.EXTRA_MESSAGE;
-import static co.gargoyle.supercab.android.utilities.CommonUtilities.SENDER_ID;
-import static co.gargoyle.supercab.android.utilities.CommonUtilities.SERVER_URL;
+import static co.gargoyle.supercab.android.utilities.CommonUtils.DISPLAY_MESSAGE_ACTION;
+import static co.gargoyle.supercab.android.utilities.CommonUtils.EXTRA_MESSAGE;
+import static co.gargoyle.supercab.android.utilities.CommonUtils.SENDER_ID;
+import static co.gargoyle.supercab.android.utilities.CommonUtils.SERVER_URL;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
@@ -18,7 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 import co.gargoyle.supercab.android.R;
-import co.gargoyle.supercab.android.utilities.ServerUtilities;
+import co.gargoyle.supercab.android.utilities.ServerUtils;
 
 import com.google.android.gcm.GCMRegistrar;
 
@@ -69,7 +69,7 @@ public class LaunchActivity extends RoboActivity {
           @Override
           protected Void doInBackground(Void... params) {
             boolean registered =
-                ServerUtilities.register(context, regId);
+                ServerUtils.register(context, regId);
             // At this point all attempts to register with the app
             // server failed, so we need to unregister the device
             // from GCM - the app will try to register again when

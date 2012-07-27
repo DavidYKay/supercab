@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 import co.gargoyle.supercab.android.activities.LaunchActivity;
-import co.gargoyle.supercab.android.utilities.CommonUtilities;
-import co.gargoyle.supercab.android.utilities.ServerUtilities;
+import co.gargoyle.supercab.android.utilities.CommonUtils;
+import co.gargoyle.supercab.android.utilities.ServerUtils;
 
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
@@ -18,7 +18,7 @@ public class GCMIntentService extends GCMBaseIntentService {
   private static final String TAG = "GCMIntentService";
   
   public GCMIntentService() {
-    super(CommonUtilities.SENDER_ID);
+    super(CommonUtils.SENDER_ID);
   }
 
   @Override
@@ -37,8 +37,8 @@ public class GCMIntentService extends GCMBaseIntentService {
   protected void onRegistered(Context context, String registrationId) {
     Log.d(TAG, "onRegistered(): " + registrationId);
         
-    CommonUtilities.displayMessage(context, getString(R.string.gcm_registered));
-    ServerUtilities.register(context, registrationId);
+    CommonUtils.displayMessage(context, getString(R.string.gcm_registered));
+    ServerUtils.register(context, registrationId);
   }
 
   /**
@@ -49,9 +49,9 @@ public class GCMIntentService extends GCMBaseIntentService {
   protected void onUnregistered(Context context, String registrationId) {
     Log.d(TAG, "onUnregistered(): " + registrationId);
 
-    CommonUtilities.displayMessage(context, getString(R.string.gcm_unregistered));
+    CommonUtils.displayMessage(context, getString(R.string.gcm_unregistered));
     if (GCMRegistrar.isRegisteredOnServer(context)) {
-      ServerUtilities.unregister(context, registrationId);
+      ServerUtils.unregister(context, registrationId);
     } else {
       // This callback results from the call to unregister made on
       // ServerUtilities when the registration to the server failed.
@@ -69,7 +69,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     Log.d(TAG, "onMessage(): " + intent.toString());
         
     String message = getString(R.string.gcm_message);
-    CommonUtilities.displayMessage(context, message);
+    CommonUtils.displayMessage(context, message);
     // notifies user
     generateNotification(context, message);
   }
@@ -78,7 +78,7 @@ public class GCMIntentService extends GCMBaseIntentService {
   protected void onDeletedMessages(Context context, int total) {
     Log.i(TAG, "Received deleted messages notification");
     String message = getString(R.string.gcm_deleted, total);
-    CommonUtilities.displayMessage(context, message);
+    CommonUtils.displayMessage(context, message);
     // notifies user
     generateNotification(context, message);
   }
@@ -91,7 +91,7 @@ public class GCMIntentService extends GCMBaseIntentService {
   @Override
   protected void onError(Context context, String errorId) {
     Log.d(TAG, "onError(): " + errorId);
-    CommonUtilities.displayMessage(context, getString(R.string.gcm_error, errorId));
+    CommonUtils.displayMessage(context, getString(R.string.gcm_error, errorId));
   }
 
   /**
@@ -105,7 +105,7 @@ public class GCMIntentService extends GCMBaseIntentService {
   protected boolean onRecoverableError(Context context, String errorId) {
     Log.d(TAG, "onRecoverableError(): " + errorId);
 
-    CommonUtilities.displayMessage(context, getString(R.string.gcm_recoverable_error,
+    CommonUtils.displayMessage(context, getString(R.string.gcm_recoverable_error,
                                       errorId));
     return super.onRecoverableError(context, errorId);
   }

@@ -1,5 +1,6 @@
 package co.gargoyle.supercab.android.activities;
 
+import co.gargoyle.supercab.android.R;
 import roboguice.activity.RoboListActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -16,11 +17,11 @@ public class FareListActivity extends RoboListActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    //setContentView(R.layout.fare_list);
-    setListAdapter(new ArrayAdapter<String>(this,
-                                            android.R.layout.simple_list_item_1,
-                                            items));
+    setContentView(R.layout.fare_list);
 
+    setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
   }
+
+
 
 }

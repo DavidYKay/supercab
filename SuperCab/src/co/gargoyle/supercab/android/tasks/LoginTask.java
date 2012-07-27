@@ -13,8 +13,8 @@ import co.gargoyle.supercab.android.model.UserCredentials;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.network.UserRepresentation;
 import co.gargoyle.supercab.android.tasks.listeners.GetUserListener;
-import co.gargoyle.supercab.android.utilities.CommonUtilities;
-import co.gargoyle.supercab.android.utilities.ServerUtilities;
+import co.gargoyle.supercab.android.utilities.CommonUtils;
+import co.gargoyle.supercab.android.utilities.ServerUtils;
 
 import com.google.common.base.Optional;
 
@@ -39,7 +39,7 @@ public class LoginTask extends AsyncTask<UserCredentials, Integer, Optional<User
     ClientResource clientResource = new ClientResource(uri);
 
     try {
-      Optional<Representation> optional = ServerUtilities.convertToJsonRepresentation(creds);
+      Optional<Representation> optional = ServerUtils.convertToJsonRepresentation(creds);
       Representation jacksonRep = optional.get();
       Representation rep = clientResource.post(jacksonRep);
       if (clientResource.getStatus().isSuccess()) {
@@ -78,7 +78,7 @@ public class LoginTask extends AsyncTask<UserCredentials, Integer, Optional<User
 
   protected URI getURI() {
     try {
-      String serverUrl = CommonUtilities.SERVER_URL + "/login";
+      String serverUrl = CommonUtils.SERVER_URL + "/login";
       URI uri = new URI(serverUrl);
       return uri;
     } catch (URISyntaxException e) {
