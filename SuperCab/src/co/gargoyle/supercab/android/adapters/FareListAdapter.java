@@ -1,5 +1,6 @@
 package co.gargoyle.supercab.android.adapters;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.view.LayoutInflater;
@@ -15,7 +16,11 @@ public class FareListAdapter extends BaseAdapter {
   private LayoutInflater mLayoutInflater;
 
   public FareListAdapter(LayoutInflater layoutInflater, List<Fare> events) {
-    mFares = events;
+    if (events == null) {
+      mFares = new ArrayList<Fare>();
+    } else {
+      mFares = events;
+    }
     mLayoutInflater = layoutInflater;
   }
   

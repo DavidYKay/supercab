@@ -17,20 +17,22 @@
     android:layout_below="@+id/logo_header"
     android:gravity="center"
     android:text="@string/fares_waiting"
-    android:textSize="12dp"
+    android:textSize="14dp"
     android:layout_marginBottom="10dp"
     />
   
   <ListView android:id="@android:id/list"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:layout_weight="1"
     android:drawSelectorOnTop="false"/>
 
   <TextView android:id="@android:id/empty"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FF0000"
-    android:text="No data"/>
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:text="@string/no_fares_waiting"
+    android:textSize="36dp"
+    android:gravity="center"
+    />
 
 </LinearLayout>
