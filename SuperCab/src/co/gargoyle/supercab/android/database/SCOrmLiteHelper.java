@@ -8,7 +8,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.util.Log;
-import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.enums.PointType;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.model.UserModel;
@@ -56,14 +56,14 @@ public class SCOrmLiteHelper extends OrmLiteSqliteOpenHelper {
     iHub.setLongitude(36.79089);
     iHub.setAddressLine(0,"iHub");
 
-    PickupPoint pickup = new PickupPoint(FareType.PICKUP, iHub);
+    PickupPoint pickup = new PickupPoint(PointType.PICKUP, iHub);
     dao.create(pickup);
 
     Address airport = new Address(Locale.getDefault());
     airport.setLatitude(-1.331);
     airport.setLongitude(36.9251);
     airport.setAddressLine(0, "Jomo Kenyatta Airport");
-    PickupPoint destination = new PickupPoint(FareType.DROPOFF, airport);
+    PickupPoint destination = new PickupPoint(PointType.DROPOFF, airport);
     dao.create(destination);
     Log.i(SCOrmLiteHelper.class.getName(), "created new entries in onCreate: " + millis);
   }

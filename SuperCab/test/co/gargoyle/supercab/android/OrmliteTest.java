@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
-import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.enums.PointType;
 import co.gargoyle.supercab.android.model.PickupPoint;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -55,7 +55,7 @@ public class OrmliteTest {
     iHub.setLongitude(36.79089);
     iHub.setAddressLine(0,"iHub");
 
-    PickupPoint original = new PickupPoint(FareType.PICKUP, iHub);
+    PickupPoint original = new PickupPoint(PointType.PICKUP, iHub);
     dao.create(original);
 
  	

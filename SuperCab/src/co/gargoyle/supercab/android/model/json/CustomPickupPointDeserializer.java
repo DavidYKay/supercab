@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Locale;
 
 import android.location.Address;
-import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.enums.PointType;
 import co.gargoyle.supercab.android.model.PickupPoint;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -29,7 +29,7 @@ public class CustomPickupPointDeserializer extends JsonDeserializer<PickupPoint>
       address.setLongitude(node.get("lon").doubleValue());
       address.setAddressLine(0, node.get("address").textValue());
       
-      PickupPoint pickupPoint = new PickupPoint(FareType.UNKNOWN, address);
+      PickupPoint pickupPoint = new PickupPoint(PointType.UNKNOWN, address);
 
       return pickupPoint;
   }

@@ -60,7 +60,11 @@ public class ConfirmationActivity extends RoboActivity implements PostFareListen
   }
   
   private String getAddressLine(PickupPoint point) {
-    return point.address.getAddressLine(0);
+    if (point != null && point.address != null) {
+      return point.address.getAddressLine(0);
+    } else {
+      return "Unknown";
+    }
   }
   
 

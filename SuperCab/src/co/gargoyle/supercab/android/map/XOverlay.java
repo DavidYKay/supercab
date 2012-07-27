@@ -5,7 +5,7 @@ import java.util.HashMap;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.enums.PointType;
 
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
@@ -13,12 +13,12 @@ import com.google.common.base.Optional;
 
 public class XOverlay extends Overlay {
 
-  private FareType mCurrentMode;
+  private PointType mCurrentMode;
   //private Bitmap mCurrentBitmap;
 
-  private HashMap<FareType, Bitmap> mBitmaps;
+  private HashMap<PointType, Bitmap> mBitmaps;
 
-  public XOverlay(HashMap<FareType, Bitmap> bitmaps, FareType defaultKey) {
+  public XOverlay(HashMap<PointType, Bitmap> bitmaps, PointType defaultKey) {
     mBitmaps = bitmaps;
     //mCurrentBitmap = mBitmaps.get(defaultKey);
     mCurrentMode = defaultKey;
@@ -61,7 +61,7 @@ public class XOverlay extends Overlay {
     }
   }
 
-  public void setMode(FareType mode) {
+  public void setMode(PointType mode) {
     if (mode == mCurrentMode) {
       return;
     } else {

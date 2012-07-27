@@ -14,7 +14,7 @@ public class PickupDropoffItem extends OverlayItem {
   public PickupDropoffItem(PickupPoint pickup, Drawable marker) {
     super(
         GeoUtils.addressToGeoPoint(pickup.address),
-        pickup.fareType.toString(), 
+        pickup.pointType.toString(), 
         pickup.address.getAddressLine(0));
 
     mPickup = pickup;

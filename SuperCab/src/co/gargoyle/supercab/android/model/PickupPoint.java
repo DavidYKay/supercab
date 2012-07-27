@@ -3,7 +3,7 @@ package co.gargoyle.supercab.android.model;
 import android.location.Address;
 import android.os.Parcel;
 import android.os.Parcelable;
-import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.enums.PointType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
@@ -15,7 +15,7 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
 
   @JsonIgnore
   @DatabaseField
-  public FareType fareType;
+  public PointType pointType;
   	
   //@JsonSerialize(using = CustomAddressSerializer.class)
   //@JsonDeserialize(using = CustomAddressDeserializer.class)
@@ -26,8 +26,8 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
     // required for ORMLite
   }
 
-  public PickupPoint(FareType fareType, Address address) {
-    this.fareType = fareType;
+  public PickupPoint(PointType pointType, Address address) {
+    this.pointType = pointType;
     this.address = address;
   }
 
@@ -42,7 +42,7 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
     PickupPoint other = (PickupPoint) o;
     if (
         Objects.equal(this.superCabId, other.superCabId) &&
-        Objects.equal(this.fareType, other.fareType) &&
+        Objects.equal(this.pointType, other.pointType) &&
         Objects.equal(this.address.getLatitude(), other.address.getLatitude()) &&
         Objects.equal(this.address.getLongitude(), other.address.getLongitude()) &&
         Objects.equal(this.address.getAddressLine(0), other.address.getAddressLine(0))
@@ -54,13 +54,13 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(fareType, address);
+    return Objects.hashCode(pointType, address);
   }
 
   @Override
   public String toString() {
     return Objects.toStringHelper(this)
-                .addValue(fareType)
+                .addValue(pointType)
                 .addValue(address.getAddressLine(0))
                 .toString();
   }
@@ -72,15 +72,15 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
 
   @Override
   public void writeToParcel(Parcel out, int flags) {
-    out.writeParcelable(fareType, flags);
+    out.writeParcelable(pointType, flags);
     out.writeParcelable(address, flags);
   }
 
   public static final Parcelable.Creator<PickupPoint> CREATOR = new Parcelable.Creator<PickupPoint>() {
     public PickupPoint createFromParcel(Parcel in) {
-      FareType fareType = in.readParcelable(PickupPoint.class.getClassLoader());
+      PointType pointType = in.readParcelable(PickupPoint.class.getClassLoader());
       Address address = in.readParcelable(PickupPoint.class.getClassLoader());
-      return new PickupPoint(fareType, address);
+      return new PickupPoint(pointType, address);
     }
 
     public PickupPoint[] newArray(int size) {

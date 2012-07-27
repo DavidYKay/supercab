@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 
 import android.content.Context;
 import android.location.Address;
-import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.enums.PointType;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.tasks.PostFareTask;
@@ -74,8 +74,8 @@ public class PostFareTest {
     Address pickupAddress  = Constants.ADDRESS_IHUB;
     Address dropoffAddress = Constants.ADDRESS_AIRPORT;
 
-    PickupPoint pickup = new PickupPoint(FareType.PICKUP, pickupAddress);
-    PickupPoint dropoff = new PickupPoint(FareType.DROPOFF, dropoffAddress);
+    PickupPoint pickup = new PickupPoint(PointType.PICKUP, pickupAddress);
+    PickupPoint dropoff = new PickupPoint(PointType.DROPOFF, dropoffAddress);
     Date time = new Date(Constants.FEB_13_2009);
     final Fare fare = new Fare(pickup, dropoff, time);
 
