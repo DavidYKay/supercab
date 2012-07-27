@@ -11,7 +11,6 @@ import org.restlet.resource.ResourceException;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
@@ -34,6 +33,7 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
      mPreferenceUtils = new PreferenceUtils(mContext);
    }
 
+  @SuppressWarnings("unused")
   private static final String TAG = "UploadFareTask";
 
   @Override
@@ -67,17 +67,13 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
       }
       Representation rep = fareProfile.post(jacksonRep);
       if (fareProfile.getStatus().isSuccess()) {
-        try {
-          Log.d(TAG, "response: " + rep.getText());
-          FareRepresentation receivedFare = new FareRepresentation(rep);
-          Optional<Fare> optionalFare = receivedFare.getFare();
-          if (optionalFare.isPresent()) {
-            return Optional.of(optionalFare.get().superCabId);
-          } else {
-            return Optional.absent();
-          }
-        } catch (IOException e) {
-          e.printStackTrace();
+        //Log.d(TAG, "response: " + rep.getText());
+        FareRepresentation receivedFare = new FareRepresentation(rep);
+        Optional<Fare> optionalFare = receivedFare.getFare();
+        if (optionalFare.isPresent()) {
+          return Optional.of(optionalFare.get().superCabId);
+        } else {
+          return Optional.absent();
         }
       }
     } catch (ResourceException e) {
