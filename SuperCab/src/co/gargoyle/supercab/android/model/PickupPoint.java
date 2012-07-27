@@ -6,30 +6,30 @@ import android.os.Parcelable;
 import co.gargoyle.supercab.android.enums.FareType;
 import co.gargoyle.supercab.android.model.json.CustomAddressSerializer;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Objects;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
-public class PickupPoint implements Parcelable {
+@DatabaseTable(tableName = "pickups")
+public class PickupPoint extends SuperCabBaseModel implements Parcelable {
 
-  private FareType mFareType;
-  private Address mAddress;
+  @DatabaseField
+  public FareType fareType;
+  	
+  @JsonSerialize(using = CustomAddressSerializer.class)
+//  @Databas
+//  @DatabaseField(persisterClass = CustomAddressPersister.class)
+  public Address address;
+  
+  public PickupPoint() {
+    // required for ORMLite
+  }
 
   public PickupPoint(FareType fareType, Address address) {
-    mFareType = fareType;
-    mAddress = address;
+    this.fareType = fareType;
+    this.address = address;
   }
-
-  @JsonSerialize(using = CustomAddressSerializer.class)
-  public Address getAddress() {
-    return mAddress;
-  }
-
-  @JsonIgnore()
-  public FareType getFareType() {
-    return mFareType;
-  }
-
 
   @Override
   public boolean equals(Object o) {
@@ -38,14 +38,14 @@ public class PickupPoint implements Parcelable {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(mFareType, mAddress);
+    return Objects.hashCode(fareType, address);
   }
 
   @Override
   public String toString() {
     return Objects.toStringHelper(this)
-                .addValue(mFareType)
-                .addValue(mAddress.getAddressLine(0))
+                .addValue(fareType)
+                .addValue(address.getAddressLine(0))
                 .toString();
   }
 
@@ -56,8 +56,8 @@ public class PickupPoint implements Parcelable {
 
   @Override
   public void writeToParcel(Parcel out, int flags) {
-    out.writeParcelable(mFareType, flags);
-    out.writeParcelable(mAddress, flags);
+    out.writeParcelable(fareType, flags);
+    out.writeParcelable(address, flags);
   }
 
   public static final Parcelable.Creator<PickupPoint> CREATOR = new Parcelable.Creator<PickupPoint>() {

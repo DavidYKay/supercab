@@ -139,7 +139,7 @@
   android:text="@string/register"
   android:onClick="onRegisterButtonClicked"
 
-  android:visibility="gone"
+  android:visibility="visible"
   />
 
 <Button

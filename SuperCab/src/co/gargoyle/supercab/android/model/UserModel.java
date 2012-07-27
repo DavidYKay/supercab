@@ -3,21 +3,35 @@ package co.gargoyle.supercab.android.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.base.Objects;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 @JsonInclude(value=Include.NON_NULL) 
+@DatabaseTable(tableName = "users")
 public class UserModel extends SuperCabBaseModel {
 
+  @DatabaseField()
   public UserRole role;
 
+  @DatabaseField
   public String firstName;
+  @DatabaseField
   public String lastName;
 
+  @DatabaseField
   public String username;
+  @DatabaseField
   public String password;
   
+  @DatabaseField
   public String phoneNumber;
   
+  @DatabaseField
   public String token;
+  
+  public UserModel() {
+    // required for ORMLite
+  }
 
   @Override
   public boolean equals(Object obj) {
