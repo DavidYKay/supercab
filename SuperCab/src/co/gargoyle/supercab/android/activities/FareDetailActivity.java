@@ -57,7 +57,7 @@ public class FareDetailActivity extends RoboActivity {
 
     mTimeLabel.setText(StringUtils.getNiceTime(fare.timeRequested));
     
-//    mPassengerLabel.setText(fare.passenger.toString());
+    mPassengerLabel.setText(fare.status.toString());
 
   }
   
