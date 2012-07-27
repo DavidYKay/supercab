@@ -15,6 +15,7 @@ import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.tasks.PutFareTask;
 import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
 import co.gargoyle.supercab.android.utilities.BroadcastUtils;
+import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.google.common.base.Optional;
@@ -47,7 +48,7 @@ public class FareDetailActivity extends RoboActivity {
     setContentView(R.layout.fare_detail);
     
     Intent i = getIntent();
-    Fare fare = i.getParcelableExtra(HailActivity.KEY_FARE); 
+    Fare fare = i.getParcelableExtra(Constants.KEY_FARE); 
     mFare = fare;
 
     populateUi(mFare);
@@ -77,7 +78,7 @@ public class FareDetailActivity extends RoboActivity {
         if (fare.isPresent()) {
           Toast.makeText(FareDetailActivity.this, "Fare Accepted!", Toast.LENGTH_SHORT).show();
           Intent i = new Intent(FareDetailActivity.this, DrivingActivity.class);
-          i.putExtra(HailActivity.KEY_FARE, fare.get());
+          i.putExtra(Constants.KEY_FARE_ID, fare.get().superCabId);
           startActivity(i);
           finish();
         } else {

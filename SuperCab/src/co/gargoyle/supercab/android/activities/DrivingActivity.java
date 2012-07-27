@@ -27,6 +27,7 @@ import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.tasks.PutFareTask;
 import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
+import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
@@ -73,7 +74,7 @@ public class DrivingActivity extends AbstractMapActivity {
     Log.i(TAG, "Starting up, creating directories");
 
     Intent i = getIntent();
-    Fare fare = i.getParcelableExtra(HailActivity.KEY_FARE); 
+    Fare fare = i.getParcelableExtra(Constants.KEY_FARE); 
 
     //Optional<Fare> fare = getFareFromDb(fareId);
 

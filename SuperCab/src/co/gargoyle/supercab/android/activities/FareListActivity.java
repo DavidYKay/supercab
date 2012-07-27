@@ -25,6 +25,7 @@ import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.tasks.GetFaresTask;
 import co.gargoyle.supercab.android.tasks.listeners.GetFaresListener;
 import co.gargoyle.supercab.android.utilities.BroadcastUtils;
+import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
 import com.google.inject.Inject;
@@ -64,7 +65,7 @@ public class FareListActivity extends RoboListActivity {
     Fare fare = (Fare) adapter.getItem(position);
 
     Intent i = new Intent(FareListActivity.this, FareDetailActivity.class);
-    i.putExtra(HailActivity.KEY_FARE, fare);
+    i.putExtra(Constants.KEY_FARE, fare);
     startActivity(i);
   }
 

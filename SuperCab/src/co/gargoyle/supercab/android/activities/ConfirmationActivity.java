@@ -31,6 +31,7 @@ import co.gargoyle.supercab.android.tasks.PutFareTask;
 import co.gargoyle.supercab.android.tasks.listeners.GetFareListener;
 import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
 import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
+import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.google.common.base.Optional;
@@ -69,7 +70,7 @@ public class ConfirmationActivity extends AbstractMapActivity {
     setContentView(R.layout.confirmation);
 
     Intent i = getIntent();
-    mFare = i.getParcelableExtra(HailActivity.KEY_FARE);
+    mFare = i.getParcelableExtra(Constants.KEY_FARE);
 
     Date time = mFare.timeRequested;
     CharSequence timeString = StringUtils.getNiceTime(time);

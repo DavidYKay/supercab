@@ -39,6 +39,7 @@ import co.gargoyle.supercab.android.map.XOverlay;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.model.UserModel;
+import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
@@ -57,9 +58,8 @@ import com.j256.ormlite.stmt.Where;
 
 public class HailActivity extends AbstractMapActivity {
 
-  public static final String KEY_FARE = "fare";
-
   private static final String TAG = "HailActivity";
+  
   private static final String LOCATION_TAG = "location";
 
   private static final int TEXT_ACTIVE_COLOR   = R.color.text_active;
@@ -651,7 +651,7 @@ public class HailActivity extends AbstractMapActivity {
   
   private void proceedToConfirmation(Fare fare) {
     Intent i = new Intent(HailActivity.this, ConfirmationActivity.class);
-    i.putExtra(KEY_FARE, fare);
+    i.putExtra(Constants.KEY_FARE, fare);
     startActivity(i);
 
     finish();
