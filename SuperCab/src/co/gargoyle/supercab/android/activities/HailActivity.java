@@ -633,7 +633,7 @@ public class HailActivity extends RoboMapActivity {
     PreparedDelete<UserModel> deleteAll;
     try {
       deleteAll = builder.prepare();
-      int result = dao.delete(deleteAll);
+      dao.delete(deleteAll);
       mPreferenceUtils.clearUser();
 
       startActivity(new Intent(HailActivity.this, LoginActivity.class));

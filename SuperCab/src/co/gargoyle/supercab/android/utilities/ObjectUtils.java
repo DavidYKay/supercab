@@ -14,4 +14,9 @@ public class ObjectUtils {
     p.recycle();
     return newParcelable;
   }
+  
+  //public static T[] listToArray(List<T> list) {
+  //  T[] array = (T[]) list.toArray(new T[list.size()]);
+  //  return array;
+  //}
 }

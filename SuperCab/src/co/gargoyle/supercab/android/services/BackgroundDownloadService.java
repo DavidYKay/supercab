@@ -33,7 +33,4 @@ public class BackgroundDownloadService extends IntentService {
     }
   }
 
-  private void uploadSmsEvents() {
-
-  }
 }

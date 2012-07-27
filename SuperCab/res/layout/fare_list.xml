@@ -16,7 +16,7 @@
     android:layout_height="wrap_content"
     android:layout_below="@+id/logo_header"
     android:gravity="center"
-    android:text="@string/app_name"
+    android:text="@string/fares_waiting"
     android:textSize="12dp"
     android:layout_marginBottom="10dp"
     />

@@ -14,7 +14,6 @@ import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.network.FareRepresentation;
 import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
 import co.gargoyle.supercab.android.utilities.CommonUtils;
-import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 import co.gargoyle.supercab.android.utilities.ServerUtils;
 
 import com.google.common.base.Optional;
@@ -29,12 +28,9 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
   private Exception mException;
   private Context mContext;
 
-  private PreferenceUtils mPreferenceUtils;
-
   public PostFareTask(Context context, PostFareListener listener) {
     mListener = listener;
     mContext = context;
-    mPreferenceUtils = new PreferenceUtils(mContext);
   }
 
   @Override
