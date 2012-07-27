@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
@@ -42,7 +43,7 @@ import com.google.common.base.Optional;
  * Helper class used to communicate with the demo server.
  */
 public final class ServerUtils {
-  
+
 
   private static final String TAG = "ServerUtilities";
   private static final int MAX_ATTEMPTS = 5;
@@ -51,7 +52,7 @@ public final class ServerUtils {
 
   /**
    * Register this account/device pair within the server.
-   * 
+   *
    * @return whether the registration succeeded or not.
    */
   public static boolean register(final Context context, final String regId) {
@@ -104,9 +105,9 @@ public final class ServerUtils {
    * Unregister this account/device pair within the server.
    */
   public static void unregister(final Context context, final String regId) {
-   
+
   }
-  
+
   public static boolean postRestlet(String endpoint, Map<String, String> params) throws IOException {
     //URI uri = getDeviceURI();
     URI uri = makeURI(endpoint);
@@ -129,7 +130,7 @@ public final class ServerUtils {
       return false;
     }
   }
-  
+
   private static URI makeURI(String endpoint) {
     try {
       //URI uri = new URI(CommonUtilities.SERVER_URL + "/register");
@@ -140,7 +141,7 @@ public final class ServerUtils {
       throw new RuntimeException("Programmer mistyped the URI!");
     }
   }
-  
+
   public static Representation convertFareToJsonRepresentation(Fare fare) throws IOException {
     JacksonRepresentation<Fare> jacksonRep = new JacksonRepresentation<Fare>(fare);
 
@@ -152,7 +153,7 @@ public final class ServerUtils {
     textRep.setMediaType(MediaType.APPLICATION_JSON);
     return textRep;
   }
-    
+
   public static Representation convertMapToJsonRepresentation(Map<String, String> map) throws IOException {
     JacksonRepresentation<Map<String,String>> jacksonRep = new JacksonRepresentation<Map<String,String>>(map);
 
@@ -182,6 +183,22 @@ public final class ServerUtils {
       return Optional.absent();
     }
 
+  }
+
+  public static void addAuthHeaderToClientResource(Context context, ClientResource resource) {
+    PreferenceUtils preferenceUtils = new PreferenceUtils(context);
+
+    Optional<String> token = preferenceUtils.getToken();
+
+    if (token.isPresent()) {
+      String tokString = token.get();
+      Form headers  = (Form) resource.getRequestAttributes().get("org.restlet.http.headers");
+      if (headers == null) {
+        headers = new Form();
+        resource.getRequestAttributes().put("org.restlet.http.headers", headers);
+      }
+      headers.set("X-SuperCab-Token", tokString);
+    }
   }
 
 }

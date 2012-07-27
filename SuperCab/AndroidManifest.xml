@@ -44,6 +44,12 @@
     >
 
     <service android:name=".GCMIntentService" />
+    
+    <service android:name=".services.BackgroundDownloadService" >
+      <intent-filter>
+        <action android:name="co.gargoyle.supercab.intent.action.uploadData"></action>
+      </intent-filter>
+    </service>
 
     <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
       <intent-filter>

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.restlet.data.Form;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -46,17 +45,7 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
 
     ClientResource fareProfile = new ClientResource(uri);
 
-    Optional<String> token = mPreferenceUtils.getToken();
-    if (token.isPresent()) {
-
-      String tokString = token.get();
-      Form headers  = (Form) fareProfile.getRequestAttributes().get("org.restlet.http.headers");
-      if (headers == null) {     
-        headers = new Form();
-        fareProfile.getRequestAttributes().put("org.restlet.http.headers", headers);
-      }
-      headers.set("X-SuperCab-Token", tokString);
-    }
+    ServerUtils.addAuthHeaderToClientResource(mContext, fareProfile);
 
     try {
       Representation jacksonRep;
@@ -69,7 +58,6 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
       }
       Representation rep = fareProfile.post(jacksonRep);
       if (fareProfile.getStatus().isSuccess()) {
-
         FareRepresentation receivedFare = new FareRepresentation(rep);
         Optional<Fare> optionalFare = receivedFare.getFare();
         if (optionalFare.isPresent()) {

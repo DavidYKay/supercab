@@ -10,6 +10,7 @@ public class BackgroundDownloadService extends IntentService {
 
   //  private PhoneUtils mPhoneUtils;
 
+  @SuppressWarnings("unused")
   private Context mContext;
 
   public BackgroundDownloadService() {
