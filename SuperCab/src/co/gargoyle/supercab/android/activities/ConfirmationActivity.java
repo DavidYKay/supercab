@@ -1,5 +1,6 @@
 package co.gargoyle.supercab.android.activities;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -29,6 +30,7 @@ import co.gargoyle.supercab.android.utilities.StringUtils;
 import com.google.common.base.Optional;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.j256.ormlite.stmt.DeleteBuilder;
 
 public class ConfirmationActivity extends AbstractMapActivity implements PostFareListener {
 
@@ -84,12 +86,18 @@ public class ConfirmationActivity extends AbstractMapActivity implements PostFar
   ////////////////////////////////////////////////////////////
 
   private void deleteFareFromDb(Fare fare) {
-
     RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
 
     // delete all fares with the matching id
-    dao.deleteById(fare.id);
+    //dao.deleteById(fare.id);
 
+    DeleteBuilder<Fare, Integer> builder = dao.deleteBuilder();
+    try {
+      dao.delete(builder.prepare());
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   private void cancelFare() {
