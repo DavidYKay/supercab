@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
+import co.gargoyle.supercab.android.enums.FareStatus;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.tasks.PutFareTask;
 import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
@@ -65,6 +66,7 @@ public class FareDetailActivity extends RoboActivity {
   ////////////////////////////////////////////////////////////
 
   public void onAcceptButtonClick(View v) {
+    mFare.status = FareStatus.accepted;
 
     // TODO: PUT fare to server, letting people know that we're accepting it
     PutFareTask task = new PutFareTask(this, new PutFareListener(){
