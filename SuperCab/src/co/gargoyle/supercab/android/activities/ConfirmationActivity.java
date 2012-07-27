@@ -128,7 +128,7 @@ public class ConfirmationActivity extends AbstractMapActivity implements PostFar
 
   private String getAddressLine(PickupPoint point) {
     if (point != null && point.address != null) {
-      return point.address.getAddressLine(0);
+      return point.address;
     } else {
       return "Unknown";
     }

@@ -119,7 +119,7 @@ public class PickupDropoffOverlay extends ItemizedOverlay<PickupDropoffItem> {
 
     ArrayList<GeoPoint> points = new ArrayList<GeoPoint>();
     for (PickupPoint pickup : mPickups) {
-      GeoPoint point = GeoUtils.addressToGeoPoint(pickup.address);
+      GeoPoint point = GeoUtils.getPoint(pickup.latitude, pickup.longitude);
       points.add(point);
     }
 

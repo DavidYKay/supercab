@@ -5,12 +5,8 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 import co.gargoyle.supercab.android.enums.FareStatus;
-import co.gargoyle.supercab.android.model.json.CustomPickupPointDeserializer;
-import co.gargoyle.supercab.android.model.json.CustomPickupPointSerializer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Objects;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -19,14 +15,10 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Fare extends SuperCabBaseModel implements Parcelable {
 
   @JsonProperty("from")
-  @JsonDeserialize(using = CustomPickupPointDeserializer.class)
-  @JsonSerialize(using = CustomPickupPointSerializer.class)
   @DatabaseField(foreign = true)
   public PickupPoint source;
 
   @JsonProperty("to")
-  @JsonDeserialize(using = CustomPickupPointDeserializer.class)
-  @JsonSerialize(using = CustomPickupPointSerializer.class)
   @DatabaseField(foreign = true)
   public PickupPoint destination;
 

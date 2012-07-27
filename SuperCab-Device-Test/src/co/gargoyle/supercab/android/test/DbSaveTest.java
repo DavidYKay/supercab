@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.test.AndroidTestCase;
 import android.test.InstrumentationTestCase;
@@ -24,6 +25,9 @@ public class DbSaveTest extends AndroidTestCase {
   @Override
   protected void tearDown() throws Exception {
     if (mHelper != null) {
+      SQLiteDatabase db = mHelper.getWritableDatabase();
+      mHelper.onUpgrade(db, 1, 1);
+      
       OpenHelperManager.releaseHelper();
       mHelper = null;
     }

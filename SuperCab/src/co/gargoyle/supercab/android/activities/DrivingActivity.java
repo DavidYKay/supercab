@@ -277,8 +277,8 @@ public class DrivingActivity extends AbstractMapActivity {
     PickupPoint source = mPickupDropoffOverlay.get(0);
     PickupPoint destination = mPickupDropoffOverlay.get(1);
 
-    mConfirmationPickupText.setText(source.address.getAddressLine(0));
-    mConfirmationDropoffText.setText(destination.address.getAddressLine(0));
+    mConfirmationPickupText.setText(source.address);
+    mConfirmationDropoffText.setText(destination.address);
   }
 
   private void setBottomBarConfirmation(boolean confirmation) {
