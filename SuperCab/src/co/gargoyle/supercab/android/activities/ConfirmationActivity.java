@@ -2,7 +2,7 @@ package co.gargoyle.supercab.android.activities;
 
 import java.util.Date;
 
-import roboguice.activity.RoboActivity;
+import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -18,7 +18,7 @@ import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.google.common.base.Optional;
 
-public class ConfirmationActivity extends RoboActivity implements PostFareListener {
+public class ConfirmationActivity extends RoboMapActivity implements PostFareListener {
 
   @InjectView(R.id.time_value) private TextView mTimeLabel;
   @InjectView(R.id.from_address) private TextView mFromLabel;
@@ -89,6 +89,12 @@ public class ConfirmationActivity extends RoboActivity implements PostFareListen
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
   
     builder.setTitle("Exception!").setMessage(t.toString()).setPositiveButton("OK", null).show();
+  }
+
+  @Override
+  protected boolean isRouteDisplayed() {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }

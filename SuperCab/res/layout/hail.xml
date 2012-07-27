@@ -50,7 +50,7 @@
     android:layout_width="fill_parent"
     android:layout_height="0px"
     android:layout_weight="75"
-    android:apiKey="0DnJfnO1j0y-3af2hXtwEp4VG5EAqB8-MteCcmg"
+    android:apiKey="@string/maps_api_key"
     android:clickable="true" />
 
   <LinearLayout
