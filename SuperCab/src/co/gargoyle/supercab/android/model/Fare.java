@@ -15,12 +15,18 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Fare extends SuperCabBaseModel implements Parcelable {
 
   @JsonProperty("from")
-  @DatabaseField(foreign = true)
+  @DatabaseField(foreign = true, foreignAutoRefresh = true)
   public PickupPoint source;
 
   @JsonProperty("to")
-  @DatabaseField(foreign = true)
+  @DatabaseField(foreign = true, foreignAutoRefresh = true)
   public PickupPoint destination;
+
+  //@DatabaseField(foreign = true, foreignAutoRefresh = true)
+  //public UserModel driver;
+  //
+  //@DatabaseField(foreign = true, foreignAutoRefresh = true)
+  //public UserModel passenger;
 
   @JsonProperty("requestTime")
 //  @JsonSerialize(using = CustomDateSerializer.class)
@@ -114,6 +120,5 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
         .addValue(timeRequested)
         .toString();
   }
-
 
 }

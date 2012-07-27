@@ -572,7 +572,9 @@ public class HailActivity extends AbstractMapActivity {
       List<Fare> fares = dao.query(builder.prepare());
 
       if (fares.size() > 0) {
-        return Optional.of(fares.get(0));
+        Fare fare = fares.get(0);
+        dao.refresh(fare);
+        return Optional.of(fare);
       } else {
         return Optional.absent();
       }
