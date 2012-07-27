@@ -7,12 +7,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.model.Fare;
+import co.gargoyle.supercab.android.tasks.PutFareTask;
+import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
 import co.gargoyle.supercab.android.utilities.BroadcastUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 import co.gargoyle.supercab.android.utilities.StringUtils;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 public class FareDetailActivity extends RoboActivity {
@@ -26,6 +30,8 @@ public class FareDetailActivity extends RoboActivity {
   @Inject private BroadcastUtils mBroadcastUtils;
 
   @Inject private PreferenceUtils mPreferenceUtils;
+  
+  private Fare mFare;
 
   ////////////////////////////////////////////////////////////
   // Activity Lifecycle
@@ -39,8 +45,9 @@ public class FareDetailActivity extends RoboActivity {
     
     Intent i = getIntent();
     Fare fare = i.getParcelableExtra(HailActivity.KEY_FARE); 
+    mFare = fare;
 
-    populateUi(fare);
+    populateUi(mFare);
   }
 
   private void populateUi(Fare fare) {
@@ -59,7 +66,27 @@ public class FareDetailActivity extends RoboActivity {
 
   public void onAcceptButtonClick(View v) {
 
-    finish();
+    // TODO: PUT fare to server, letting people know that we're accepting it
+    PutFareTask task = new PutFareTask(this, new PutFareListener(){
+
+      @Override
+      public void completed(Optional<Fare> fare) {
+        if (fare.isPresent()) {
+          Toast.makeText(FareDetailActivity.this, "Fare Accepted!", Toast.LENGTH_SHORT).show();
+
+          startActivity(new Intent(FareDetailActivity.this, DrivingActivity.class));
+          finish();
+        } else {
+          // Something happened. better not risk it
+        }
+      }
+
+      @Override
+      public void handleError(Throwable exception) {
+        goBlooey(exception);
+      }
+    });
+    task.execute(mFare);
   }
 
   ////////////////////////////////////////////////////////////

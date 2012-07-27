@@ -275,5 +275,6 @@
 <string name="pick_user_type">User Type</string>
 <string name="register">Register</string>
 <string name="accept_fare">Accept Fare</string>
+<string name="driving">Driving</string>
 
 </resources>

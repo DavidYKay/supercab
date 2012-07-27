@@ -47,6 +47,12 @@
     
     <service android:name=".services.BackgroundDownloadService" >
       <intent-filter>
+        <action android:name="co.gargoyle.supercab.intent.action.downloadData"></action>
+      </intent-filter>
+    </service>
+    
+    <service android:name=".services.BackgroundUploadService" >
+      <intent-filter>
         <action android:name="co.gargoyle.supercab.intent.action.uploadData"></action>
       </intent-filter>
     </service>
@@ -83,6 +89,12 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
 
+    </activity>
+    
+    <activity
+      android:name=".activities.DrivingActivity"
+      android:configChanges="orientation"
+      android:label="@string/app_name" >
     </activity>
     
     <activity
