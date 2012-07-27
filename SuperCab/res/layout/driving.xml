@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/rl"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:layout_marginBottom="0dp"
+  android:layout_marginLeft="0dp"
+  android:layout_marginRight="0dp"
+  android:layout_marginTop="0dp"
+  android:orientation="vertical"
+  android:padding="0dp" >
+
+  <RelativeLayout
+    android:id="@+id/top_bar"
+    android:layout_width="fill_parent"
+    android:layout_height="48dp"
+    android:orientation="horizontal"
+    >
+
+    <TextView
+      android:id="@+id/app_logo"
+      android:layout_width="wrap_content"
+      android:layout_height="fill_parent"
+      android:layout_alignParentLeft="true"
+      android:layout_marginLeft="10dp"
+      android:text="@string/driving"
+      android:textSize="24sp"
+      android:textStyle="bold"
+      android:gravity="center"
+      />
+
+    <ImageButton
+      android:id="@+id/profile_button"
+      android:layout_width="48dp"
+      android:layout_height="fill_parent"
+      android:layout_alignParentRight="true"
+      android:onClick="onProfileButtonClicked"
+      android:scaleType="fitEnd"
+      android:src="@drawable/profile"
+      />
+  </RelativeLayout>
+
+  <co.gargoyle.supercab.android.map.ExtendedMapView
+    android:id="@+id/map"
+    android:layout_width="fill_parent"
+    android:layout_height="0px"
+    android:layout_weight="75"
+    android:apiKey="@string/maps_api_key"
+    android:clickable="true" />
+
+  <LinearLayout
+    android:id="@+id/bottom_bar_confirmation"
+    android:layout_width="fill_parent"
+    android:layout_height="0px"
+    android:layout_weight="25"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+
+      <TextView
+        android:id="@+id/confirmation_pickup_label"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pickup:"
+        android:textColor="@color/text_inactive"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        />
+
+      <TextView
+        android:id="@+id/confirmation_pickup_text"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="XXX"
+        android:textColor="@color/text_inactive"
+        android:textSize="18dp"
+        android:textStyle="normal"
+        android:gravity="center"
+        />
+    </LinearLayout>
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+
+      <TextView
+        android:id="@+id/confirmation_dropoff_label"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dropoff:"
+        android:textColor="@color/text_inactive"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        />
+
+      <TextView
+        android:id="@+id/confirmation_dropoff_text"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="Dropoff: XXX"
+        android:textColor="@color/text_inactive"
+        android:textSize="18dp"
+        android:textStyle="normal"
+        android:gravity="center"
+        />
+    </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="fill_parent"
+      android:layout_height="48dp"
+      android:orientation="horizontal"
+      >
+      <Button
+        android:id="@+id/cancel_confirm_button"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="50"
+        android:layout_alignParentBottom="true"
+        android:text="@string/cancel"
+        android:textSize="24dp"
+        android:onClick="onCancelConfirmButtonClicked"
+        />
+      <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="50"
+        android:layout_alignParentBottom="true"
+        android:text="@string/confirm"
+        android:textSize="24dp"
+        android:onClick="onConfirmButtonClicked"
+        />
+    </LinearLayout>
+  </LinearLayout>
+</LinearLayout>

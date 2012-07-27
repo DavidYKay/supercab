@@ -1,7 +1,7 @@
 package co.gargoyle.supercab.android.map;
 
 import android.graphics.drawable.Drawable;
-import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.enums.PointType;
 import co.gargoyle.supercab.android.model.PickupPoint;
 
 public class PickupDropoffItemFactory {
@@ -14,7 +14,7 @@ public class PickupDropoffItemFactory {
   }
 
   public PickupDropoffItem itemFromPickup(PickupPoint pickup) {
-    Drawable marker = (pickup.fareType == FareType.PICKUP) ? mPickupMarker : mDropoffMarker ;
+    Drawable marker = (pickup.pointType == PointType.PICKUP) ? mPickupMarker : mDropoffMarker ;
     return new PickupDropoffItem(pickup, marker);
 //    return itemFromStuff(
 //        pickup.address,

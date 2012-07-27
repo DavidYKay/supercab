@@ -3,7 +3,7 @@ package co.gargoyle.supercab.android.enums;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public enum FareType implements Parcelable {
+public enum PointType implements Parcelable {
 
   WAITING,
   PICKUP,
@@ -20,13 +20,13 @@ public enum FareType implements Parcelable {
     out.writeInt(ordinal());
   }
 
-  public static final Parcelable.Creator<FareType> CREATOR = new Parcelable.Creator<FareType>() {
-    public FareType createFromParcel(Parcel in) {
-      return FareType.values()[in.readInt()];
+  public static final Parcelable.Creator<PointType> CREATOR = new Parcelable.Creator<PointType>() {
+    public PointType createFromParcel(Parcel in) {
+      return PointType.values()[in.readInt()];
     }
 
-    public FareType[] newArray(int size) {
-      return new FareType[size];
+    public PointType[] newArray(int size) {
+      return new PointType[size];
     }
   };
 

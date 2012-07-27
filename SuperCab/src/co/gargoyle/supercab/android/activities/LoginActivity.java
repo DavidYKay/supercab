@@ -191,8 +191,12 @@ public class LoginActivity extends RoboActivity {
     Intent i;
     if (user.role == UserRole.passenger) {
         i = new Intent(LoginActivity.this, HailActivity.class);
-    } else {
+    } else if (user.role == UserRole.driver) {
         i = new Intent(LoginActivity.this, FareListActivity.class);
+    } else {
+      mPreferenceUtils.clearUser();
+      goBlooey(new Exception("Unknown user type! Please contact support."));
+      return;
     }
     startActivity(i);
     finish();

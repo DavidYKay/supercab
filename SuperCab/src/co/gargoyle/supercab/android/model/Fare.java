@@ -5,12 +5,8 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 import co.gargoyle.supercab.android.enums.FareStatus;
-import co.gargoyle.supercab.android.model.json.CustomPickupPointDeserializer;
-import co.gargoyle.supercab.android.model.json.CustomPickupPointSerializer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Objects;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -19,22 +15,25 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Fare extends SuperCabBaseModel implements Parcelable {
 
   @JsonProperty("from")
-  @JsonDeserialize(using = CustomPickupPointDeserializer.class)
-  @JsonSerialize(using = CustomPickupPointSerializer.class)
-  @DatabaseField(foreign = true)
+  @DatabaseField(foreign = true, foreignAutoRefresh = true, foreignAutoCreate = true)
   public PickupPoint source;
 
   @JsonProperty("to")
-  @JsonDeserialize(using = CustomPickupPointDeserializer.class)
-  @JsonSerialize(using = CustomPickupPointSerializer.class)
-  @DatabaseField(foreign = true)
+  @DatabaseField(foreign = true, foreignAutoRefresh = true, foreignAutoCreate = true)
   public PickupPoint destination;
+
+  //@DatabaseField(foreign = true, foreignAutoRefresh = true)
+  //public UserModel driver;
+  //
+  //@DatabaseField(foreign = true, foreignAutoRefresh = true)
+  //public UserModel passenger;
 
   @JsonProperty("requestTime")
 //  @JsonSerialize(using = CustomDateSerializer.class)
-  @DatabaseField()
+  @DatabaseField
   public Date timeRequested;
 
+  @DatabaseField
   public FareStatus status;
 
   public Fare() {
@@ -56,8 +55,10 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
 
   @Override
   public void writeToParcel(Parcel out, int flags) {
+    out.writeString(superCabId);
     out.writeParcelable(source, flags);
     out.writeParcelable(destination, flags);
+    out.writeParcelable(status, flags);
     out.writeSerializable(timeRequested);
   }
 
@@ -72,8 +73,10 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
   };
 
   private Fare(Parcel in) {
+    superCabId    = in.readString();
     source        = in.readParcelable(Fare.class.getClassLoader());
     destination   = in.readParcelable(Fare.class.getClassLoader());
+    status        = in.readParcelable(Fare.class.getClassLoader());
     timeRequested = (Date) in.readSerializable();
   }
 
@@ -91,7 +94,8 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
         Objects.equal(this.timeRequested, other.timeRequested) &&
         Objects.equal(this.superCabId, other.superCabId) &&
         Objects.equal(this.source, other.source) &&
-        Objects.equal(this.destination, other.destination)
+        Objects.equal(this.destination, other.destination) &&
+        Objects.equal(this.status, other.status)
     ){
       return true;
     }
@@ -119,6 +123,5 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
         .addValue(timeRequested)
         .toString();
   }
-
 
 }

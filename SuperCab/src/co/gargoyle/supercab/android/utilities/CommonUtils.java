@@ -22,7 +22,7 @@ import android.content.Intent;
  * Helper class providing methods and constants common to other classes in the
  * app.
  */
-public final class CommonUtilities {
+public final class CommonUtils {
 
   /**
    * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
@@ -32,9 +32,9 @@ public final class CommonUtilities {
   //public static final String SERVER_URL = "http://192.168.0.107:8080/push";
   //public static final String SERVER_URL = "http://192.168.0.108:8080";
 
-  //public static final String SERVER_URL = "http://192.168.0.100:8080";
+  public static final String SERVER_URL = "http://192.168.0.100:8080";
   
-  public static final String SERVER_URL = "http://supercab.herokuapp.com";
+  //public static final String SERVER_URL = "http://supercab.herokuapp.com";
 
   //public static final String SERVER_URL = "http://requestb.in/pijt1epi";
   

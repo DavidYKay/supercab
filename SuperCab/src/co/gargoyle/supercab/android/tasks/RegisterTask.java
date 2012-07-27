@@ -12,8 +12,8 @@ import android.os.AsyncTask;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.network.UserRepresentation;
 import co.gargoyle.supercab.android.tasks.listeners.PostUserListener;
-import co.gargoyle.supercab.android.utilities.CommonUtilities;
-import co.gargoyle.supercab.android.utilities.ServerUtilities;
+import co.gargoyle.supercab.android.utilities.CommonUtils;
+import co.gargoyle.supercab.android.utilities.ServerUtils;
 
 import com.google.common.base.Optional;
 
@@ -37,7 +37,7 @@ public class RegisterTask extends AsyncTask<UserModel, Integer, Optional<UserMod
 
     ClientResource userResource = new ClientResource(uri);
 
-    Optional<Representation> optional = ServerUtilities.convertToJsonRepresentation(userModel);
+    Optional<Representation> optional = ServerUtils.convertToJsonRepresentation(userModel);
     if (optional.isPresent()) {
       Representation userRepresentation = optional.get();
       try {
@@ -80,7 +80,7 @@ public class RegisterTask extends AsyncTask<UserModel, Integer, Optional<UserMod
 
   protected URI getURI() {
     try {
-      String serverUrl = CommonUtilities.SERVER_URL + "/register";
+      String serverUrl = CommonUtils.SERVER_URL + "/register";
       URI uri = new URI(serverUrl);
       return uri;
     } catch (URISyntaxException e) {

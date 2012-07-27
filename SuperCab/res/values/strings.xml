@@ -266,11 +266,19 @@
 <string name="server_unregister_error">Could not unregister device on Demo Server (%1$s).</string>
 <string name="server_unregistered">From Demo Server: successfully removed device!</string>
 
-<string name="register">Register</string>
-<string name="pick_user_type">User Type</string>
 <string name="change_first_name">First Name</string>
 <string name="change_last_name">Last Name</string>
 <string name="confirm_password">Confirm Password</string>
+<string name="fares_waiting">Fares Waiting</string>
+<string name="logout">Logout</string>
 <string name="phone_number">Phone Number</string>
+<string name="pick_user_type">User Type</string>
+<string name="register">Register</string>
+<string name="accept_fare">Accept Fare</string>
+<string name="driving">Driving</string>
+<string name="cancelling_fare">Cancelling Fare</string>
+<string name="no_fares_waiting">There are no passengers waiting right now!</string>
+
+<string name="maps_api_key">0DnJfnO1j0y-3af2hXtwEp4VG5EAqB8-MteCcmg</string>
 
 </resources>

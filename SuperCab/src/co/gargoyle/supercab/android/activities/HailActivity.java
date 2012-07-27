@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -27,8 +26,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
+import co.gargoyle.supercab.android.activities.parent.AbstractMapActivity;
 import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
-import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.enums.FareStatus;
+import co.gargoyle.supercab.android.enums.PointType;
 import co.gargoyle.supercab.android.map.ExtendedMapView;
 import co.gargoyle.supercab.android.map.ExtendedMapView.OnMoveListener;
 import co.gargoyle.supercab.android.map.PickupDropoffItem;
@@ -51,8 +52,10 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedDelete;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
-public class HailActivity extends RoboMapActivity {
+public class HailActivity extends AbstractMapActivity {
 
   public static final String KEY_FARE = "fare";
 
@@ -65,28 +68,26 @@ public class HailActivity extends RoboMapActivity {
   private static final int ZOOM_LEVEL_CITY         = 15;
   private static final int ZOOM_LEVEL_NEIGHBORHOOD = 20;
 
+  @InjectView(R.id.map) protected ExtendedMapView mMapView;
   @InjectView(R.id.bottom_bar_pickup) private View mPickupBar;
   @InjectView(R.id.bottom_bar_confirmation) private View mConfirmationBar;
   @InjectView(R.id.location_hint) private ImageView mPinHint;
   @InjectView(R.id.location_text) private TextView mAddressText;
   @InjectView(R.id.hail_button) private Button mHailButton;
-  @InjectView(R.id.map) private ExtendedMapView mMapView;
 
   @InjectView(R.id.confirmation_pickup_text) private TextView mConfirmationPickupText;
   @InjectView(R.id.confirmation_dropoff_text) private TextView mConfirmationDropoffText;
 
-  @Inject private GeoUtils mGeoUtils;
-
   private PickupDropoffOverlay mPickupDropoffOverlay;
   private XOverlay mXOverlay;
   private MyLocationOverlay mMyLocationOverlay;
-  private MapController mMapController;
+  protected MapController mMapController;
 
   private Handler mHandler;
 
   private Address mLastKnownAddress;
   private Location mLastKnownLocation;
-  private FareType mMode = FareType.PICKUP;
+  private PointType mMode = PointType.PICKUP;
   private boolean mHasGeolocated;
 
   @Inject private PreferenceUtils mPreferenceUtils;
@@ -96,55 +97,61 @@ public class HailActivity extends RoboMapActivity {
     super.onCreate(savedInstanceState);
 
     Log.i(TAG, "Starting up, creating directories");
+    
 
-    setContentView(R.layout.hail);
+    Optional<Fare> pendingFare = getFareFromDb();
+    if (pendingFare.isPresent()) {
+      proceedToConfirmation(pendingFare.get());
+    } else {
+      setContentView(R.layout.hail);
 
-    mMapView.setBuiltInZoomControls(true);
+      mMapView.setBuiltInZoomControls(true);
 
-    mMapController = mMapView.getController();
-    mMapController.setZoom(ZOOM_LEVEL_NEIGHBORHOOD); // Fixed Zoom Level
+      mMapController = mMapView.getController();
+      mMapController.setZoom(ZOOM_LEVEL_NEIGHBORHOOD); // Fixed Zoom Level
 
-    mMyLocationOverlay = new MyLocationOverlay(this, mMapView) {
-      @Override
-      public synchronized void onLocationChanged(Location location) {
-        super.onLocationChanged(location);
-        checkAndUpdateLastKnownLocation(location);
-      }
-    };
-
-    mXOverlay = new XOverlay(getPinOverlayMappings(), FareType.PICKUP);
-
-    mPickupDropoffOverlay = new PickupDropoffOverlay(
-        getBoundedPinForMapOverlayWithMode(FareType.PICKUP),
-        getBoundedPinForMapOverlayWithMode(FareType.DROPOFF)
-        );
-
-    mPickupDropoffOverlay.setTapListener(new PickupDropoffOverlayTapListener() {
-      @Override
-      public void itemWasTapped(PickupDropoffItem item) {
-        Toast.makeText(HailActivity.this,
-                       item.getTitle(),
-                       Toast.LENGTH_SHORT).show();
-      }
-    });
-    mMapView.getOverlays().add(mPickupDropoffOverlay);
-
-    mMapView.getOverlays().add(mMyLocationOverlay);
-    mMapView.getOverlays().add(mXOverlay);
-
-    mMapView.setOnMoveListener(new OnMoveListener() {
-      public void onMove(MapView mapView, GeoPoint center, boolean stopped) {
-        Log.d(TAG, String.format("onMove center: %s stopped: %b", center.toString(), stopped));
-        if (stopped) {
-          updateAddressWithGeoPoint(center);
-        } else {
-          setAddressLabelActive(false);
-          mLastKnownAddress = null;
+      mMyLocationOverlay = new MyLocationOverlay(this, mMapView) {
+        @Override
+        public synchronized void onLocationChanged(Location location) {
+          super.onLocationChanged(location);
+          checkAndUpdateLastKnownLocation(location);
         }
-      }
-    });
+      };
 
-    centerMapAction();
+      mXOverlay = new XOverlay(getPinOverlayMappings(), PointType.PICKUP);
+
+      mPickupDropoffOverlay = new PickupDropoffOverlay(
+          getBoundedPinForMapOverlayWithMode(PointType.PICKUP),
+          getBoundedPinForMapOverlayWithMode(PointType.DROPOFF)
+          );
+
+      mPickupDropoffOverlay.setTapListener(new PickupDropoffOverlayTapListener() {
+        @Override
+        public void itemWasTapped(PickupDropoffItem item) {
+          Toast.makeText(HailActivity.this,
+                         item.getTitle(),
+                         Toast.LENGTH_SHORT).show();
+        }
+      });
+      mMapView.getOverlays().add(mPickupDropoffOverlay);
+
+      mMapView.getOverlays().add(mMyLocationOverlay);
+      mMapView.getOverlays().add(mXOverlay);
+
+      mMapView.setOnMoveListener(new OnMoveListener() {
+        public void onMove(MapView mapView, GeoPoint center, boolean stopped) {
+          Log.d(TAG, String.format("onMove center: %s stopped: %b", center.toString(), stopped));
+          if (stopped) {
+            updateAddressWithGeoPoint(center);
+          } else {
+            setAddressLabelActive(false);
+            mLastKnownAddress = null;
+          }
+        }
+      });
+
+      centerMapAction();
+    }
   }
 
   ////////////////////////////////////////////////////////////
@@ -214,23 +221,25 @@ public class HailActivity extends RoboMapActivity {
   public void onConfirmButtonClicked(View view) {
     Log.i(TAG, "onConfirmButtonClicked()");
 
-    proceedToConfirmation(getFareFromUi());
+    Fare fare = getFareFromUi();
+    saveFareToDb(fare);
+    proceedToConfirmation(fare);
   }
 
   public void onCancelConfirmButtonClicked(View view) {
     Log.i(TAG, "onCancelConfirmButtonClicked()");
 
     // Clear pins, reset to 0
-    setMode(FareType.PICKUP);
+    setMode(PointType.PICKUP);
   }
 
   ////////////////////////////////////////////////////////////
   // Mode Management
   ////////////////////////////////////////////////////////////
 
-  private void setMode(FareType mode) {
+  private void setMode(PointType mode) {
 
-    if (mMode == FareType.WAITING && mode == FareType.PICKUP) {
+    if (mMode == PointType.WAITING && mode == PointType.PICKUP) {
       // Complete reset
       enterStandardMode();
       mPickupDropoffOverlay.clear();
@@ -246,7 +255,7 @@ public class HailActivity extends RoboMapActivity {
     mHailButton.invalidate();
 
 
-    if (mode == FareType.WAITING) {
+    if (mode == PointType.WAITING) {
       enterConfirmationMode();
     } else {
       // NOP
@@ -274,8 +283,8 @@ public class HailActivity extends RoboMapActivity {
     PickupPoint source = mPickupDropoffOverlay.get(0);
     PickupPoint destination = mPickupDropoffOverlay.get(1);
 
-    mConfirmationPickupText.setText(source.address.getAddressLine(0));
-    mConfirmationDropoffText.setText(destination.address.getAddressLine(0));
+    mConfirmationPickupText.setText(source.address);
+    mConfirmationDropoffText.setText(destination.address);
   }
 
   private void setBottomBarConfirmation(boolean confirmation) {
@@ -398,17 +407,17 @@ public class HailActivity extends RoboMapActivity {
       return;
     }
 
-    if (mMode == FareType.PICKUP) {
-      setMode(FareType.DROPOFF);
-    } else if (mMode == FareType.DROPOFF) {
-      setMode(FareType.WAITING);
+    if (mMode == PointType.PICKUP) {
+      setMode(PointType.DROPOFF);
+    } else if (mMode == PointType.DROPOFF) {
+      setMode(PointType.WAITING);
     } else {
       throw new RuntimeException("Can't pickup, dropoff, pickup.");
       //setMode(FareType.PICKUP);
     }
   }
 
-  private boolean addPickupAtCurrentAddress(FareType fareType) {
+  private boolean addPickupAtCurrentAddress(PointType pointType) {
     Address address = copyAddress(mLastKnownAddress);
     if (address == null) {
       return false;
@@ -420,7 +429,7 @@ public class HailActivity extends RoboMapActivity {
       address.setLatitude(GeoUtils.integerToDoubleValue(geoPoint.getLatitudeE6()));
       address.setLongitude(GeoUtils.integerToDoubleValue(geoPoint.getLongitudeE6()));
 
-      PickupPoint testPickup = new PickupPoint(fareType, address);
+      PickupPoint testPickup = new PickupPoint(pointType, address);
 
       mPickupDropoffOverlay.addPickup(testPickup);
       mMapView.invalidate();
@@ -497,30 +506,30 @@ public class HailActivity extends RoboMapActivity {
   // Resources
   ////////////////////////////////////////////////////////////
 
-  private HashMap<FareType, Bitmap> getPinOverlayMappings() {
-    HashMap<FareType, Bitmap> mappings = new HashMap<FareType, Bitmap>();
+  private HashMap<PointType, Bitmap> getPinOverlayMappings() {
+    HashMap<PointType, Bitmap> mappings = new HashMap<PointType, Bitmap>();
 
-    FareType[] modes = new FareType[] {
-      FareType.PICKUP,
-      FareType.DROPOFF
+    PointType[] modes = new PointType[] {
+      PointType.PICKUP,
+      PointType.DROPOFF
     };
 
-    for (FareType mode : modes) {
+    for (PointType mode : modes) {
       mappings.put(mode, getPinBitmapForMode(mode));
     }
 
     return mappings;
   }
 
-  private Bitmap getPinBitmapForMode(FareType mode) {
+  private Bitmap getPinBitmapForMode(PointType mode) {
     Drawable drawable = getPinDrawableForMode(mode);
     Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
     return bitmap;
   }
 
-  private Drawable getPinDrawableForMode(FareType mode) {
+  private Drawable getPinDrawableForMode(PointType mode) {
     Drawable newPin;
-    if (mode == FareType.PICKUP) {
+    if (mode == PointType.PICKUP) {
       newPin = getResources().getDrawable(R.drawable.map_pin_green);
     } else {
       newPin = getResources().getDrawable(R.drawable.map_pin_red);
@@ -528,16 +537,16 @@ public class HailActivity extends RoboMapActivity {
     return newPin;
   }
 
-  private Drawable getBoundedPinForMapOverlayWithMode(FareType mode) {
+  private Drawable getBoundedPinForMapOverlayWithMode(PointType mode) {
     Drawable pin = getPinDrawableForMode(mode);
 
     pin.setBounds(0, 0, pin.getIntrinsicWidth(), pin.getIntrinsicHeight());
     return pin;
   }
 
-  private String getHailTextForMode(FareType mode) {
+  private String getHailTextForMode(PointType mode) {
     String prompt;
-    if (mode == FareType.PICKUP) {
+    if (mode == PointType.PICKUP) {
       prompt = getResources().getString(R.string.pick_me_up_here);
     } else {
       prompt = getResources().getString(R.string.drop_me_off_here);
@@ -546,8 +555,51 @@ public class HailActivity extends RoboMapActivity {
   }
 
   ////////////////////////////////////////////////////////////
-  // Listeners
+  // Fare
   ////////////////////////////////////////////////////////////
+
+  private Optional<Fare> getFareFromDb() {
+    RuntimeExceptionDao <Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
+
+    QueryBuilder<Fare, Integer> builder = dao.queryBuilder();
+    
+    Where<Fare, Integer> where = builder.where();
+    try {
+      where.eq("status", FareStatus.waiting);
+      builder.setWhere(where);
+      
+      // get all fares that are waiting
+      List<Fare> fares = dao.query(builder.prepare());
+
+      if (fares.size() > 0) {
+        Fare fare = fares.get(0);
+        dao.refresh(fare);
+        return Optional.of(fare);
+      } else {
+        return Optional.absent();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return Optional.absent();
+  }
+
+  private void saveFareToDb(Fare fare) {
+    RuntimeExceptionDao <Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
+    dao.create(fare);
+  }
+  
+  private Fare getFareFromUi() {
+    PickupPoint source = mPickupDropoffOverlay.get(0);
+    PickupPoint destination = mPickupDropoffOverlay.get(1);
+    Date timeRequested = new Date();
+
+    Fare fare = new Fare(source, destination, timeRequested);
+    fare.status = FareStatus.waiting;
+
+    return fare;
+  }
 
   ////////////////////////////////////////////////////////////
   // Util
@@ -577,12 +629,11 @@ public class HailActivity extends RoboMapActivity {
   
   private void logout() {
     RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
-//    UserModel arg0;
     DeleteBuilder<UserModel, Integer> builder = dao.deleteBuilder();
     PreparedDelete<UserModel> deleteAll;
     try {
       deleteAll = builder.prepare();
-      int result = dao.delete(deleteAll);
+      dao.delete(deleteAll);
       mPreferenceUtils.clearUser();
 
       startActivity(new Intent(HailActivity.this, LoginActivity.class));
@@ -598,20 +649,12 @@ public class HailActivity extends RoboMapActivity {
   // Nav
   ////////////////////////////////////////////////////////////
   
-  private Fare getFareFromUi() {
-    PickupPoint source = mPickupDropoffOverlay.get(0);
-    PickupPoint destination = mPickupDropoffOverlay.get(1);
-    Date timeRequested = new Date();
-
-    Fare fare = new Fare(source, destination, timeRequested);
-
-    return fare;
-  }
-
   private void proceedToConfirmation(Fare fare) {
     Intent i = new Intent(HailActivity.this, ConfirmationActivity.class);
     i.putExtra(KEY_FARE, fare);
     startActivity(i);
+
+    finish();
   }
   
   ////////////////////////////////////////////////////////////

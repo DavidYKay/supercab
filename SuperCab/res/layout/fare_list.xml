@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:id="@+id/rl"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
@@ -16,9 +16,23 @@
     android:layout_height="wrap_content"
     android:layout_below="@+id/logo_header"
     android:gravity="center"
-    android:text="@string/app_name"
-    android:textSize="12dp"
+    android:text="@string/fares_waiting"
+    android:textSize="14dp"
     android:layout_marginBottom="10dp"
     />
+  
+  <ListView android:id="@android:id/list"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
+    android:drawSelectorOnTop="false"/>
 
-</RelativeLayout>
+  <TextView android:id="@android:id/empty"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:text="@string/no_fares_waiting"
+    android:textSize="36dp"
+    android:gravity="center"
+    />
+
+</LinearLayout>

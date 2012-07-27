@@ -3,9 +3,10 @@ package co.gargoyle.supercab.android.model;
 import android.location.Address;
 import android.os.Parcel;
 import android.os.Parcelable;
-import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.enums.PointType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -15,20 +16,34 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
 
   @JsonIgnore
   @DatabaseField
-  public FareType fareType;
+  public PointType pointType;
+  
+  @JsonProperty("lat")
+  @DatabaseField
+  public double latitude;
+  
+  @JsonProperty("lon")
+  @DatabaseField
+  public double longitude;
+  
+  @DatabaseField
+  public String address;
   	
   //@JsonSerialize(using = CustomAddressSerializer.class)
   //@JsonDeserialize(using = CustomAddressDeserializer.class)
 //  @DatabaseField(persisterClass = CustomAddressPersister.class)
-  public Address address;
+//  public Address address;
   
   public PickupPoint() {
     // required for ORMLite
   }
 
-  public PickupPoint(FareType fareType, Address address) {
-    this.fareType = fareType;
-    this.address = address;
+  public PickupPoint(PointType pointType, Address address) {
+    this.pointType = pointType;
+
+    this.address = address.getAddressLine(0);
+    this.latitude  = address.getLatitude();
+    this.longitude = address.getLongitude();
   }
 
   @Override
@@ -42,11 +57,11 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
     PickupPoint other = (PickupPoint) o;
     if (
         Objects.equal(this.superCabId, other.superCabId) &&
-        Objects.equal(this.fareType, other.fareType) &&
-        Objects.equal(this.address.getLatitude(), other.address.getLatitude()) &&
-        Objects.equal(this.address.getLongitude(), other.address.getLongitude()) &&
-        Objects.equal(this.address.getAddressLine(0), other.address.getAddressLine(0))
-        ) {
+        Objects.equal(this.pointType, other.pointType) &&
+        Objects.equal(this.latitude, other.latitude) &&
+        Objects.equal(this.longitude, other.longitude) &&
+        Objects.equal(this.address, other.address)
+    ) {
       return true;
     }
     return false;
@@ -54,15 +69,16 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(fareType, address);
+    return Objects.hashCode(pointType, address);
   }
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-                .addValue(fareType)
-                .addValue(address.getAddressLine(0))
-                .toString();
+    return address;
+    //return Objects.toStringHelper(this)
+    //            .addValue(pointType)
+    //            .addValue(address.getAddressLine(0))
+    //            .toString();
   }
 
   @Override
@@ -72,21 +88,31 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
 
   @Override
   public void writeToParcel(Parcel out, int flags) {
-    out.writeParcelable(fareType, flags);
-    out.writeParcelable(address, flags);
+    out.writeParcelable(pointType, flags);
+    out.writeString(address);
+    out.writeDouble(latitude);
+    out.writeDouble(longitude);
   }
 
   public static final Parcelable.Creator<PickupPoint> CREATOR = new Parcelable.Creator<PickupPoint>() {
     public PickupPoint createFromParcel(Parcel in) {
-      FareType fareType = in.readParcelable(PickupPoint.class.getClassLoader());
-      Address address = in.readParcelable(PickupPoint.class.getClassLoader());
-      return new PickupPoint(fareType, address);
+      PointType pointType = in.readParcelable(PickupPoint.class.getClassLoader());
+      String address      = in.readString();
+      double latitude     = in.readDouble();
+      double longitude    = in.readDouble();
+
+      PickupPoint point = new PickupPoint();
+      point.pointType = pointType;
+      point.address = address;
+      point.latitude = latitude;
+      point.longitude = longitude;
+
+      return point;
     }
 
     public PickupPoint[] newArray(int size) {
       return new PickupPoint[size];
     }
   };
-
 
 }

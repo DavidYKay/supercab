@@ -5,15 +5,15 @@ import java.io.FileReader;
 import java.util.Date;
 
 import android.location.Address;
-import co.gargoyle.supercab.android.enums.FareType;
+import co.gargoyle.supercab.android.enums.PointType;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
 
 public class FixtureFactory {
 
-  public static PickupPoint createExamplePickupPoint(FareType type) {
+  public static PickupPoint createExamplePickupPoint(PointType type) {
     Address address;
-    if (type == FareType.PICKUP) {
+    if (type == PointType.PICKUP) {
       address  = Constants.ADDRESS_IHUB;
     } else {
       address = Constants.ADDRESS_AIRPORT;
@@ -26,8 +26,8 @@ public class FixtureFactory {
     Date time = new Date(Constants.FEB_13_2009);
 
     Fare fare = new Fare(
-        createExamplePickupPoint(FareType.PICKUP),
-        createExamplePickupPoint(FareType.DROPOFF),
+        createExamplePickupPoint(PointType.PICKUP),
+        createExamplePickupPoint(PointType.DROPOFF),
         time
     );
     return fare;
