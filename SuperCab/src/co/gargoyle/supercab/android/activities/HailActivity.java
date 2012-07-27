@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -27,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
+import co.gargoyle.supercab.android.activities.parent.AbstractMapActivity;
 import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
 import co.gargoyle.supercab.android.enums.FareStatus;
 import co.gargoyle.supercab.android.enums.PointType;
@@ -55,7 +55,7 @@ import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-public class HailActivity extends RoboMapActivity {
+public class HailActivity extends AbstractMapActivity {
 
   public static final String KEY_FARE = "fare";
 
@@ -68,22 +68,20 @@ public class HailActivity extends RoboMapActivity {
   private static final int ZOOM_LEVEL_CITY         = 15;
   private static final int ZOOM_LEVEL_NEIGHBORHOOD = 20;
 
+  @InjectView(R.id.map) protected ExtendedMapView mMapView;
   @InjectView(R.id.bottom_bar_pickup) private View mPickupBar;
   @InjectView(R.id.bottom_bar_confirmation) private View mConfirmationBar;
   @InjectView(R.id.location_hint) private ImageView mPinHint;
   @InjectView(R.id.location_text) private TextView mAddressText;
   @InjectView(R.id.hail_button) private Button mHailButton;
-  @InjectView(R.id.map) private ExtendedMapView mMapView;
 
   @InjectView(R.id.confirmation_pickup_text) private TextView mConfirmationPickupText;
   @InjectView(R.id.confirmation_dropoff_text) private TextView mConfirmationDropoffText;
 
-  @Inject private GeoUtils mGeoUtils;
-
   private PickupDropoffOverlay mPickupDropoffOverlay;
   private XOverlay mXOverlay;
   private MyLocationOverlay mMyLocationOverlay;
-  private MapController mMapController;
+  protected MapController mMapController;
 
   private Handler mHandler;
 
@@ -99,6 +97,7 @@ public class HailActivity extends RoboMapActivity {
     super.onCreate(savedInstanceState);
 
     Log.i(TAG, "Starting up, creating directories");
+    
 
     Optional<Fare> pendingFare = getFareFromDb();
     if (pendingFare.isPresent()) {

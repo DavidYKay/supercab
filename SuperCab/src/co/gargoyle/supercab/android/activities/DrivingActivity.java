@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -27,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
+import co.gargoyle.supercab.android.activities.parent.AbstractMapActivity;
 import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
 import co.gargoyle.supercab.android.enums.FareStatus;
 import co.gargoyle.supercab.android.enums.PointType;
@@ -54,7 +54,7 @@ import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-public class DrivingActivity extends RoboMapActivity {
+public class DrivingActivity extends AbstractMapActivity {
 
   public static final String KEY_FARE = "fare";
 
