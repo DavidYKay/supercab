@@ -66,7 +66,6 @@ public class ConfirmationActivity extends AbstractMapActivity implements PostFar
     mFromLabel.setText(getAddressLine(mFare.source));
     mToLabel.setText(getAddressLine(mFare.destination));
 
-
     mDriverLabel.setText("Uploading...");
 
     uploadFare(mFare);
@@ -94,7 +93,6 @@ public class ConfirmationActivity extends AbstractMapActivity implements PostFar
   }
 
   private void cancelFare() {
-
     // Tell the API we're done
     mFare.status = FareStatus.cancelled;
 
@@ -102,12 +100,13 @@ public class ConfirmationActivity extends AbstractMapActivity implements PostFar
     final PutFareTask task = new PutFareTask(this, new PutFareListener() {
       @Override
       public void completed(Optional<Fare> fare) {
-        if (fare.isPresent()) {
+        if (fare.isPresent() && fare.get().status == FareStatus.cancelled) {
           Toast.makeText(ConfirmationActivity.this, "Fare Cancelled!", Toast.LENGTH_SHORT).show();
           // clear out the fare from the DB
           deleteFareFromDb(fare.get());
 
           // back to the main screen
+          startActivity(new Intent(ConfirmationActivity.this, HailActivity.class));
           finish();
         } else {
           // Something happened. better not risk it
