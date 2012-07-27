@@ -30,6 +30,9 @@ public class CustomAddressPersister extends StringType {
     super(SqlType.STRING, new Class<?>[] { Address.class });
 
     mObjectMapper = new ObjectMapper();
+    //mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//    mapper.configure(DeserializationFeature., false);
+
     mObjectReader = mObjectMapper.reader(Address.class);
     mObjectWriter = mObjectMapper.writer();
   }
@@ -55,6 +58,31 @@ public class CustomAddressPersister extends StringType {
     }
 
     return null;
+  }
+
+  @Override
+  public Object javaToSqlArg(FieldType fieldType, Object javaObject) throws SQLException { 
+    Address address = (Address) javaObject;
+    
+    try {
+      String jsonString =  mObjectWriter.writeValueAsString(address);
+      return jsonString;
+    } catch (JsonGenerationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (JsonMappingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    return null;
+    
+//    return super.javaToSqlArg(fieldType, javaObject);
   }
 
   @Override
