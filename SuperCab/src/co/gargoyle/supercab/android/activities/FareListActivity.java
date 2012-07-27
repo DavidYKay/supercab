@@ -11,7 +11,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.adapters.FareListAdapter;
 import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
@@ -55,29 +58,18 @@ public class FareListActivity extends RoboListActivity {
 
     getData();
   }
-
-
-  @SuppressWarnings("unchecked")
-  private void getData() {
-    GetFaresTask task = new GetFaresTask(this, new GetFaresListener() {
-
-      @Override
-      public void completed(List<Fare> fares) {
-        //Fare[] fareArray = (Fare[]) fares.toArray(new Fare[fares.size()]);
-        //setListAdapter(new ArrayAdapter<String>(FareListActivity.this, android.R.layout.simple_list_item_1, fareArray));
-        setListAdapter(new FareListAdapter(getLayoutInflater(), fares));
-      }
-
-      @Override
-      public void handleError(Throwable throwable) {
-        goBlooey(throwable);
-      }
-
-    });
-    Map<String, Object> params = new HashMap<String, Object>();
-    task.execute(params);
-  }
   
+  @Override
+  protected void onListItemClick(ListView l, View v, int position, long id) {
+    ListAdapter adapter = getListAdapter();
+
+    Fare fare = (Fare) adapter.getItem(position);
+
+    Intent i = new Intent(FareListActivity.this, FareDetailActivity.class);
+    i.putExtra(HailActivity.KEY_FARE, fare);
+    startActivity(i);
+  }
+
   ////////////////////////////////////////////////////////////
   // Menus
   ////////////////////////////////////////////////////////////
@@ -110,8 +102,6 @@ public class FareListActivity extends RoboListActivity {
     return super.onOptionsItemSelected(item);
   }
 
-
-
   @Override
   public void onOptionsMenuClosed(Menu menu) {
     super.onOptionsMenuClosed(menu);
@@ -136,7 +126,25 @@ public class FareListActivity extends RoboListActivity {
       e.printStackTrace();
       goBlooey(e);
     }
-   
+  }
+  
+  @SuppressWarnings("unchecked")
+  private void getData() {
+    GetFaresTask task = new GetFaresTask(this, new GetFaresListener() {
+
+      @Override
+      public void completed(List<Fare> fares) {
+        setListAdapter(new FareListAdapter(getLayoutInflater(), fares));
+      }
+
+      @Override
+      public void handleError(Throwable throwable) {
+        goBlooey(throwable);
+      }
+
+    });
+    Map<String, Object> params = new HashMap<String, Object>();
+    task.execute(params);
   }
   
   ////////////////////////////////////////////////////////////

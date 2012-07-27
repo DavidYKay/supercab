@@ -35,7 +35,6 @@ public class ConfirmationActivity extends RoboActivity implements PostFareListen
     setContentView(R.layout.confirmation);
 
     Intent i = getIntent();
-
     Fare fare = i.getParcelableExtra(HailActivity.KEY_FARE); 
 
     //DateFormat.getTimeFormat

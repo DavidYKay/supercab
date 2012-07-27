@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/rl"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:layout_marginBottom="0dp"
+  android:layout_marginLeft="0dp"
+  android:layout_marginRight="0dp"
+  android:layout_marginTop="0dp"
+  android:orientation="vertical"
+  android:padding="0dp" >
+
+  <TextView
+    android:id="@+id/main_menu_header"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:paddingBottom="1dp"
+    android:paddingTop="6dp"
+    android:text="@string/please_log_call"
+    android:textSize="21dp"
+    android:textStyle="bold" />
+
+  <Button
+    android:id="@+id/done_button"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:onClick="onDoneButtonClicked"
+    android:text="Done" />
+
+  <EditText
+    android:id="@+id/memo"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_above="@+id/done_button"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="18dp"
+    android:ems="10"
+    android:inputType="textCapSentences"
+    android:imeOptions="actionSend"
+    />
+
+  <TextView
+    android:id="@+id/memo_prompt"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_above="@+id/memo"
+    android:layout_alignLeft="@+id/memo"
+    android:text="Memo"
+    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+  <RadioGroup
+    android:id="@+id/categoryRadioGroup"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/memo_prompt"
+    android:layout_centerVertical="true" >
+
+    <RadioButton
+      android:id="@+id/radio0"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:checked="true"
+      android:text="Sale" />
+
+    <RadioButton
+      android:id="@+id/radio1"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Support" />
+
+    <RadioButton
+      android:id="@+id/radio2"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Feedback" />
+  </RadioGroup>
+
+  <TextView
+    android:id="@+id/category_prompt"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_above="@+id/categoryRadioGroup"
+    android:layout_alignLeft="@+id/categoryRadioGroup"
+    android:text="Category"
+    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+  <TextView
+    android:id="@+id/call_from"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/category_prompt"
+    android:layout_below="@+id/main_menu_header"
+    android:layout_marginTop="38dp"
+    android:text="Call From:"
+    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+  <TextView
+    android:id="@+id/duration"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/call_from"
+    android:layout_below="@+id/call_from"
+    android:text="Duration"
+    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+</RelativeLayout>
