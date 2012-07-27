@@ -1,7 +1,7 @@
 package co.gargoyle.supercab.android;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +24,7 @@ import com.xtremelabs.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class RegisterTest {
-  
+
   @Before
   public void runBeforeEveryTest() {
     Context context = Robolectric.application;
@@ -45,6 +45,18 @@ public class RegisterTest {
     // create a signal to let us know when our task is done.
     final CountDownLatch signal = new CountDownLatch(1);
 
+    final UserModel sean = new UserModel();
+    sean.role = UserRole.passenger;
+    sean.firstName = "Sean";
+    sean.lastName = "Smith";
+
+    sean.username = "seansmith";
+    sean.password = "seansmith";
+
+    sean.phoneNumber = "+254727114825";
+
+    //sean.phoneNumber = "0727114825";
+
     PostUserListener listener = new PostUserListener() {
 
       @Override
@@ -54,23 +66,25 @@ public class RegisterTest {
       }
 
       @Override
-      public void completed(Optional<UserModel> user) {
-        assertTrue(user.isPresent());
+      public void completed(Optional<UserModel> userOpt) {
+        assertTrue(userOpt.isPresent());
+
+        UserModel user = userOpt.get();
+        assertThat(user.role, is(equalTo(sean.role)));
+        assertThat(user.firstName, is(equalTo(sean.firstName)));
+        assertThat(user.lastName, is(equalTo(sean.lastName)));
+
+        assertThat(user.username, is(equalTo(sean.username)));
+//        assertThat(user.password, is(equalTo(sean.password)));
+
+        assertThat(user.phoneNumber, is(equalTo(sean.phoneNumber)));
+
         signal.countDown();
       }
     };
 
     RegisterTask task = new RegisterTask(listener);
-    
-    UserModel userModel = new UserModel();
-    userModel.role = UserRole.passenger;
-    userModel.firstName = "Sean";
-    userModel.lastName = "Smith";
-    
-    userModel.username = "seansmith";
-    userModel.password = "seansmith";
-    
-    userModel.phoneNumber = "+254123456789";
+    task.execute(sean);
 
     signal.await(10, TimeUnit.SECONDS);
   }

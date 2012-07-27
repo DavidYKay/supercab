@@ -45,7 +45,8 @@ public class RegisterTask extends AsyncTask<UserModel, Integer, Optional<UserMod
         if (userResource.getStatus().isSuccess()) {
           try {
             UserRepresentation user = new UserRepresentation(rep);
-            Log.d(TAG, "response: " + rep.getText());
+//            String repText = rep.getText();
+//            Log.d(TAG, "response: " + repText);
             return user.getUser();
           } catch (IOException e) {
             e.printStackTrace();

@@ -45,12 +45,12 @@ public class JacksonTest {
   //  assertThat(textDump, equalTo("{phone=+254727114825}"));
 
   //}
-  
+
   @Test
-  public void shouldConvertUserModelCorrectly() throws Exception {
+  public void shouldConvertUserModel() throws Exception {
     String expected = FixtureFactory.readFileAsString("../SuperCab-Test/fixtures/user.json");
-//    String expected = FixtureFactory.readFileAsString("../SuperCab-Test/fixtures/user-simplified.json");
-    
+    //    String expected = FixtureFactory.readFileAsString("../SuperCab-Test/fixtures/user-simplified.json");
+
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -59,7 +59,7 @@ public class JacksonTest {
 
     ObjectWriter writer = mapper.writer();
     String result = writer.writeValueAsString(user);
-    
+
     assertFalse(StringUtils.stringIsEmpty(result));
 
     UserModel finalExpected = reader.readValue(expected);
@@ -69,14 +69,46 @@ public class JacksonTest {
     assertNotNull(finalResult.lastName);
 
     assertNotNull(finalResult.username);
-//    assertNotNull(finalResult.password);
-    
+    //    assertNotNull(finalResult.password);
+
+    assertNotNull(finalResult.role);
     assertNotNull(finalResult.phoneNumber);
-    
+
+    assertNotNull(finalResult.token);
+
+    assertThat(finalExpected, is(equalTo(finalResult)));
+  }
+
+  @Test
+  public void shouldConvertRegisteredUser() throws Exception {
+    String expected = FixtureFactory.readFileAsString("../SuperCab-Test/fixtures/registered.json");
+
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    ObjectReader reader =  mapper.reader(UserModel.class);
+    UserModel user = reader.readValue(expected);
+
+    ObjectWriter writer = mapper.writer();
+    String result = writer.writeValueAsString(user);
+
+    assertFalse(StringUtils.stringIsEmpty(result));
+
+    UserModel finalExpected = reader.readValue(expected);
+    UserModel finalResult = reader.readValue(result);
+
+    assertNotNull(finalResult.firstName);
+    assertNotNull(finalResult.lastName);
+
+    assertNotNull(finalResult.username);
+    //    assertNotNull(finalResult.password);
+
+    assertNotNull(finalResult.phoneNumber);
+    assertNotNull(finalResult.role);
+
+    assertNotNull(finalResult.token);
+
     assertThat(finalExpected, is(equalTo(finalResult)));
 
   }
-  
-  
-  
 }
