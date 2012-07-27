@@ -81,6 +81,7 @@ public class DrivingActivity extends AbstractMapActivity {
       Toast.makeText(DrivingActivity.this, "Error! No fare found.", Toast.LENGTH_SHORT).show();
       finish();
     }
+    mFare = fare;
 
     setContentView(R.layout.driving);
 

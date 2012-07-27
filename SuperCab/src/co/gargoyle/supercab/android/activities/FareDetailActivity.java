@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
@@ -40,6 +41,8 @@ public class FareDetailActivity extends RoboActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
     setContentView(R.layout.fare_detail);
     
@@ -70,6 +73,7 @@ public class FareDetailActivity extends RoboActivity {
     PutFareTask task = new PutFareTask(this, new PutFareListener(){
       @Override
       public void completed(Optional<Fare> fare) {
+        setProgressBarIndeterminateVisibility(false);
         if (fare.isPresent()) {
           Toast.makeText(FareDetailActivity.this, "Fare Accepted!", Toast.LENGTH_SHORT).show();
           Intent i = new Intent(FareDetailActivity.this, DrivingActivity.class);
@@ -83,9 +87,11 @@ public class FareDetailActivity extends RoboActivity {
 
       @Override
       public void handleError(Throwable exception) {
+        setProgressBarIndeterminateVisibility(false);
         goBlooey(exception);
       }
     });
+    setProgressBarIndeterminateVisibility(true);
     task.execute(mFare);
   }
 

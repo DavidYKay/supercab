@@ -52,8 +52,6 @@ public class FareListActivity extends RoboListActivity {
 
     setContentView(R.layout.fare_list);
       
-    setProgressBarIndeterminateVisibility(true);
-
     //setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
 
     getData();
