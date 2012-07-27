@@ -274,5 +274,6 @@
 <string name="phone_number">Phone Number</string>
 <string name="pick_user_type">User Type</string>
 <string name="register">Register</string>
+<string name="accept_fare">Accept Fare</string>
 
 </resources>

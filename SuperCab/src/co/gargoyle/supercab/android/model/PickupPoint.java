@@ -59,10 +59,11 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this)
-                .addValue(pointType)
-                .addValue(address.getAddressLine(0))
-                .toString();
+    return address.getAddressLine(0);
+    //return Objects.toStringHelper(this)
+    //            .addValue(pointType)
+    //            .addValue(address.getAddressLine(0))
+    //            .toString();
   }
 
   @Override
@@ -87,6 +88,5 @@ public class PickupPoint extends SuperCabBaseModel implements Parcelable {
       return new PickupPoint[size];
     }
   };
-
 
 }

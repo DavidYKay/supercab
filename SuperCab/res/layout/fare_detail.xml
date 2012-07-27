@@ -11,99 +11,192 @@
   android:padding="0dp" >
 
   <TextView
-    android:id="@+id/main_menu_header"
+    android:id="@+id/status_header"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_marginLeft="10dp"
+    android:text="@string/status"
+    android:textSize="24sp"
+    android:textStyle="bold"
     android:gravity="center"
-    android:paddingBottom="1dp"
-    android:paddingTop="6dp"
-    android:text="@string/please_log_call"
-    android:textSize="21dp"
-    android:textStyle="bold" />
+    />
 
+  <TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tableLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginRight="10dp"
+    android:layout_centerInParent="true"
+    android:stretchColumns="1"
+    android:gravity="center"
+    >
+    <!--
+    android:shrinkColumns="0"
+    -->
+    <TableRow
+      android:id="@+id/time_row"
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent"
+      android:gravity="center_horizontal"
+      >
+      <TextView
+        android:id="@+id/time_label"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="Time Called:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="left"
+        />
+      <TextView
+        android:id="@+id/time_value"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="12:34"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="right"
+        />
+    </TableRow>
+
+    <TableRow
+      android:id="@+id/from_row"
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent"
+      android:gravity="center_horizontal"
+      >
+      <TextView
+        android:id="@+id/from_label"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="From:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="left"
+        />
+      <TextView
+        android:id="@+id/from_address"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="1 Kindaruma Rd"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="right"
+        />
+    </TableRow>
+    <TableRow
+      android:id="@+id/to_row"
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent"
+      android:gravity="center_horizontal">
+      <TextView
+        android:id="@+id/to_label"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="To:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="left"
+        />
+      <TextView
+        android:id="@+id/to_address"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="Jomo Kenyatta Airport"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="right"
+        />
+    </TableRow>
+    <TableRow
+      android:id="@+id/fare_row"
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent"
+      android:gravity="center_horizontal">
+      <TextView
+        android:id="@+id/fare_label"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="Fare:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="left"
+        />
+
+      <TextView
+        android:id="@+id/fare_status"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="1000 Ksh"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="right"
+        />
+    </TableRow>
+
+    <TableRow
+      android:id="@+id/passenger_row"
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent"
+      android:gravity="center_horizontal">
+      <TextView
+        android:id="@+id/passenger_label"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="Status:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="left"
+        />
+
+      <TextView
+        android:id="@+id/passenger_status"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="Driver En Route"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="right"
+        />
+    </TableRow>
+
+  </TableLayout>
+  
   <Button
-    android:id="@+id/done_button"
+    android:id="@+id/accept_fare"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
-    android:layout_centerHorizontal="true"
-    android:onClick="onDoneButtonClicked"
-    android:text="Done" />
-
-  <EditText
-    android:id="@+id/memo"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_above="@+id/done_button"
-    android:layout_centerHorizontal="true"
-    android:layout_marginBottom="18dp"
-    android:ems="10"
-    android:inputType="textCapSentences"
-    android:imeOptions="actionSend"
+    android:text="@string/accept_fare"
+    android:gravity="center"
+    android:onClick="onAcceptButtonClick"
     />
+  <!--
+    android:textSize="24sp"
+    android:textStyle="bold"
+  -->
 
-  <TextView
-    android:id="@+id/memo_prompt"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_above="@+id/memo"
-    android:layout_alignLeft="@+id/memo"
-    android:text="Memo"
-    android:textAppearance="?android:attr/textAppearanceSmall" />
-
-  <RadioGroup
-    android:id="@+id/categoryRadioGroup"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignLeft="@+id/memo_prompt"
-    android:layout_centerVertical="true" >
-
-    <RadioButton
-      android:id="@+id/radio0"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:checked="true"
-      android:text="Sale" />
-
-    <RadioButton
-      android:id="@+id/radio1"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Support" />
-
-    <RadioButton
-      android:id="@+id/radio2"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Feedback" />
-  </RadioGroup>
-
-  <TextView
-    android:id="@+id/category_prompt"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_above="@+id/categoryRadioGroup"
-    android:layout_alignLeft="@+id/categoryRadioGroup"
-    android:text="Category"
-    android:textAppearance="?android:attr/textAppearanceSmall" />
-
-  <TextView
-    android:id="@+id/call_from"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignLeft="@+id/category_prompt"
-    android:layout_below="@+id/main_menu_header"
-    android:layout_marginTop="38dp"
-    android:text="Call From:"
-    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-  <TextView
-    android:id="@+id/duration"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignLeft="@+id/call_from"
-    android:layout_below="@+id/call_from"
-    android:text="Duration"
-    android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

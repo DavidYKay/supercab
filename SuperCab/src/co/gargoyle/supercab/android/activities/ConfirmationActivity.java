@@ -7,7 +7,6 @@ import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
@@ -15,6 +14,7 @@ import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.tasks.PostFareTask;
 import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
+import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.google.common.base.Optional;
 
@@ -37,14 +37,8 @@ public class ConfirmationActivity extends RoboActivity implements PostFareListen
     Intent i = getIntent();
     Fare fare = i.getParcelableExtra(HailActivity.KEY_FARE); 
 
-    //DateFormat.getTimeFormat
     Date time = fare.timeRequested;
-    CharSequence timeString = DateUtils.getRelativeTimeSpanString(
-        time.getTime(),
-        System.currentTimeMillis(),
-        DateUtils.MINUTE_IN_MILLIS,
-        DateUtils.FORMAT_ABBREV_RELATIVE
-        );
+    CharSequence timeString = StringUtils.getNiceTime(time);
 
     mTimeLabel.setText(timeString);
 

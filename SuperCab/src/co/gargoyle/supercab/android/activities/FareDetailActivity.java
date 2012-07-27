@@ -5,19 +5,22 @@ import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import co.gargoyle.supercab.android.R;
-import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.utilities.BroadcastUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
+import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.google.inject.Inject;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 public class FareDetailActivity extends RoboActivity {
   
-  @InjectView(R.id.call_from) private TextView mCallFrom;
+  @InjectView(R.id.time_value) private TextView mTimeLabel;
+  @InjectView(R.id.from_address) private TextView mSourceText;
+  @InjectView(R.id.to_address) private TextView mDestinationText;
+  @InjectView(R.id.passenger_status) private TextView mPassengerLabel;
 
   @SuppressWarnings("unused")
   @Inject private BroadcastUtils mBroadcastUtils;
@@ -41,36 +44,45 @@ public class FareDetailActivity extends RoboActivity {
   }
 
   private void populateUi(Fare fare) {
-    mCallFrom.setText(fare.source.toString());
+    mSourceText.setText(fare.source.toString());
+    mDestinationText.setText(fare.destination.toString());
+
+    mTimeLabel.setText(StringUtils.getNiceTime(fare.timeRequested));
+    
+//    mPassengerLabel.setText(fare.passenger.toString());
+
   }
   
   ////////////////////////////////////////////////////////////
   // Main Methods
   ////////////////////////////////////////////////////////////
-  
 
+  public void onAcceptButtonClick(View v) {
+
+    finish();
+  }
 
   ////////////////////////////////////////////////////////////
   // ORMLite
   ////////////////////////////////////////////////////////////
 
-  private SCOrmLiteHelper databaseHelper;
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    if (databaseHelper != null) {
-      OpenHelperManager.releaseHelper();
-      databaseHelper = null;
-    }
-  }
-
-  private SCOrmLiteHelper getHelper() {
-    if (databaseHelper == null) {
-      databaseHelper =
-          OpenHelperManager.getHelper(this, SCOrmLiteHelper.class);
-    }
-    return databaseHelper;
-  }
+//  private SCOrmLiteHelper databaseHelper;
+//  @Override
+//  protected void onDestroy() {
+//    super.onDestroy();
+//    if (databaseHelper != null) {
+//      OpenHelperManager.releaseHelper();
+//      databaseHelper = null;
+//    }
+//  }
+//
+//  private SCOrmLiteHelper getHelper() {
+//    if (databaseHelper == null) {
+//      databaseHelper =
+//          OpenHelperManager.getHelper(this, SCOrmLiteHelper.class);
+//    }
+//    return databaseHelper;
+//  }
 
   ////////////////////////////////////////////////////////////
   // Utils
