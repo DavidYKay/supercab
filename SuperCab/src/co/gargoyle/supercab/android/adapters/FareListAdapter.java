@@ -15,11 +15,11 @@ public class FareListAdapter extends BaseAdapter {
   private List<Fare> mFares;
   private LayoutInflater mLayoutInflater;
 
-  public FareListAdapter(LayoutInflater layoutInflater, List<Fare> events) {
-    if (events == null) {
+  public FareListAdapter(LayoutInflater layoutInflater, List<Fare> fares) {
+    if (fares == null) {
       mFares = new ArrayList<Fare>();
     } else {
-      mFares = events;
+      mFares = fares;
     }
     mLayoutInflater = layoutInflater;
   }

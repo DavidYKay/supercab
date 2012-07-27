@@ -58,6 +58,7 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
     out.writeString(superCabId);
     out.writeParcelable(source, flags);
     out.writeParcelable(destination, flags);
+    out.writeParcelable(status, flags);
     out.writeSerializable(timeRequested);
   }
 
@@ -75,6 +76,7 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
     superCabId    = in.readString();
     source        = in.readParcelable(Fare.class.getClassLoader());
     destination   = in.readParcelable(Fare.class.getClassLoader());
+    status        = in.readParcelable(Fare.class.getClassLoader());
     timeRequested = (Date) in.readSerializable();
   }
 
@@ -92,7 +94,8 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
         Objects.equal(this.timeRequested, other.timeRequested) &&
         Objects.equal(this.superCabId, other.superCabId) &&
         Objects.equal(this.source, other.source) &&
-        Objects.equal(this.destination, other.destination)
+        Objects.equal(this.destination, other.destination) &&
+        Objects.equal(this.status, other.status)
     ){
       return true;
     }
