@@ -20,6 +20,7 @@ public class CustomAddressPersister extends StringType {
 
   private ObjectMapper mObjectMapper;
   private ObjectReader mObjectReader;
+  @SuppressWarnings("unused")
   private ObjectWriter mObjectWriter;
 
   //@SuppressWarnings("deprecation")
