@@ -14,7 +14,6 @@ import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.tasks.PutFareTask;
 import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
 import co.gargoyle.supercab.android.utilities.BroadcastUtils;
-import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.google.common.base.Optional;
@@ -30,7 +29,7 @@ public class FareDetailActivity extends RoboActivity {
   @SuppressWarnings("unused")
   @Inject private BroadcastUtils mBroadcastUtils;
 
-  @Inject private PreferenceUtils mPreferenceUtils;
+//  @Inject private PreferenceUtils mPreferenceUtils;
   
   private Fare mFare;
 
@@ -58,7 +57,6 @@ public class FareDetailActivity extends RoboActivity {
     mTimeLabel.setText(StringUtils.getNiceTime(fare.timeRequested));
     
     mPassengerLabel.setText(fare.status.toString());
-
   }
   
   ////////////////////////////////////////////////////////////

@@ -2,6 +2,7 @@ package co.gargoyle.supercab.android.activities;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import roboguice.inject.InjectView;
@@ -12,7 +13,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
@@ -21,8 +25,10 @@ import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
 import co.gargoyle.supercab.android.enums.FareStatus;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
+import co.gargoyle.supercab.android.tasks.GetFareTask;
 import co.gargoyle.supercab.android.tasks.PostFareTask;
 import co.gargoyle.supercab.android.tasks.PutFareTask;
+import co.gargoyle.supercab.android.tasks.listeners.GetFareListener;
 import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
 import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
 import co.gargoyle.supercab.android.utilities.StringUtils;
@@ -32,7 +38,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 
-public class ConfirmationActivity extends AbstractMapActivity implements PostFareListener {
+public class ConfirmationActivity extends AbstractMapActivity {
 
   private static final int PROGRESS_DIALOG = 1;
 
@@ -49,12 +55,16 @@ public class ConfirmationActivity extends AbstractMapActivity implements PostFar
 
   protected ProgressDialog mProgressDialog;
 
+  private FareStatus mMode;
+
   ////////////////////////////////////////////////////////////
   // Activity Lifecycle
   ////////////////////////////////////////////////////////////
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
     setContentView(R.layout.confirmation);
 
@@ -81,10 +91,102 @@ public class ConfirmationActivity extends AbstractMapActivity implements PostFar
   public void onCancelButtonClick(View v) {
     cancelFare();
   }
+  
+  ////////////////////////////////////////////////////////////
+  // Menus
+  ////////////////////////////////////////////////////////////
+  
+  private static final int MENU_LOGOUT = Menu.FIRST;
+  private static final int MENU_REFRESH = Menu.FIRST + 1;
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    super.onCreateOptionsMenu(menu);
+
+    menu.add(0, MENU_LOGOUT, 0, getString(R.string.logout))
+        .setIcon(android.R.drawable.ic_menu_delete);
+    menu.add(0, MENU_REFRESH, 1, getString(R.string.refresh)).setIcon(
+        R.drawable.ic_menu_refresh);
+
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case MENU_LOGOUT:
+        //logout();
+        return true;
+      case MENU_REFRESH:
+        refresh();
+        return true;
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
+  @Override
+  public void onOptionsMenuClosed(Menu menu) {
+    super.onOptionsMenuClosed(menu);
+  }
 
   ////////////////////////////////////////////////////////////
   // Main Methods
   ////////////////////////////////////////////////////////////
+
+  private static final HashMap<FareStatus, Integer> sTextForMode = new HashMap<FareStatus, Integer>();
+
+  static {
+    sTextForMode.put(FareStatus.waiting, R.string.mode_passenger_waiting);
+    sTextForMode.put(FareStatus.accepted, R.string.mode_passenger_accepted);
+    sTextForMode.put(FareStatus.active, R.string.mode_passenger_active);
+    sTextForMode.put(FareStatus.complete, R.string.mode_passenger_complete);
+  }
+
+  private void setMode(FareStatus status) {
+    mMode = status;
+
+    // Update the GUI
+    mDriverLabel.setText(getString(sTextForMode.get(status)));
+  }
+
+  private void refresh() {
+    GetFareTask task = new GetFareTask(this, new GetFareListener() {
+      @Override
+      public void completed(Optional<Fare> fare) {
+        setProgressBarIndeterminateVisibility(false);
+        if (!fare.isPresent()) {
+          mDriverLabel.setText("Error! Try again.");
+        } else {
+          mFare = fare.get();
+          updateFare(mFare);
+
+          setMode(mFare.status);
+          Toast.makeText(ConfirmationActivity.this, "Finished refreshing fare.", Toast.LENGTH_SHORT).show();
+        }
+      }
+
+    @Override
+    public void handleError(Throwable exception) {
+      setProgressBarIndeterminateVisibility(false);
+      goBlooey(exception);
+    }
+
+    @Override
+    public void unauthorized() {
+      goBlooey(new Exception("Your app is now in an invalid state! Please call your driver."));
+//      logout();
+    }
+
+    });
+
+    setProgressBarIndeterminateVisibility(true);
+    task.execute(mFare.superCabId);
+  }
+  
+  private void updateFare(Fare fare) {
+    RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
+    dao.update(fare);
+  }
 
   private void deleteFareFromDb(Fare fare) {
     RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
@@ -144,32 +246,36 @@ public class ConfirmationActivity extends AbstractMapActivity implements PostFar
   }
 
   private void uploadFare(Fare fare) {
-    PostFareTask task = new PostFareTask(this, this);
-    task.execute(fare);
-  }
+    PostFareTask task = new PostFareTask(this, new PostFareListener() {
+      @Override
+      public void completed(Optional<String> fareId) {
+        setProgressBarIndeterminateVisibility(false);
+        if (!fareId.isPresent()) {
+          mDriverLabel.setText("Error! Try again.");
+        } else {
+          mFare.superCabId = fareId.get();
+          updateFare(mFare);
 
-  @Override
-  public void completed(Optional<String> fareId) {
-    if (!fareId.isPresent()) {
-      mDriverLabel.setText("Error! Try again.");
-    } else {
-      mFare.superCabId = fareId.get();
-      Toast.makeText(this,
-                     "Finished uploading fare",
-                     Toast.LENGTH_SHORT).show();
-      mDriverLabel.setText("Awaiting driver...");
+          setMode(FareStatus.waiting);
+          Toast.makeText(ConfirmationActivity.this, "Finished uploading fare.", Toast.LENGTH_SHORT).show();
+        }
+      }
+
+    @Override
+    public void handleError(Throwable exception) {
+      setProgressBarIndeterminateVisibility(false);
+      goBlooey(exception);
     }
+
+    });
+    setProgressBarIndeterminateVisibility(true);
+    task.execute(fare);
   }
 
   ////////////////////////////////////////////////////////////
   // Error Handling
   ////////////////////////////////////////////////////////////
 
-  @Override
-  public void handleError(Throwable exception) {
-    goBlooey(exception);
-
-  }
 
   void goBlooey(Throwable t) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);

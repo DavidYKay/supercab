@@ -3,9 +3,6 @@ package co.gargoyle.supercab.android.tasks;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -13,61 +10,56 @@ import org.restlet.resource.ResourceException;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import co.gargoyle.supercab.android.enums.FareStatus;
 import co.gargoyle.supercab.android.model.Fare;
-import co.gargoyle.supercab.android.tasks.listeners.GetFaresListener;
+import co.gargoyle.supercab.android.tasks.listeners.GetFareListener;
 import co.gargoyle.supercab.android.utilities.CommonUtils;
 import co.gargoyle.supercab.android.utilities.ServerUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.base.Optional;
 
-public class GetFaresTask extends AsyncTask<Map<String, Object>, Integer, List<Fare>> {
+public class GetFareTask extends AsyncTask<String, Integer, Optional<Fare>> {
 
   @SuppressWarnings("unused")
-  private static final String TAG = "GetFaresTask";
+  private static final String TAG = "GetFareTask";
 
-  private GetFaresListener mListener;
+  private GetFareListener mListener;
   private Context mContext;
   private Exception mException;
 
-  public GetFaresTask(Context context, GetFaresListener listener) {
+  public GetFareTask(Context context, GetFareListener listener) {
     mListener = listener;
     mContext = context;
   }
 
   @Override
-  protected List<Fare> doInBackground(Map<String, Object>... paramsList) {
+  protected Optional<Fare> doInBackground(String... paramsList) {
+    String id = paramsList[0];
 
-    Map<String, Object> params = paramsList[0];
-
-    FareStatus status = (FareStatus) params.get("status");
-    URI uri = getURI(status);
+    URI uri = getURI(id);
 
     ClientResource fareProfile = new ClientResource(uri);
     ServerUtils.addAuthHeaderToClientResource(mContext, fareProfile);
     try {
       Representation rep = fareProfile.get();
       if (fareProfile.getStatus().isSuccess()) {
-        List<Fare> fares = parseFaresFromRepresentation(rep);
-        return fares;
+        return parseFareFromRepresentation(rep);
       }
     } catch (ResourceException ex) {
       ex.printStackTrace();
       mException = ex;
     }
 
-    return new ArrayList<Fare>();
+    return Optional.absent();
   }
 
   @Override
-  protected void onPostExecute(List<Fare> fares) {
-    mListener.completed(fares);
-    
+  protected void onPostExecute(Optional<Fare> fare) {
+    mListener.completed(fare);
+
     if (mException != null) {
       if (mException instanceof ResourceException) {
         ResourceException resEx = (ResourceException) mException;
@@ -84,13 +76,10 @@ public class GetFaresTask extends AsyncTask<Map<String, Object>, Integer, List<F
   protected void onProgressUpdate(Integer... values) {
 
   }
-  
-  private URI getURI(FareStatus status) {
+
+  private URI getURI(String id) {
     try {
-      String serverUrl = CommonUtils.SERVER_URL + "/fare";
-      if (status != null) {
-        serverUrl += "/status/" + status.toString();
-      }
+      String serverUrl = CommonUtils.SERVER_URL + "/fare/" + id;
 
       URI uri = new URI(serverUrl);
       return uri;
@@ -100,15 +89,15 @@ public class GetFaresTask extends AsyncTask<Map<String, Object>, Integer, List<F
     }
   }
 
-  private List<Fare> parseFaresFromRepresentation(Representation rep) {
+  private Optional<Fare> parseFareFromRepresentation(Representation rep) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    JavaType type = TypeFactory.defaultInstance().constructParametricType(List.class, Fare.class);
-    ObjectReader reader = mapper.reader(type);
+    ObjectReader reader = mapper.reader(Fare.class);
 
     try {
-      return reader.readValue(rep.getText());
+      Fare fare = reader.readValue(rep.getText());
+      return Optional.of(fare);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
       mException = e;
@@ -117,7 +106,6 @@ public class GetFaresTask extends AsyncTask<Map<String, Object>, Integer, List<F
       mException = e;
     }
 
-    return new ArrayList<Fare>();
+    return Optional.absent();
   }
-
 }
