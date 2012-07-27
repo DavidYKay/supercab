@@ -32,9 +32,10 @@ public class Fare extends SuperCabBaseModel implements Parcelable {
 
   @JsonProperty("requestTime")
 //  @JsonSerialize(using = CustomDateSerializer.class)
-  @DatabaseField()
+  @DatabaseField
   public Date timeRequested;
 
+  @DatabaseField
   public FareStatus status;
 
   public Fare() {

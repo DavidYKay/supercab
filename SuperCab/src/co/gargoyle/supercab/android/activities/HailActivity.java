@@ -546,8 +546,49 @@ public class HailActivity extends RoboMapActivity {
   }
 
   ////////////////////////////////////////////////////////////
-  // Listeners
+  // Fare
   ////////////////////////////////////////////////////////////
+
+  private Optional<Fare> getFareFromDb() {
+    RuntimeExceptionDao <Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
+
+    QueryBuilder<Fare, Integer> builder = dao.queryBuilder();
+    
+    Where<Fare, Integer> where = builder.where();
+    try {
+      where.eq("status", FareStatus.waiting);
+      builder.setWhere(where);
+      
+      // get all fares that are waiting
+      List<Fare> fares = dao.query(builder.prepare());
+
+      if (fares.size() > 0) {
+        return Optional.of(fares.get(0));
+      } else {
+        return Optional.absent();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return Optional.absent();
+  }
+
+  private void saveFareToDb(Fare fare) {
+    RuntimeExceptionDao <Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
+    dao.create(fare);
+  }
+  
+  private Fare getFareFromUi() {
+    PickupPoint source = mPickupDropoffOverlay.get(0);
+    PickupPoint destination = mPickupDropoffOverlay.get(1);
+    Date timeRequested = new Date();
+
+    Fare fare = new Fare(source, destination, timeRequested);
+    fare.status = FareStatus.waiting;
+
+    return fare;
+  }
 
   ////////////////////////////////////////////////////////////
   // Util
@@ -577,7 +618,6 @@ public class HailActivity extends RoboMapActivity {
   
   private void logout() {
     RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
-//    UserModel arg0;
     DeleteBuilder<UserModel, Integer> builder = dao.deleteBuilder();
     PreparedDelete<UserModel> deleteAll;
     try {
@@ -598,16 +638,6 @@ public class HailActivity extends RoboMapActivity {
   // Nav
   ////////////////////////////////////////////////////////////
   
-  private Fare getFareFromUi() {
-    PickupPoint source = mPickupDropoffOverlay.get(0);
-    PickupPoint destination = mPickupDropoffOverlay.get(1);
-    Date timeRequested = new Date();
-
-    Fare fare = new Fare(source, destination, timeRequested);
-
-    return fare;
-  }
-
   private void proceedToConfirmation(Fare fare) {
     Intent i = new Intent(HailActivity.this, ConfirmationActivity.class);
     i.putExtra(KEY_FARE, fare);
