@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.utilities.StringUtils;
 
@@ -107,6 +108,37 @@ public class JacksonTest {
     assertNotNull(finalResult.role);
 
     assertNotNull(finalResult.token);
+
+    assertThat(finalExpected, is(equalTo(finalResult)));
+
+  }
+  
+  @Test
+  public void shouldConvertFare() throws Exception {
+    String expected = FixtureFactory.readFileAsString("../SuperCab-Test/fixtures/fare.json");
+
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    ObjectReader reader =  mapper.reader(Fare.class);
+    Fare fare = reader.readValue(expected);
+
+    ObjectWriter writer = mapper.writer();
+    String result = writer.writeValueAsString(fare);
+
+    assertFalse(StringUtils.stringIsEmpty(result));
+
+    Fare finalExpected = reader.readValue(expected);
+    Fare finalResult = reader.readValue(result);
+
+    assertNotNull(finalResult.source);
+    assertNotNull(finalResult.destination);
+
+    assertNotNull(finalResult.status);
+    //    assertNotNull(finalResult.password);
+
+    assertNotNull(finalResult.timeRequested);
+    assertNotNull(finalResult.superCabId);
 
     assertThat(finalExpected, is(equalTo(finalResult)));
 

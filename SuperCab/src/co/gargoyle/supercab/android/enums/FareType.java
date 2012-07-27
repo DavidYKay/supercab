@@ -7,6 +7,7 @@ public enum FareType implements Parcelable {
 
   WAITING,
   PICKUP,
+  UNKNOWN,
   DROPOFF;
 
   @Override

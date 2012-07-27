@@ -1,12 +1,14 @@
 package co.gargoyle.supercab.android.activities;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -25,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
+import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
 import co.gargoyle.supercab.android.enums.FareType;
 import co.gargoyle.supercab.android.map.ExtendedMapView;
 import co.gargoyle.supercab.android.map.ExtendedMapView.OnMoveListener;
@@ -34,7 +37,9 @@ import co.gargoyle.supercab.android.map.PickupDropoffOverlayTapListener;
 import co.gargoyle.supercab.android.map.XOverlay;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
+import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
+import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
@@ -42,6 +47,10 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedDelete;
 
 public class HailActivity extends RoboMapActivity {
 
@@ -79,6 +88,8 @@ public class HailActivity extends RoboMapActivity {
   private Location mLastKnownLocation;
   private FareType mMode = FareType.PICKUP;
   private boolean mHasGeolocated;
+
+  @Inject private PreferenceUtils mPreferenceUtils;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -191,6 +202,7 @@ public class HailActivity extends RoboMapActivity {
   public void onProfileButtonClicked(View view) {
     Log.i(TAG, "onProfileButtonClicked()");
 
+    logout();
   }
 
   public void onLocateButtonClicked(View view) {
@@ -558,11 +570,34 @@ public class HailActivity extends RoboMapActivity {
     p.recycle();
     return newAddress;
   }
+  
+  ////////////////////////////////////////////////////////////
+  // Logout
+  ////////////////////////////////////////////////////////////
+  
+  private void logout() {
+    RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
+//    UserModel arg0;
+    DeleteBuilder<UserModel, Integer> builder = dao.deleteBuilder();
+    PreparedDelete<UserModel> deleteAll;
+    try {
+      deleteAll = builder.prepare();
+      int result = dao.delete(deleteAll);
+      mPreferenceUtils.clearUser();
+
+      startActivity(new Intent(HailActivity.this, LoginActivity.class));
+      finish();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      goBlooey(e);
+    }
+   
+  }
 
   ////////////////////////////////////////////////////////////
   // Nav
   ////////////////////////////////////////////////////////////
-
+  
   private Fare getFareFromUi() {
     PickupPoint source = mPickupDropoffOverlay.get(0);
     PickupPoint destination = mPickupDropoffOverlay.get(1);
@@ -577,7 +612,37 @@ public class HailActivity extends RoboMapActivity {
     Intent i = new Intent(HailActivity.this, ConfirmationActivity.class);
     i.putExtra(KEY_FARE, fare);
     startActivity(i);
+  }
+  
+  ////////////////////////////////////////////////////////////
+  // ORMLite
+  ////////////////////////////////////////////////////////////
 
+  private SCOrmLiteHelper databaseHelper;
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (databaseHelper != null) {
+      OpenHelperManager.releaseHelper();
+      databaseHelper = null;
+    }
+  }
 
+  private SCOrmLiteHelper getHelper() {
+    if (databaseHelper == null) {
+      databaseHelper =
+          OpenHelperManager.getHelper(this, SCOrmLiteHelper.class);
+    }
+    return databaseHelper;
+  }
+  
+  ////////////////////////////////////////////////////////////
+  // Utils
+  ////////////////////////////////////////////////////////////
+  
+  void goBlooey(Throwable t) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+    builder.setTitle("Exception!").setMessage(t.toString()).setPositiveButton("OK", null).show();
   }
 }

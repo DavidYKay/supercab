@@ -1,7 +1,8 @@
 package co.gargoyle.supercab.android;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.util.List;
 import java.util.Locale;
@@ -19,8 +20,6 @@ import co.gargoyle.supercab.android.model.PickupPoint;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 
@@ -62,13 +61,13 @@ public class OrmliteTest {
  	
 
     // get our query builder from the DAO
-    QueryBuilder<PickupPoint, Integer> queryBuilder = dao.queryBuilder();
+//    QueryBuilder<PickupPoint, Integer> queryBuilder = dao.queryBuilder();
 
     // the 'password' field must be equal to "qwerty"
     //queryBuilder.where().eq(Account.PASSWORD_FIELD_NAME, "qwerty");
 
     // prepare our sql statement
-    PreparedQuery<PickupPoint> preparedQuery = queryBuilder.prepare();
+//    PreparedQuery<PickupPoint> preparedQuery = queryBuilder.prepare();
     // query for all accounts that have "qwerty" as a password
     //List<Account> accountList = accountDao.query(preparedQuery);
 

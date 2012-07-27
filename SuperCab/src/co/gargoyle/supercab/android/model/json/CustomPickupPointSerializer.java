@@ -17,14 +17,11 @@ public class CustomPickupPointSerializer extends JsonSerializer<PickupPoint> {
       throws IOException, JsonProcessingException {
 
     Address address = pickupPoint.address;
-        // latitude
+
     generator.writeStartObject();
     generator.writeNumberField("lat", address.getLatitude());
     generator.writeNumberField("lon", address.getLongitude());
     generator.writeStringField("address", address.getAddressLine(0));
-    //latitude = models.FloatField()
-    //longitude = models.FloatField()
-    //address = models.TextField()
     generator.writeEndObject();
   }
 

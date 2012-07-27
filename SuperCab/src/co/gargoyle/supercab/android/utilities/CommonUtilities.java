@@ -32,7 +32,13 @@ public final class CommonUtilities {
   //public static final String SERVER_URL = "http://192.168.0.107:8080/push";
   //public static final String SERVER_URL = "http://192.168.0.108:8080";
 
-  public static final String SERVER_URL = "http://192.168.0.100:8080";
+  //public static final String SERVER_URL = "http://192.168.0.100:8080";
+  
+  public static final String SERVER_URL = "http://supercab.herokuapp.com";
+
+  //public static final String SERVER_URL = "http://requestb.in/pijt1epi";
+  
+  //public static final String SERVER_URL = "http://192.168.43.185:8080";
 
   // iHub
   //public static final String SERVER_URL = "http://192.168.1.207:8080";

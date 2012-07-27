@@ -11,8 +11,8 @@ import org.restlet.resource.ResourceException;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import co.gargoyle.supercab.android.model.Fare;
+import co.gargoyle.supercab.android.network.FareRepresentation;
 import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
 import co.gargoyle.supercab.android.utilities.CommonUtilities;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
@@ -22,19 +22,21 @@ import com.google.common.base.Optional;
 
 public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
 
-   private PostFareListener mListener;
-   private Exception mException;
-   private Context mContext;
-   
-   private PreferenceUtils mPreferenceUtils;
 
-   public PostFareTask(Context context, PostFareListener listener) {
-     mListener = listener;
-     mContext = context;
-     mPreferenceUtils = new PreferenceUtils(mContext);
-   }
-
+  @SuppressWarnings("unused")
   private static final String TAG = "UploadFareTask";
+
+  private PostFareListener mListener;
+  private Exception mException;
+  private Context mContext;
+
+  private PreferenceUtils mPreferenceUtils;
+
+  public PostFareTask(Context context, PostFareListener listener) {
+    mListener = listener;
+    mContext = context;
+    mPreferenceUtils = new PreferenceUtils(mContext);
+  }
 
   @Override
   protected Optional<String> doInBackground(Fare... fares) {
@@ -67,17 +69,14 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
       }
       Representation rep = fareProfile.post(jacksonRep);
       if (fareProfile.getStatus().isSuccess()) {
-        try {
-          Log.d(TAG, "response: " + rep.getText());
-          FareRepresentation receivedFare = new FareRepresentation(rep);
-          Optional<Fare> optionalFare = receivedFare.getFare();
-          if (optionalFare.isPresent()) {
-            return Optional.of(optionalFare.get().superCabId);
-          } else {
-            return Optional.absent();
-          }
-        } catch (IOException e) {
-          e.printStackTrace();
+
+        FareRepresentation receivedFare = new FareRepresentation(rep);
+        Optional<Fare> optionalFare = receivedFare.getFare();
+        if (optionalFare.isPresent()) {
+          return Optional.of(optionalFare.get().superCabId);
+        } else {
+//          Log.d(TAG, "response: " + rep.getText());
+          return Optional.absent();
         }
       }
     } catch (ResourceException e) {
@@ -104,7 +103,7 @@ public class PostFareTask extends AsyncTask<Fare, Integer, Optional<String>> {
   private URI getURI() {
     try {
       String serverUrl = CommonUtilities.SERVER_URL + "/fare";
-      //String serverUrl = CommonUtilities.SERVER_URL + "/api/v1/fare/";
+      //String serverUrl = "http://requestb.in/pijt1epi";
       URI uri = new URI(serverUrl);
       return uri;
     } catch (URISyntaxException e) {

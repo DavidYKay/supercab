@@ -1,0 +1,16 @@
+{
+  "status":"waiting",
+  "passenger":"50125525e4b03f356e80dbbe",
+  "requestTime":1343381750323,
+  "from":{
+    "lat":-1.296497,
+    "lon":36.796641,
+    "address":"1 Kindaruma Rd"
+  },
+  "to":{
+    "lat":-1.296497,
+    "lon":36.796641,
+    "address":"1 Kindaruma Rd"
+  },
+  "_id":"501260fce4b095c403976da7"
+}

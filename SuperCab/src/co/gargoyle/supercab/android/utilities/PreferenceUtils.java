@@ -52,6 +52,11 @@ public class PreferenceUtils {
     Optional<UserCredentials> creds = getCredentials();
     return creds.isPresent();
   }
+  
+  public void clearUser() {
+    saveCredentials(null, null);
+    saveToken(null);
+  }
 
   public void saveCredentials(UserCredentials credentials) {
     saveCredentials(credentials.username, credentials.password);
