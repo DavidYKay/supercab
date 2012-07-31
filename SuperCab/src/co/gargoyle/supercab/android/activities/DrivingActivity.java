@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
@@ -73,6 +74,8 @@ public class DrivingActivity extends AbstractMapActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
     Log.i(TAG, "Starting up, creating directories");
 
@@ -322,6 +325,7 @@ public class DrivingActivity extends AbstractMapActivity {
     PutFareTask task = new PutFareTask(this, new PutFareListener() {
       @Override
       public void completed(Optional<Fare> fare) {
+        setProgressBarIndeterminateVisibility(false);
         if (fare.isPresent()) {
           Toast.makeText(DrivingActivity.this, "Customer Notified!", Toast.LENGTH_SHORT).show();
           mFare = fare.get();
@@ -333,9 +337,11 @@ public class DrivingActivity extends AbstractMapActivity {
 
       @Override
       public void handleError(Throwable exception) {
+        setProgressBarIndeterminateVisibility(false);
         goBlooey(exception);
       }
     });
+    setProgressBarIndeterminateVisibility(true);
     task.execute(mFare);
 
   }
