@@ -215,7 +215,7 @@ public class DrivingActivity extends AbstractMapActivity {
   // Mode Management
   ////////////////////////////////////////////////////////////
 
-  protected void setStatus(FareStatus status) {
+  protected void setMode(FareStatus status) {
     mFareStatusLabel.setText(getString(sTextForMode.get(status)));
 
     if (status == FareStatus.accepted) {
@@ -255,7 +255,7 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
 
   private void updateUiWithFare(Fare fare) {
-    setStatus(fare.status);
+    setMode(fare.status);
 
     //setNavTextWithPoint(fare.source);
 
@@ -439,7 +439,7 @@ public class DrivingActivity extends AbstractMapActivity {
           Toast.makeText(DrivingActivity.this, "Customer Notified!", Toast.LENGTH_SHORT).show();
           updateFareInDb(fare.get());
           mFare = fare.get();
-          setStatus(mFare.status);
+          setMode(mFare.status);
         } else {
           // Something happened. better not risk it
         }
