@@ -2,6 +2,7 @@ package co.gargoyle.supercab.android.activities;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
@@ -40,6 +41,8 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedDelete;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 public class DrivingActivity extends AbstractMapActivity {
 
@@ -74,15 +77,24 @@ public class DrivingActivity extends AbstractMapActivity {
     Log.i(TAG, "Starting up, creating directories");
 
     Intent i = getIntent();
-    Fare fare = i.getParcelableExtra(Constants.KEY_FARE); 
+    //Fare fare = i.getParcelableExtra(Constants.KEY_FARE); 
+    //if (fare == null) {
+    //  onCouldNotFindFare();
+    //} else {
+    //  mFare = fare;
+    //}
 
-    //Optional<Fare> fare = getFareFromDb(fareId);
-
-    if (fare == null) {
-      Toast.makeText(DrivingActivity.this, "Error! No fare found.", Toast.LENGTH_SHORT).show();
-      finish();
+    long fareId = i.getParcelableExtra(Constants.KEY_FARE_ID); 
+    if (fareId == 0) {
+    } else {
+      Optional<Fare> fare = getFareFromDb(fareId);
+      if (!fare.isPresent()) {
+        onCouldNotFindFare();
+      } else {
+        //fare = getFareFromDb(fareId);
+        mFare = fare.get();
+      }
     }
-    mFare = fare;
 
     setContentView(R.layout.driving);
 
@@ -360,6 +372,44 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // Nav
   ////////////////////////////////////////////////////////////
+  
+
+  private void onCouldNotFindFare() {
+    onCouldNotFindFare();
+    Toast.makeText(DrivingActivity.this, "Error! No fare found.", Toast.LENGTH_SHORT).show();
+    finish();
+  }
+
+  ////////////////////////////////////////////////////////////
+  // DB
+  ////////////////////////////////////////////////////////////
+        
+  private Optional<Fare> getFareFromDb(long fareId) {
+    // get the fare from the DB.
+    RuntimeExceptionDao dao = getHelper().getRuntimeDao(Fare.class);
+
+    QueryBuilder<Fare, Integer> builder = dao.queryBuilder();
+    
+    Where<Fare, Integer> where = builder.where();
+    try {
+      where.eq("id", fareId);
+      builder.setWhere(where);
+      
+      // get all fares that are waiting
+      List<Fare> fares = dao.query(builder.prepare());
+      if (fares.size() > 0) {
+        Fare fare = fares.get(0);
+        dao.refresh(fare);
+        return Optional.of(fare);
+      } else {
+        return Optional.absent();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return Optional.absent();
+  }
   
   ////////////////////////////////////////////////////////////
   // ORMLite

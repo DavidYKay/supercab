@@ -5,6 +5,7 @@ import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import com.google.inject.Inject;
 
 public class FareDetailActivity extends RoboActivity {
   
+  protected static final String TAG = "FareDetailActivity";
   @InjectView(R.id.time_value) private TextView mTimeLabel;
   @InjectView(R.id.from_address) private TextView mSourceText;
   @InjectView(R.id.to_address) private TextView mDestinationText;
@@ -40,7 +42,7 @@ public class FareDetailActivity extends RoboActivity {
   ////////////////////////////////////////////////////////////
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -83,6 +85,7 @@ public class FareDetailActivity extends RoboActivity {
           finish();
         } else {
           // Something happened. better not risk it
+          Log.e(TAG, "Failed to receive fare back!");
         }
       }
 

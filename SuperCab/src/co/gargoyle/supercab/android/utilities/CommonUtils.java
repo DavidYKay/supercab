@@ -30,9 +30,9 @@ public final class CommonUtils {
   //    static final String SERVER_URL = null;
   //public static final String SERVER_URL = "http://192.168.0.107:8000/api";
   //public static final String SERVER_URL = "http://192.168.0.107:8080/push";
-  //public static final String SERVER_URL = "http://192.168.0.108:8080";
+  public static final String SERVER_URL = "http://192.168.0.104:8080";
 
-  public static final String SERVER_URL = "http://192.168.0.100:8080";
+  //public static final String SERVER_URL = "http://192.168.0.100:8080";
   
   //public static final String SERVER_URL = "http://supercab.herokuapp.com";
 

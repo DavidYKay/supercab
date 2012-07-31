@@ -41,8 +41,8 @@
 <!--
 <string name="default_server_url">http://192.168.0.100:8000</string>
 <string name="default_server_url">http://www.supercab.com</string>
--->
 <string name="default_server_url">http://192.168.0.100:8000</string>
+-->
 <string name="delete_confirm">Delete %s form(s)?</string>
 <string name="delete_file">Delete Selected</string>
 <string name="delete_no">Do Not Delete</string>

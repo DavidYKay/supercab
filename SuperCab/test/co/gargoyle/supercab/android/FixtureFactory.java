@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.util.Date;
 
 import android.location.Address;
+import co.gargoyle.supercab.android.enums.FareStatus;
 import co.gargoyle.supercab.android.enums.PointType;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
@@ -30,6 +31,7 @@ public class FixtureFactory {
         createExamplePickupPoint(PointType.DROPOFF),
         time
     );
+    fare.status = FareStatus.waiting;
     return fare;
   }
   
