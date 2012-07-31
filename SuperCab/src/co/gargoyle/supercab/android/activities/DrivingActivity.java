@@ -84,8 +84,9 @@ public class DrivingActivity extends AbstractMapActivity {
     //  mFare = fare;
     //}
 
-    long fareId = i.getParcelableExtra(Constants.KEY_FARE_ID); 
-    if (fareId == 0) {
+    long fareId = i.getIntExtra(Constants.KEY_FARE_ID, -1); 
+    if (fareId == -1) {
+      onCouldNotFindFare();
     } else {
       Optional<Fare> fare = getFareFromDb(fareId);
       if (!fare.isPresent()) {
@@ -375,7 +376,6 @@ public class DrivingActivity extends AbstractMapActivity {
   
 
   private void onCouldNotFindFare() {
-    onCouldNotFindFare();
     Toast.makeText(DrivingActivity.this, "Error! No fare found.", Toast.LENGTH_SHORT).show();
     finish();
   }
