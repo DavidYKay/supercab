@@ -16,7 +16,6 @@
     android:layout_height="48dp"
     android:orientation="horizontal"
     >
-
     <TextView
       android:id="@+id/app_logo"
       android:layout_width="wrap_content"
@@ -45,19 +44,19 @@
   <!--
   com.google.android.maps.MapView
 -->
+
   <co.gargoyle.supercab.android.map.ExtendedMapView
-    android:id="@+id/map"
-    android:layout_width="fill_parent"
-    android:layout_height="0px"
-    android:layout_weight="75"
-    android:apiKey="@string/maps_api_key"
-    android:clickable="true" />
+      android:id="@+id/map"
+      android:layout_width="fill_parent"
+      android:layout_height="0px"
+      android:layout_weight="65"
+      android:apiKey="@string/maps_api_key"
+      android:clickable="true" />
 
   <LinearLayout
     android:id="@+id/bottom_bar_pickup"
     android:layout_width="fill_parent"
-    android:layout_height="0px"
-    android:layout_weight="25"
+    android:layout_height="128dp"
     android:orientation="vertical"
     >
     <TextView
@@ -127,27 +126,28 @@
     <Button
       android:id="@+id/hail_button"
       android:layout_width="fill_parent"
-      android:layout_height="48dp"
+      android:layout_height="fill_parent"
       android:layout_alignParentBottom="true"
-      android:text="@string/pick_me_up_here"
-      android:textSize="24dp"
       android:onClick="onHailButtonClicked"
-      />
+      android:text="@string/pick_me_up_here"
+      android:textSize="24dp" />
+
   </LinearLayout>
 
-  <LinearLayout
+  <RelativeLayout
     android:id="@+id/bottom_bar_confirmation"
     android:layout_width="fill_parent"
-    android:layout_height="0px"
-    android:layout_weight="25"
+    android:layout_height="128dp"
     android:orientation="vertical"
     android:visibility="gone"
     >
 
     <LinearLayout
+      android:id="@+id/confirmation_pickup_bar"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
+      android:layout_alignParentTop="true"
       >
 
       <TextView
@@ -180,6 +180,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
+      android:layout_below="@+id/confirmation_pickup_bar"
       >
 
       <TextView
@@ -215,6 +216,7 @@
       android:layout_width="fill_parent"
       android:layout_height="48dp"
       android:orientation="horizontal"
+      android:layout_alignParentBottom="true"
       >
       <Button
         android:id="@+id/cancel_confirm_button"
@@ -238,6 +240,6 @@
         />
     </LinearLayout>
 
-  </LinearLayout>
+  </RelativeLayout>
 
 </LinearLayout>
