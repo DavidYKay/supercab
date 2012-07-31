@@ -342,14 +342,7 @@ public class HailActivity extends AbstractMapActivity {
   }
 
   private void zoomMapToFitBothPins() {
-    int latSpan = (int) (1.1 * mPickupDropoffOverlay.getLatSpanE6());
-    int lonSpan = (int) (1.1 * mPickupDropoffOverlay.getLonSpanE6());
-    mMapController.zoomToSpan(latSpan, lonSpan);
-
-    Optional<GeoPoint> result = mPickupDropoffOverlay.getCenterPoint();
-    if (result.isPresent()) {
-      mMapController.animateTo(result.get());
-    }
+    zoomMapToFitBothPins(mMapController, mPickupDropoffOverlay);
   }
 
   private void checkAndUpdateLastKnownLocation(Location location) {

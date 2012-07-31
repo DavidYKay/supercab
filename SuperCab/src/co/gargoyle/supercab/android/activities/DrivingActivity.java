@@ -1,13 +1,13 @@
 package co.gargoyle.supercab.android.activities;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -116,11 +116,10 @@ public class DrivingActivity extends AbstractMapActivity {
     };
     mMapView.getOverlays().add(mMyLocationOverlay);
 
-    mPickupDropoffOverlay = new PickupDropoffOverlay(
+    mPickupDropoffOverlay = PickupDropoffOverlay.Factory.createFromFare(
         getBoundedPinForMapOverlayWithMode(PointType.PICKUP),
-        getBoundedPinForMapOverlayWithMode(PointType.DROPOFF)
-        );
-
+        getBoundedPinForMapOverlayWithMode(PointType.DROPOFF),
+        mFare);
     mPickupDropoffOverlay.setTapListener(new PickupDropoffOverlayTapListener() {
       @Override
       public void itemWasTapped(PickupDropoffItem item) {
@@ -131,7 +130,8 @@ public class DrivingActivity extends AbstractMapActivity {
     });
     mMapView.getOverlays().add(mPickupDropoffOverlay);
 
-    centerMapAction();
+    //centerMapAction();
+    fitPinsAndMe();
   }
 
   ////////////////////////////////////////////////////////////
@@ -213,6 +213,20 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // Map Management
   ////////////////////////////////////////////////////////////
+  
+  private void fitPinsAndMe() {
+    ArrayList<GeoPoint> points = new ArrayList<GeoPoint>();
+
+    Location lastFix = mMyLocationOverlay.getLastFix();
+    if (lastFix != null) {
+      points.add(GeoUtils.locationToGeoPoint(lastFix));
+    }
+
+    points.add(GeoUtils.pickupPointToGeoPoint(mFare.source));
+    points.add(GeoUtils.pickupPointToGeoPoint(mFare.destination));
+
+    zoomMapToFitPoints(mMapController, points);
+  }
 
   private void zoomMapAction() {
     int zoomLevel = mMapView.getZoomLevel();
