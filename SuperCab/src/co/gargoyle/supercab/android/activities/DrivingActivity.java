@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.restlet.resource.ResourceException;
+
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -209,7 +211,7 @@ public class DrivingActivity extends AbstractMapActivity {
 
   protected void setStatus(FareStatus status) {
     //mFareStatusLabel.setText(getString(sTextForMode.get(status)));
-    
+
     mFareStatusLabel.setText(getString(sTextForMode.get(status)));
   }
 
@@ -219,12 +221,12 @@ public class DrivingActivity extends AbstractMapActivity {
 
   private void updateUiWithFare(Fare fare) {
     setStatus(fare.status);
-    
+
     Location location = GeoUtils.pickupPointToLocation(fare.source);
     mPickupLabel.setText(StringUtils.makeWebLinkFromUrl(
         GeoUtils.makeGoogleMapsUrl(location),
                       fare.source.toString()));
-        
+
                       //"geo:0,0?q=my+street+address",
                       //"geo:-1.29885,36.79089?q=iHub",
                       //"http://maps.google.com/?q=5.352135,100.299683&z=17",
@@ -346,13 +348,7 @@ public class DrivingActivity extends AbstractMapActivity {
       public void completed(Optional<Fare> fare) {
         setProgressBarIndeterminateVisibility(false);
         if (fare.isPresent() && fare.get().status == FareStatus.cancelled) {
-          Toast.makeText(DrivingActivity.this, "Fare Cancelled!", Toast.LENGTH_SHORT).show();
-          // clear out the fare from the DB
-          deleteFareFromDb(fare.get());
-
-          // back to the main screen
-          startActivity(new Intent(DrivingActivity.this, FareListActivity.class));
-          finish();
+          onFareCancelled(fare.get());
         } else {
           // Something happened. better not risk it
         }
@@ -406,6 +402,26 @@ public class DrivingActivity extends AbstractMapActivity {
   // Logout
   ////////////////////////////////////////////////////////////
 
+  private void onCrazyErrorState() {
+    Toast.makeText(DrivingActivity.this, "Crazy error! aborting!", Toast.LENGTH_LONG).show();
+
+    deleteFareAndLeave(mFare);
+  }
+
+  private void deleteFareAndLeave(Fare fare) {
+    // clear out the fare from the DB
+    deleteFareFromDb(fare);
+
+    // back to the main screen
+    startActivity(new Intent(DrivingActivity.this, FareListActivity.class));
+    finish();
+  }
+
+  private void onFareCancelled(Fare fare) {
+    Toast.makeText(DrivingActivity.this, "Fare Cancelled!", Toast.LENGTH_LONG).show();
+
+    deleteFareAndLeave(fare);
+  }
 
   private void logout() {
     RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
@@ -507,6 +523,17 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
 
   void handleThrowable(Throwable t) {
+    if (t instanceof ResourceException) {
+      ResourceException resEx = (ResourceException) t;
+
+      if (resEx.getStatus().getCode() == 400) {
+        //onFareCancelled(mFare);
+        // Something crazy happened
+        onCrazyErrorState();
+      } else {
+        goBlooey(t);
+      }
+    }
     goBlooey(t);
   }
 
