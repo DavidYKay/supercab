@@ -82,15 +82,20 @@ public class GeoUtils {
       return location.toString();
     }
   }
+  
+  public static Location getLocation(double lat, double lon) {
+    Location location = new Location("GeoUtils");
+    location.setLatitude(lat);
+    location.setLongitude(lon);
+
+    return location;
+  }
 
   public Location geoPointToLocation(GeoPoint geoPoint) {
     double latitude  = GeoUtils.integerToDoubleValue(geoPoint.getLatitudeE6());
     double longitude = GeoUtils.integerToDoubleValue(geoPoint.getLongitudeE6());
 
-    Location location = new Location("GeoUtils");
-    location.setLatitude(latitude);
-    location.setLongitude(longitude);
-
+    Location location = getLocation(latitude, longitude);
     return location;
   }
 
@@ -124,6 +129,10 @@ public class GeoUtils {
 
   public static GeoPoint getPoint(double lat, double lon) {
     return (new GeoPoint((int) (lat * 1000000.0), (int) (lon * 1000000.0)));
+  }
+
+  public static Location pickupPointToLocation(PickupPoint pickupPoint) {
+    return getLocation(pickupPoint.latitude, pickupPoint.longitude);
   }
 
   public static GeoPoint pickupPointToGeoPoint(PickupPoint pickupPoint) {
@@ -166,6 +175,12 @@ public class GeoUtils {
     boundingBox.maxLon = maxLon;
 
     return Optional.of(boundingBox);
+  }
+
+  public static String makeGoogleMapsUrl(Location location) {
+    return String.format("http://maps.google.com/?q=%s,%s&z=17",
+                         location.getLatitude(),
+                         location.getLongitude());
   }
 
 }

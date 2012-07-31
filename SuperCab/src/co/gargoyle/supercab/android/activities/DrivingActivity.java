@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -32,6 +33,7 @@ import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
 import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
+import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
@@ -53,6 +55,7 @@ public class DrivingActivity extends AbstractMapActivity {
   private static final String LOCATION_TAG = "location";
 
   @InjectView(R.id.fare_status) private TextView mFareStatusLabel;
+  @InjectView(R.id.confirmation_pickup_text) private TextView mPickupLabel;
   @InjectView(R.id.map) private ExtendedMapView mMapView;
 
   @Inject private GeoUtils mGeoUtils;
@@ -95,7 +98,6 @@ public class DrivingActivity extends AbstractMapActivity {
       if (!fare.isPresent()) {
         onCouldNotFindFare();
       } else {
-        //fare = getFareFromDb(fareId);
         mFare = fare.get();
       }
     }
@@ -130,6 +132,7 @@ public class DrivingActivity extends AbstractMapActivity {
     });
     mMapView.getOverlays().add(mPickupDropoffOverlay);
 
+    updateUiWithFare(mFare);
     //centerMapAction();
     fitPinsAndMe();
   }
@@ -204,11 +207,30 @@ public class DrivingActivity extends AbstractMapActivity {
   // Mode Management
   ////////////////////////////////////////////////////////////
 
+  protected void setStatus(FareStatus status) {
+    //mFareStatusLabel.setText(getString(sTextForMode.get(status)));
+    
+    mFareStatusLabel.setText(getString(sTextForMode.get(status)));
+  }
 
   ////////////////////////////////////////////////////////////
   // View Management
   ////////////////////////////////////////////////////////////
 
+  private void updateUiWithFare(Fare fare) {
+    setStatus(fare.status);
+    
+    Location location = GeoUtils.pickupPointToLocation(fare.source);
+    mPickupLabel.setText(StringUtils.makeWebLinkFromUrl(
+        GeoUtils.makeGoogleMapsUrl(location),
+                      fare.source.toString()));
+        
+                      //"geo:0,0?q=my+street+address",
+                      //"geo:-1.29885,36.79089?q=iHub",
+                      //"http://maps.google.com/?q=5.352135,100.299683&z=17",
+                      //"http://maps.google.com/?q=-1.29885,36.79089&z=17",
+    mPickupLabel.setMovementMethod(LinkMovementMethod.getInstance());
+  }
 
   ////////////////////////////////////////////////////////////
   // Map Management
@@ -238,7 +260,6 @@ public class DrivingActivity extends AbstractMapActivity {
     } else {
       // We're zoomed in enough. Stop.
     }
-
   }
 
   private void centerMapAction() {
@@ -385,9 +406,6 @@ public class DrivingActivity extends AbstractMapActivity {
   // Logout
   ////////////////////////////////////////////////////////////
 
-  protected void setStatus(FareStatus status) {
-    mFareStatusLabel.setText(getString(sTextForMode.get(status)));
-  }
 
   private void logout() {
     RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
