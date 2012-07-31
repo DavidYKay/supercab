@@ -35,18 +35,24 @@ public class XOverlay extends Overlay {
 
     Bitmap xBitmap = bitmap.get();
 
-    int canvasHeight = canvas.getHeight();
-    int canvasWidth = canvas.getWidth();
+    //int canvasHeight = canvas.getHeight();
+    //int canvasWidth = canvas.getWidth();
+    int mapHeight = mapView.getHeight();
+    int mapWidth  = mapView.getWidth();
 
     int bitmapHeight = xBitmap.getHeight();
     int bitmapWidth  = xBitmap.getWidth();
 
-    float left = (canvasWidth  - bitmapWidth) / 2;
+    //float left = (canvasWidth  - bitmapWidth) / 2;
+    float left = mapView.getLeft() + ((mapWidth  - bitmapWidth) / 2);
 
     //float top  = (canvasHeight / 2) - (4 * bitmapHeight);
     //float top  = (canvasHeight / 2) - (2 * bitmapHeight);
     //float top  = (canvasHeight / 2) - (bitmapHeight / 2);
-    float top  = (canvasHeight / 2) - (bitmapHeight);
+    //float top  = (canvasHeight / 2) - (bitmapHeight);
+    
+    //float top  = mapView.getTop() + (mapHeight / 2) - (bitmapHeight);
+    float top  = mapView.getTop() + (mapHeight / 2) - (2 * bitmapHeight);
 
     Paint paint = new Paint();
     canvas.drawBitmap(xBitmap, left, top, paint);

@@ -112,14 +112,13 @@
     <activity
       android:name=".activities.ConfirmationActivity"
       android:configChanges="orientation"
-      android:label="@string/app_name" >
+      android:label="@string/fare_status" >
     </activity>
 
     <activity
       android:name=".activities.HailActivity"
       android:configChanges="orientation"
       android:label="@string/app_name" >
-
 
     </activity>
 

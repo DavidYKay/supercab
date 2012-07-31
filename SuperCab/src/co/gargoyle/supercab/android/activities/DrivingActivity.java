@@ -2,6 +2,7 @@ package co.gargoyle.supercab.android.activities;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
@@ -40,6 +42,8 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedDelete;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 public class DrivingActivity extends AbstractMapActivity {
 
@@ -71,18 +75,30 @@ public class DrivingActivity extends AbstractMapActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
     Log.i(TAG, "Starting up, creating directories");
 
     Intent i = getIntent();
-    Fare fare = i.getParcelableExtra(Constants.KEY_FARE); 
+    //Fare fare = i.getParcelableExtra(Constants.KEY_FARE); 
+    //if (fare == null) {
+    //  onCouldNotFindFare();
+    //} else {
+    //  mFare = fare;
+    //}
 
-    //Optional<Fare> fare = getFareFromDb(fareId);
-
-    if (fare == null) {
-      Toast.makeText(DrivingActivity.this, "Error! No fare found.", Toast.LENGTH_SHORT).show();
-      finish();
+    long fareId = i.getIntExtra(Constants.KEY_FARE_ID, -1); 
+    if (fareId == -1) {
+      onCouldNotFindFare();
+    } else {
+      Optional<Fare> fare = getFareFromDb(fareId);
+      if (!fare.isPresent()) {
+        onCouldNotFindFare();
+      } else {
+        //fare = getFareFromDb(fareId);
+        mFare = fare.get();
+      }
     }
-    mFare = fare;
 
     setContentView(R.layout.driving);
 
@@ -180,7 +196,8 @@ public class DrivingActivity extends AbstractMapActivity {
 
   public void onCancelFareButtonClicked(View view) {
     Log.i(TAG, "onCancelFareButtonClicked()");
-
+    
+    cancelFare();
   }
 
   ////////////////////////////////////////////////////////////
@@ -303,12 +320,49 @@ public class DrivingActivity extends AbstractMapActivity {
   // Fare
   ////////////////////////////////////////////////////////////
 
+  // TODO: Unify with ConfirmationActivity code
+  private void cancelFare() {
+    // Tell the API we're done
+    mFare.status = FareStatus.cancelled;
+
+    // PUT fare to server, letting people know that we're cancelling it
+    final PutFareTask task = new PutFareTask(this, new PutFareListener() {
+      @Override
+      public void completed(Optional<Fare> fare) {
+        setProgressBarIndeterminateVisibility(false);
+        if (fare.isPresent() && fare.get().status == FareStatus.cancelled) {
+          Toast.makeText(DrivingActivity.this, "Fare Cancelled!", Toast.LENGTH_SHORT).show();
+          // clear out the fare from the DB
+          deleteFareFromDb(fare.get());
+
+          // back to the main screen
+          startActivity(new Intent(DrivingActivity.this, FareListActivity.class));
+          finish();
+        } else {
+          // Something happened. better not risk it
+        }
+        //mTasks.remove(this);
+      }
+
+      @Override
+      public void handleError(Throwable exception) {
+        setProgressBarIndeterminateVisibility(false);
+        handleThrowable(exception);
+      }
+    });
+
+    //mTasks.add(task);
+    setProgressBarIndeterminateVisibility(true);
+    task.execute(mFare);
+  }
+
   private void onFareArrived() {
     mFare.status = FareStatus.active;
 
     PutFareTask task = new PutFareTask(this, new PutFareListener() {
       @Override
       public void completed(Optional<Fare> fare) {
+        setProgressBarIndeterminateVisibility(false);
         if (fare.isPresent()) {
           Toast.makeText(DrivingActivity.this, "Customer Notified!", Toast.LENGTH_SHORT).show();
           mFare = fare.get();
@@ -320,9 +374,11 @@ public class DrivingActivity extends AbstractMapActivity {
 
       @Override
       public void handleError(Throwable exception) {
-        goBlooey(exception);
+        setProgressBarIndeterminateVisibility(false);
+        handleThrowable(exception);
       }
     });
+    setProgressBarIndeterminateVisibility(true);
     task.execute(mFare);
 
   }
@@ -361,6 +417,58 @@ public class DrivingActivity extends AbstractMapActivity {
   // Nav
   ////////////////////////////////////////////////////////////
   
+
+  private void onCouldNotFindFare() {
+    Toast.makeText(DrivingActivity.this, "Error! No fare found.", Toast.LENGTH_SHORT).show();
+    finish();
+  }
+
+  ////////////////////////////////////////////////////////////
+  // DB
+  ////////////////////////////////////////////////////////////
+  
+  private void deleteFareFromDb(Fare fare) {
+    RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
+
+    // delete all fares with the matching id
+    //dao.deleteById(fare.id);
+
+    DeleteBuilder<Fare, Integer> builder = dao.deleteBuilder();
+    try {
+      dao.delete(builder.prepare());
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+        
+  private Optional<Fare> getFareFromDb(long fareId) {
+    // get the fare from the DB.
+    RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
+
+    QueryBuilder<Fare, Integer> builder = dao.queryBuilder();
+    
+    Where<Fare, Integer> where = builder.where();
+    try {
+      where.eq("id", fareId);
+      builder.setWhere(where);
+      
+      // get all fares that are waiting
+      List<Fare> fares = dao.query(builder.prepare());
+      if (fares.size() > 0) {
+        Fare fare = fares.get(0);
+        dao.refresh(fare);
+        return Optional.of(fare);
+      } else {
+        return Optional.absent();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return Optional.absent();
+  }
+  
   ////////////////////////////////////////////////////////////
   // ORMLite
   ////////////////////////////////////////////////////////////
@@ -377,8 +485,7 @@ public class DrivingActivity extends AbstractMapActivity {
 
   private SCOrmLiteHelper getHelper() {
     if (databaseHelper == null) {
-      databaseHelper =
-          OpenHelperManager.getHelper(this, SCOrmLiteHelper.class);
+      databaseHelper = OpenHelperManager.getHelper(this, SCOrmLiteHelper.class);
     }
     return databaseHelper;
   }
@@ -386,6 +493,10 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // Utils
   ////////////////////////////////////////////////////////////
+ 
+  void handleThrowable(Throwable t) {
+    goBlooey(t);
+  }
   
   void goBlooey(Throwable t) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);

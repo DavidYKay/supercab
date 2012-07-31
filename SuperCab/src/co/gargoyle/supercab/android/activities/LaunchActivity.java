@@ -68,8 +68,7 @@ public class LaunchActivity extends RoboActivity {
 
           @Override
           protected Void doInBackground(Void... params) {
-            boolean registered =
-                ServerUtils.register(context, regId);
+            boolean registered = ServerUtils.register(context, regId);
             // At this point all attempts to register with the app
             // server failed, so we need to unregister the device
             // from GCM - the app will try to register again when
@@ -93,7 +92,6 @@ public class LaunchActivity extends RoboActivity {
       }
     }
   }
-
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {

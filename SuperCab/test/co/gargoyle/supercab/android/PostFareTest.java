@@ -50,7 +50,7 @@ public class PostFareTest {
   @Test
   public void shouldUploadFare() throws Exception {
     Context context = Robolectric.application;
-        
+
     // create  a signal to let us know when our task is done.
     final CountDownLatch signal = new CountDownLatch(1);
 
@@ -64,7 +64,7 @@ public class PostFareTest {
 
       @Override
       public void handleError(Throwable exception) {
-        
+
         fail("received error: " + exception.getMessage());
         signal.countDown();
       }
@@ -80,9 +80,9 @@ public class PostFareTest {
     final Fare fare = new Fare(pickup, dropoff, time);
 
     task.execute(fare);
-    
+
     signal.await(30, TimeUnit.SECONDS);
-    
+
   }
 
 }

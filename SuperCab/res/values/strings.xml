@@ -41,8 +41,8 @@
 <!--
 <string name="default_server_url">http://192.168.0.100:8000</string>
 <string name="default_server_url">http://www.supercab.com</string>
--->
 <string name="default_server_url">http://192.168.0.100:8000</string>
+-->
 <string name="delete_confirm">Delete %s form(s)?</string>
 <string name="delete_file">Delete Selected</string>
 <string name="delete_no">Do Not Delete</string>
@@ -256,23 +256,26 @@
 <string name="server_unregister_error">Could not unregister device on Demo Server (%1$s).</string>
 <string name="server_unregistered">From Demo Server: successfully removed device!</string>
 
+<string name="accept_fare">Accept Fare</string>
+<string name="arrived">Arrived</string>
+<string name="cancelling_fare">Cancelling Fare</string>
 <string name="change_first_name">First Name</string>
 <string name="change_last_name">Last Name</string>
 <string name="confirm_password">Confirm Password</string>
+<string name="driver_cancelled_fare">Your driver cancelled the fare!</string>
+<string name="driving">Driving</string>
+<string name="fare_status">Fare Status</string>
 <string name="fares_waiting">Fares Waiting</string>
 <string name="logout">Logout</string>
+<string name="no_fares_waiting">There are no passengers waiting right now!</string>
 <string name="phone_number">Phone Number</string>
 <string name="pick_user_type">User Type</string>
 <string name="register">Register</string>
-<string name="accept_fare">Accept Fare</string>
-<string name="driving">Driving</string>
-<string name="cancelling_fare">Cancelling Fare</string>
-<string name="no_fares_waiting">There are no passengers waiting right now!</string>
 
 <string name="maps_api_key">0DnJfnO1j0y-3af2hXtwEp4VG5EAqB8-MteCcmg</string>
 
 <string name="mode_passenger_waiting">Awaiting driver...</string>
-<string name="mode_passenger_accepted">Driver accepted fare! En route.</string>
+<string name="mode_passenger_accepted">Driver is en route.</string>
 <string name="mode_passenger_active">The meter is active.</string>
 <string name="mode_passenger_complete">Fare complete!</string>
 
@@ -281,6 +284,5 @@
 <string name="mode_driver_active">The meter is active.</string>
 <string name="mode_driver_complete">Fare complete!</string>
 
-<string name="arrived">Arrived</string>
 
 </resources>
