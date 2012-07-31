@@ -178,9 +178,10 @@ public class ConfirmationActivity extends AbstractMapActivity {
   }
 
   private void refresh() {
-    GetFareTask task = new GetFareTask(this, new GetFareListener() {
+    final GetFareTask task = new GetFareTask(this, new GetFareListener() {
       @Override
       public void completed(Optional<Fare> fare) {
+        mTasks.remove(this);
         setProgressBarIndeterminateVisibility(false);
         if (!fare.isPresent()) {
           mDriverLabel.setText("Error! Try again.");
@@ -195,18 +196,21 @@ public class ConfirmationActivity extends AbstractMapActivity {
 
     @Override
     public void handleError(Throwable exception) {
+      mTasks.remove(this);
       setProgressBarIndeterminateVisibility(false);
       handleThrowable(exception);
     }
 
     @Override
     public void unauthorized() {
+      mTasks.remove(this);
       onUnauthorizedCrazyState();
 //      logout();
     }
 
     });
 
+    mTasks.add(task);
     setProgressBarIndeterminateVisibility(true);
     task.execute(mFare.superCabId);
   }
@@ -315,7 +319,7 @@ public class ConfirmationActivity extends AbstractMapActivity {
   public void onUnauthorizedCrazyState() {
     Toast.makeText(getApplicationContext(),
                    "Your app is now in an invalid state! Please contact customer support.",
-                   Toast.LENGTH_LONG);
+                   Toast.LENGTH_LONG).show();
     logout();
   }
 
@@ -428,15 +432,17 @@ public class ConfirmationActivity extends AbstractMapActivity {
         public void onClick(DialogInterface dialog, int which) {
           dialog.dismiss();
           // End the tasks
+          for (AsyncTask<?, ?, ?> task : mTasks)  {
+            task.cancel(true);
+          }
         }
       };
       mProgressDialog.setTitle(getString(R.string.uploading_data));
       mProgressDialog.setMessage(getString(R.string.cancelling_fare));
       mProgressDialog.setIcon(android.R.drawable.ic_dialog_info);
       mProgressDialog.setIndeterminate(true);
-      mProgressDialog.setCancelable(false);
-      mProgressDialog.setButton(getString(R.string.cancel),
-          loadingButtonListener);
+      mProgressDialog.setCancelable(true);
+      mProgressDialog.setButton(getString(R.string.cancel),loadingButtonListener);
       return mProgressDialog;
     }
     return null;

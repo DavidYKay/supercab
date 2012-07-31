@@ -57,8 +57,8 @@ public class DrivingActivity extends AbstractMapActivity {
   private static final String TAG = "DrivingActivity";
   private static final String LOCATION_TAG = "location";
 
-  @InjectView(R.id.pickup_bar) private View mPickupBar;
-  @InjectView(R.id.dropoff_bar) private View mDropoffBar;
+  @InjectView(R.id.bottom_bar_pickup) private View mPickupBar;
+  @InjectView(R.id.bottom_bar_dropoff) private View mDropoffBar;
 
   @InjectView(R.id.fare_status) private TextView mFareStatusLabel;
   @InjectView(R.id.confirmation_pickup_text) private TextView mPickupLabel;
@@ -199,9 +199,10 @@ public class DrivingActivity extends AbstractMapActivity {
     centerMapAction();
   }
 
-  public void onConfirmButtonClicked(View view) {
-    Log.i(TAG, "onConfirmButtonClicked()");
+  public void onCompleteButtonClicked(View view) {
+    Log.i(TAG, "onCompleteButtonClicked()");
 
+    completeFare();
   }
 
   public void onCancelFareButtonClicked(View view) {
@@ -367,6 +368,35 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // Fare
   ////////////////////////////////////////////////////////////
+  
+  private void completeFare() {
+    // Tell the API we're done
+    mFare.status = FareStatus.complete;
+
+    // PUT fare to server, letting people know that we're completeling it
+    final PutFareTask task = new PutFareTask(this, new PutFareListener() {
+      @Override
+      public void completed(Optional<Fare> fare) {
+        setProgressBarIndeterminateVisibility(false);
+        if (fare.isPresent() && fare.get().status == FareStatus.complete) {
+          onFareCompleted(fare.get());
+        } else {
+          // Something happened. better not risk it
+        }
+        //mTasks.remove(this);
+      }
+
+      @Override
+      public void handleError(Throwable exception) {
+        setProgressBarIndeterminateVisibility(false);
+        handleThrowable(exception);
+      }
+    });
+
+    //mTasks.add(task);
+    setProgressBarIndeterminateVisibility(true);
+    task.execute(mFare);
+  }
 
   // TODO: Unify with ConfirmationActivity code
   private void cancelFare() {
@@ -407,6 +437,7 @@ public class DrivingActivity extends AbstractMapActivity {
         setProgressBarIndeterminateVisibility(false);
         if (fare.isPresent()) {
           Toast.makeText(DrivingActivity.this, "Customer Notified!", Toast.LENGTH_SHORT).show();
+          updateFareInDb(fare.get());
           mFare = fare.get();
           setStatus(mFare.status);
         } else {
@@ -447,6 +478,17 @@ public class DrivingActivity extends AbstractMapActivity {
     startActivity(new Intent(DrivingActivity.this, FareListActivity.class));
     finish();
   }
+  
+  private void onFareCompleted(Fare fare) {
+    updateFareInDb(fare);
+
+    Toast.makeText(DrivingActivity.this, "Fare Completed!", Toast.LENGTH_LONG).show();
+
+    Intent i = new Intent(DrivingActivity.this, FareCompleteActivity.class);
+    i.putExtra(Constants.KEY_FARE_ID, fare.id);
+    startActivity(i);
+    finish();
+  }
 
   private void onFareCancelled(Fare fare) {
     Toast.makeText(DrivingActivity.this, "Fare Cancelled!", Toast.LENGTH_LONG).show();
@@ -469,13 +511,11 @@ public class DrivingActivity extends AbstractMapActivity {
       e.printStackTrace();
       goBlooey(e);
     }
-
   }
 
   ////////////////////////////////////////////////////////////
   // Nav
   ////////////////////////////////////////////////////////////
-
 
   private void onCouldNotFindFare() {
     Toast.makeText(DrivingActivity.this, "Error! No fare found.", Toast.LENGTH_SHORT).show();
@@ -485,8 +525,19 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // DB
   ////////////////////////////////////////////////////////////
+  
+  private int updateFareInDb(Fare fare) {
 
-  private void deleteFareFromDb(Fare fare) {
+    if (fare.id == 0) {
+      fare.id = mFare.id; 
+    }
+
+    RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
+
+    return dao.update(fare); 
+  }
+
+  private int deleteFareFromDb(Fare fare) {
     RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
 
     // delete all fares with the matching id
@@ -494,10 +545,10 @@ public class DrivingActivity extends AbstractMapActivity {
 
     DeleteBuilder<Fare, Integer> builder = dao.deleteBuilder();
     try {
-      dao.delete(builder.prepare());
+      return dao.delete(builder.prepare());
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
+      return -1;
     }
   }
 

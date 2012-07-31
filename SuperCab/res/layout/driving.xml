@@ -49,13 +49,12 @@
     android:clickable="true" />
 
   <RelativeLayout
-    android:id="@+id/bottom_bar_confirmation"
+    android:id="@+id/bottom_bar_pickup"
     android:layout_width="fill_parent"
     android:layout_height="0px"
     android:layout_weight="25"
     android:orientation="vertical"
     >
-
     <LinearLayout
       android:id="@+id/pickup_bar"
       android:layout_width="wrap_content"
@@ -92,14 +91,48 @@
     </LinearLayout>
 
     <LinearLayout
+      android:layout_width="fill_parent"
+      android:layout_height="48dp"
+      android:orientation="horizontal"
+      android:layout_alignParentBottom="true"
+      >
+      <Button
+        android:id="@+id/cancel_fare_button"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="50"
+        android:layout_alignParentBottom="true"
+        android:text="@string/cancel"
+        android:textSize="24dp"
+        android:onClick="onCancelFareButtonClicked"
+        />
+      <Button
+        android:id="@+id/arrived_button"
+        android:layout_width="0px"
+        android:layout_height="48dp"
+        android:layout_weight="50"
+        android:layout_alignParentBottom="true"
+        android:text="@string/arrived"
+        android:textSize="24dp"
+        android:onClick="onArrivedButtonClicked"
+        />
+    </LinearLayout>
+  </RelativeLayout>
+
+  <RelativeLayout
+    android:id="@+id/bottom_bar_dropoff"
+    android:layout_width="fill_parent"
+    android:layout_height="0px"
+    android:layout_weight="25"
+    android:orientation="vertical"
+    >
+    <LinearLayout
       android:id="@+id/dropoff_bar"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
       android:layout_alignParentTop="true"
       android:paddingTop="12dp"
-
-      android:visibility="gone"
       >
       <TextView
         android:id="@+id/confirmation_dropoff_label"
@@ -134,24 +167,14 @@
       android:layout_alignParentBottom="true"
       >
       <Button
-        android:id="@+id/cancel_fare_button"
+        android:id="@+id/complete_button"
         android:layout_width="0px"
         android:layout_height="48dp"
         android:layout_weight="50"
         android:layout_alignParentBottom="true"
-        android:text="@string/cancel"
+        android:text="@string/fare_complete"
         android:textSize="24dp"
-        android:onClick="onCancelFareButtonClicked"
-        />
-      <Button
-        android:id="@+id/arrived_button"
-        android:layout_width="0px"
-        android:layout_height="48dp"
-        android:layout_weight="50"
-        android:layout_alignParentBottom="true"
-        android:text="@string/arrived"
-        android:textSize="24dp"
-        android:onClick="onArrivedButtonClicked"
+        android:onClick="onCompleteButtonClicked"
         />
     </LinearLayout>
   </RelativeLayout>
