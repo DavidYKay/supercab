@@ -62,7 +62,7 @@
       android:layout_height="wrap_content"
       android:orientation="horizontal"
       android:layout_alignParentTop="true"
-      android:paddingTop="12dp" >
+      android:paddingTop="12dp"
       >
 
       <TextView
@@ -88,7 +88,6 @@
         android:textSize="24dp"
         android:textStyle="bold"
         android:gravity="center"
-
         />
     </LinearLayout>
 
@@ -97,6 +96,8 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
+      android:layout_alignParentTop="true"
+      android:paddingTop="12dp"
 
       android:visibility="gone"
       >
@@ -107,8 +108,8 @@
         android:layout_height="wrap_content"
         android:text="Dropoff:"
         android:textColor="@color/text_inactive"
-        android:textSize="24dp"
-        android:textStyle="bold"
+        android:textSize="18dp"
+        android:textStyle="normal"
         android:gravity="center"
         />
 
@@ -120,8 +121,8 @@
         android:layout_alignParentTop="true"
         android:text="Dropoff: XXX"
         android:textColor="@color/text_inactive"
-        android:textSize="18dp"
-        android:textStyle="normal"
+        android:textSize="24dp"
+        android:textStyle="bold"
         android:gravity="center"
         />
     </LinearLayout>
