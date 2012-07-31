@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -141,10 +142,14 @@ public class ConfirmationActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
 
   private void setMode(FareStatus status) {
-    updateFareStatus(status);
+    if (status == FareStatus.cancelled) {
+      onFareCancelled();
+    } else {
+      updateFareStatus(status);
 
-    // Update the GUI
-    mDriverLabel.setText(getString(sTextForMode.get(status)));
+      // Update the GUI
+      mDriverLabel.setText(getString(sTextForMode.get(status)));
+    }
   }
 
   private void refresh() {
@@ -193,12 +198,12 @@ public class ConfirmationActivity extends AbstractMapActivity {
     dao.update(fare);
   }
 
+  // TODO: Unify this logic
   private void deleteFareFromDb(Fare fare) {
     RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
 
     // delete all fares with the matching id
     //dao.deleteById(fare.id);
-
     DeleteBuilder<Fare, Integer> builder = dao.deleteBuilder();
     try {
       dao.delete(builder.prepare());
@@ -208,6 +213,7 @@ public class ConfirmationActivity extends AbstractMapActivity {
     }
   }
 
+  // TODO: Unify with DrivingActivity code
   private void cancelFare() {
     // Tell the API we're done
     mFare.status = FareStatus.cancelled;
@@ -342,6 +348,29 @@ public class ConfirmationActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // Nav
   ////////////////////////////////////////////////////////////
+  
+  private void onFareCancelled() {
+    deleteFareFromDb(mFare);
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    AlertDialog dialog = builder.setTitle("Cancelled!")
+        .setMessage(R.string.driver_cancelled_fare)
+        .setPositiveButton("OK", null)
+        .create();
+    dialog.setOnDismissListener(new OnDismissListener() {
+      @Override
+      public void onDismiss(DialogInterface dialog) {
+        Intent i = new Intent(ConfirmationActivity.this, HailActivity.class);
+        startActivity(i);
+
+        finish();
+      }
+    });
+    dialog.show();
+
+    //Toast.makeText(ConfirmationActivity.this, "Finished refreshing fare.", Toast.LENGTH_SHORT).show();
+    //finish();
+  }
 
   private void logout() {
     RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
