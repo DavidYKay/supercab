@@ -98,6 +98,12 @@
     </activity>
     
     <activity
+      android:name=".activities.FareCompleteActivity"
+      android:configChanges="orientation"
+      android:label="@string/fare_complete" >
+    </activity>
+    
+    <activity
       android:name=".activities.FareDetailActivity"
       android:configChanges="orientation"
       android:label="@string/app_name" >
