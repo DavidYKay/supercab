@@ -26,6 +26,7 @@ import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.activities.parent.AbstractMapActivity;
 import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
 import co.gargoyle.supercab.android.enums.FareStatus;
+import co.gargoyle.supercab.android.map.PickupDropoffOverlay;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.model.UserModel;
@@ -54,14 +55,17 @@ public class ConfirmationActivity extends AbstractMapActivity {
   @InjectView(R.id.from_address) private TextView mFromLabel;
   @InjectView(R.id.to_address) private TextView mToLabel;
   @InjectView(R.id.driver_status) private TextView mDriverLabel;
+  
+  protected ProgressDialog mProgressDialog;
 
   private Fare mFare;
   private SCOrmLiteHelper databaseHelper;
 
   @SuppressWarnings("rawtypes")
   private HashSet<AsyncTask> mTasks = new HashSet<AsyncTask>();
-
-  protected ProgressDialog mProgressDialog;
+  
+  private PickupDropoffOverlay mPickupDropoffOverlay;
+  //private DriverLocationOverlay mDriverLocationOverlay;
 
   @Inject protected PreferenceUtils mPreferenceUtils;
 

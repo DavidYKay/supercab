@@ -527,23 +527,6 @@ public class HailActivity extends AbstractMapActivity {
     return bitmap;
   }
 
-  private Drawable getPinDrawableForMode(PointType mode) {
-    Drawable newPin;
-    if (mode == PointType.PICKUP) {
-      newPin = getResources().getDrawable(R.drawable.map_pin_green);
-    } else {
-      newPin = getResources().getDrawable(R.drawable.map_pin_red);
-    }
-    return newPin;
-  }
-
-  private Drawable getBoundedPinForMapOverlayWithMode(PointType mode) {
-    Drawable pin = getPinDrawableForMode(mode);
-
-    pin.setBounds(0, 0, pin.getIntrinsicWidth(), pin.getIntrinsicHeight());
-    return pin;
-  }
-
   private String getHailTextForMode(PointType mode) {
     String prompt;
     if (mode == PointType.PICKUP) {
