@@ -28,14 +28,17 @@ import co.gargoyle.supercab.android.utilities.BroadcastUtils;
 import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedDelete;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 public class FareListActivity extends RoboListActivity {
-  
+
   @SuppressWarnings("unused")
   @Inject private BroadcastUtils mBroadcastUtils;
 
@@ -49,15 +52,20 @@ public class FareListActivity extends RoboListActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+    Optional<Fare> activeFare = getFareFromDb();
+    if (activeFare.isPresent()) {
+      proceedToDriving(activeFare.get());
+    } else {
+      requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
-    setContentView(R.layout.fare_list);
-      
-    //setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
+      setContentView(R.layout.fare_list);
 
-    getData();
+      //setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
+
+      getData();
+    }
   }
-  
+
   @Override
   protected void onListItemClick(ListView l, View v, int position, long id) {
     ListAdapter adapter = getListAdapter();
@@ -72,7 +80,7 @@ public class FareListActivity extends RoboListActivity {
   ////////////////////////////////////////////////////////////
   // Menus
   ////////////////////////////////////////////////////////////
-  
+
   private static final int MENU_LOGOUT = Menu.FIRST;
   private static final int MENU_REFRESH = Menu.FIRST + 1;
 
@@ -105,11 +113,11 @@ public class FareListActivity extends RoboListActivity {
   public void onOptionsMenuClosed(Menu menu) {
     super.onOptionsMenuClosed(menu);
   }
-  
+
   ////////////////////////////////////////////////////////////
   // Main Methods
   ////////////////////////////////////////////////////////////
-  
+
   private void logout() {
     RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
     DeleteBuilder<UserModel, Integer> builder = dao.deleteBuilder();
@@ -126,11 +134,11 @@ public class FareListActivity extends RoboListActivity {
       goBlooey(e);
     }
   }
-  
+
   private void refresh() {
     getData();
   }
-  
+
   @SuppressWarnings("unchecked")
   private void getData() {
     GetFaresTask task = new GetFaresTask(this, new GetFaresListener() {
@@ -161,7 +169,50 @@ public class FareListActivity extends RoboListActivity {
     params.put("status", FareStatus.waiting);
     task.execute(params);
   }
-  
+
+  ////////////////////////////////////////////////////////////
+  // Navigation
+  ////////////////////////////////////////////////////////////
+
+  private void proceedToDriving(Fare fare) {
+    Intent i = new Intent(FareListActivity.this, DrivingActivity.class);
+    i.putExtra(Constants.KEY_FARE_ID, fare.id);
+    startActivity(i);
+
+    finish();
+  }
+
+  ////////////////////////////////////////////////////////////
+  // Fare
+  ////////////////////////////////////////////////////////////
+
+  private Optional<Fare> getFareFromDb() {
+    RuntimeExceptionDao <Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
+
+    QueryBuilder<Fare, Integer> builder = dao.queryBuilder();
+
+    Where<Fare, Integer> where = builder.where();
+    try {
+      where.in("status", FareStatus.accepted, FareStatus.active);
+      builder.setWhere(where);
+
+      // get all fares that are waiting
+      List<Fare> fares = dao.query(builder.prepare());
+
+      if (fares.size() > 0) {
+        Fare fare = fares.get(0);
+        dao.refresh(fare);
+        return Optional.of(fare);
+      } else {
+        return Optional.absent();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return Optional.absent();
+  }
+
   ////////////////////////////////////////////////////////////
   // ORMLite
   ////////////////////////////////////////////////////////////

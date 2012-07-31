@@ -4,6 +4,8 @@ import java.util.List;
 
 import android.location.Address;
 import android.location.Location;
+import co.gargoyle.supercab.android.model.GeoBoundingBox;
+import co.gargoyle.supercab.android.model.PickupPoint;
 
 import com.google.android.maps.GeoPoint;
 import com.google.common.base.Optional;
@@ -52,7 +54,7 @@ public class GeoUtils {
 
     // Check if the old and new location are from the same provider
     boolean isFromSameProvider = isSameProvider(location.getProvider(),
-                                                currentBestLocation.getProvider());
+        currentBestLocation.getProvider());
 
     // Determine location quality using a combination of timeliness and accuracy
     if (isMoreAccurate) {
@@ -80,19 +82,24 @@ public class GeoUtils {
       return location.toString();
     }
   }
+  
+  public static Location getLocation(double lat, double lon) {
+    Location location = new Location("GeoUtils");
+    location.setLatitude(lat);
+    location.setLongitude(lon);
+
+    return location;
+  }
 
   public Location geoPointToLocation(GeoPoint geoPoint) {
     double latitude  = GeoUtils.integerToDoubleValue(geoPoint.getLatitudeE6());
     double longitude = GeoUtils.integerToDoubleValue(geoPoint.getLongitudeE6());
 
-    Location location = new Location("GeoUtils");
-    location.setLatitude(latitude);
-    location.setLongitude(longitude);
-
+    Location location = getLocation(latitude, longitude);
     return location;
   }
 
-  public GeoPoint locationToGeoPoint(Location location) {
+  public static GeoPoint locationToGeoPoint(Location location) {
     int latitude  = GeoUtils.doubleToIntegerValue(location.getLatitude());
     int longitude = GeoUtils.doubleToIntegerValue(location.getLongitude());
 
@@ -124,8 +131,27 @@ public class GeoUtils {
     return (new GeoPoint((int) (lat * 1000000.0), (int) (lon * 1000000.0)));
   }
 
+  public static Location pickupPointToLocation(PickupPoint pickupPoint) {
+    return getLocation(pickupPoint.latitude, pickupPoint.longitude);
+  }
+
+  public static GeoPoint pickupPointToGeoPoint(PickupPoint pickupPoint) {
+    return getPoint(pickupPoint.latitude, pickupPoint.longitude);
+  }
 
   public static Optional<GeoPoint> getCenterPoint(List<GeoPoint> points) {
+    if (points.size() == 0) {
+      return Optional.absent();
+    }
+
+    Optional<GeoBoundingBox> boundingBox = getBoundingBox(points);
+    if (!boundingBox.isPresent()) {
+      return Optional.absent();
+    }
+    return Optional.of(boundingBox.get().getMidPoint());
+  }
+
+  public static Optional<GeoBoundingBox> getBoundingBox(List<GeoPoint> points) {
     if (points.size() == 0) {
       return Optional.absent();
     }
@@ -142,11 +168,19 @@ public class GeoUtils {
       maxLon = (int) ((maxLon < point.getLongitudeE6()) ? point.getLongitudeE6() : maxLon);
     }
 
-    int latitudeMidpoint = (minLat + maxLat) / 2;
-    int longitudeMidpoint = (minLon + maxLon) / 2;
+    GeoBoundingBox boundingBox = new GeoBoundingBox();
+    boundingBox.minLat = minLat;
+    boundingBox.maxLat = maxLat;
+    boundingBox.minLon = minLon;
+    boundingBox.maxLon = maxLon;
 
-    GeoPoint centerPoint = new GeoPoint(latitudeMidpoint, longitudeMidpoint);
-    return Optional.of(centerPoint);
+    return Optional.of(boundingBox);
+  }
+
+  public static String makeGoogleMapsUrl(Location location) {
+    return String.format("http://maps.google.com/?q=%s,%s&z=17",
+                         location.getLatitude(),
+                         location.getLongitude());
   }
 
 }

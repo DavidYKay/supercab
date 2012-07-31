@@ -274,13 +274,13 @@
 
 <string name="maps_api_key">0DnJfnO1j0y-3af2hXtwEp4VG5EAqB8-MteCcmg</string>
 
-<string name="mode_passenger_waiting">Awaiting driver...</string>
+<string name="mode_passenger_waiting">Awaiting driver…</string>
 <string name="mode_passenger_accepted">Driver is en route.</string>
 <string name="mode_passenger_active">The meter is active.</string>
 <string name="mode_passenger_complete">Fare complete!</string>
 
-<string name="mode_driver_waiting">Passenger waiting...</string>
-<string name="mode_driver_accepted">Fare accepted! Drive to customer.</string>
+<string name="mode_driver_waiting">Passenger waiting…</string>
+<string name="mode_driver_accepted">Drive to customer.</string>
 <string name="mode_driver_active">The meter is active.</string>
 <string name="mode_driver_complete">Fare complete!</string>
 

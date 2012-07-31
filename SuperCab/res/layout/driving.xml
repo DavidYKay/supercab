@@ -48,7 +48,7 @@
     android:apiKey="@string/maps_api_key"
     android:clickable="true" />
 
-  <LinearLayout
+  <RelativeLayout
     android:id="@+id/bottom_bar_confirmation"
     android:layout_width="fill_parent"
     android:layout_height="0px"
@@ -61,6 +61,8 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
+      android:layout_alignParentTop="true"
+      android:paddingTop="12dp" >
       >
 
       <TextView
@@ -70,8 +72,8 @@
         android:layout_height="wrap_content"
         android:text="Pickup:"
         android:textColor="@color/text_inactive"
-        android:textSize="24dp"
-        android:textStyle="bold"
+        android:textSize="18dp"
+        android:textStyle="normal"
         android:gravity="center"
         />
 
@@ -83,9 +85,10 @@
         android:layout_alignParentTop="true"
         android:text="XXX"
         android:textColor="@color/text_inactive"
-        android:textSize="18dp"
-        android:textStyle="normal"
+        android:textSize="24dp"
+        android:textStyle="bold"
         android:gravity="center"
+
         />
     </LinearLayout>
 
@@ -127,6 +130,7 @@
       android:layout_width="fill_parent"
       android:layout_height="48dp"
       android:orientation="horizontal"
+      android:layout_alignParentBottom="true"
       >
       <Button
         android:id="@+id/cancel_fare_button"
@@ -149,5 +153,5 @@
         android:onClick="onArrivedButtonClicked"
         />
     </LinearLayout>
-  </LinearLayout>
+  </RelativeLayout>
 </LinearLayout>

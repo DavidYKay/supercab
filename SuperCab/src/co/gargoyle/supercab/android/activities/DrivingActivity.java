@@ -1,16 +1,19 @@
 package co.gargoyle.supercab.android.activities;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.restlet.resource.ResourceException;
 
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -32,6 +35,7 @@ import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
 import co.gargoyle.supercab.android.utilities.Constants;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 import co.gargoyle.supercab.android.utilities.PreferenceUtils;
+import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
@@ -53,6 +57,7 @@ public class DrivingActivity extends AbstractMapActivity {
   private static final String LOCATION_TAG = "location";
 
   @InjectView(R.id.fare_status) private TextView mFareStatusLabel;
+  @InjectView(R.id.confirmation_pickup_text) private TextView mPickupLabel;
   @InjectView(R.id.map) private ExtendedMapView mMapView;
 
   @Inject private GeoUtils mGeoUtils;
@@ -80,14 +85,14 @@ public class DrivingActivity extends AbstractMapActivity {
     Log.i(TAG, "Starting up, creating directories");
 
     Intent i = getIntent();
-    //Fare fare = i.getParcelableExtra(Constants.KEY_FARE); 
+    //Fare fare = i.getParcelableExtra(Constants.KEY_FARE);
     //if (fare == null) {
     //  onCouldNotFindFare();
     //} else {
     //  mFare = fare;
     //}
 
-    long fareId = i.getIntExtra(Constants.KEY_FARE_ID, -1); 
+    long fareId = i.getIntExtra(Constants.KEY_FARE_ID, -1);
     if (fareId == -1) {
       onCouldNotFindFare();
     } else {
@@ -95,7 +100,6 @@ public class DrivingActivity extends AbstractMapActivity {
       if (!fare.isPresent()) {
         onCouldNotFindFare();
       } else {
-        //fare = getFareFromDb(fareId);
         mFare = fare.get();
       }
     }
@@ -116,11 +120,10 @@ public class DrivingActivity extends AbstractMapActivity {
     };
     mMapView.getOverlays().add(mMyLocationOverlay);
 
-    mPickupDropoffOverlay = new PickupDropoffOverlay(
+    mPickupDropoffOverlay = PickupDropoffOverlay.Factory.createFromFare(
         getBoundedPinForMapOverlayWithMode(PointType.PICKUP),
-        getBoundedPinForMapOverlayWithMode(PointType.DROPOFF)
-        );
-
+        getBoundedPinForMapOverlayWithMode(PointType.DROPOFF),
+        mFare);
     mPickupDropoffOverlay.setTapListener(new PickupDropoffOverlayTapListener() {
       @Override
       public void itemWasTapped(PickupDropoffItem item) {
@@ -131,7 +134,9 @@ public class DrivingActivity extends AbstractMapActivity {
     });
     mMapView.getOverlays().add(mPickupDropoffOverlay);
 
-    centerMapAction();
+    updateUiWithFare(mFare);
+    //centerMapAction();
+    fitPinsAndMe();
   }
 
   ////////////////////////////////////////////////////////////
@@ -196,7 +201,7 @@ public class DrivingActivity extends AbstractMapActivity {
 
   public void onCancelFareButtonClicked(View view) {
     Log.i(TAG, "onCancelFareButtonClicked()");
-    
+
     cancelFare();
   }
 
@@ -204,15 +209,48 @@ public class DrivingActivity extends AbstractMapActivity {
   // Mode Management
   ////////////////////////////////////////////////////////////
 
+  protected void setStatus(FareStatus status) {
+    //mFareStatusLabel.setText(getString(sTextForMode.get(status)));
+
+    mFareStatusLabel.setText(getString(sTextForMode.get(status)));
+  }
 
   ////////////////////////////////////////////////////////////
   // View Management
   ////////////////////////////////////////////////////////////
 
+  private void updateUiWithFare(Fare fare) {
+    setStatus(fare.status);
+
+    Location location = GeoUtils.pickupPointToLocation(fare.source);
+    mPickupLabel.setText(StringUtils.makeWebLinkFromUrl(
+        GeoUtils.makeGoogleMapsUrl(location),
+                      fare.source.toString()));
+
+                      //"geo:0,0?q=my+street+address",
+                      //"geo:-1.29885,36.79089?q=iHub",
+                      //"http://maps.google.com/?q=5.352135,100.299683&z=17",
+                      //"http://maps.google.com/?q=-1.29885,36.79089&z=17",
+    mPickupLabel.setMovementMethod(LinkMovementMethod.getInstance());
+  }
 
   ////////////////////////////////////////////////////////////
   // Map Management
   ////////////////////////////////////////////////////////////
+
+  private void fitPinsAndMe() {
+    ArrayList<GeoPoint> points = new ArrayList<GeoPoint>();
+
+    Location lastFix = mMyLocationOverlay.getLastFix();
+    if (lastFix != null) {
+      points.add(GeoUtils.locationToGeoPoint(lastFix));
+    }
+
+    points.add(GeoUtils.pickupPointToGeoPoint(mFare.source));
+    points.add(GeoUtils.pickupPointToGeoPoint(mFare.destination));
+
+    zoomMapToFitPoints(mMapController, points);
+  }
 
   private void zoomMapAction() {
     int zoomLevel = mMapView.getZoomLevel();
@@ -224,7 +262,6 @@ public class DrivingActivity extends AbstractMapActivity {
     } else {
       // We're zoomed in enough. Stop.
     }
-
   }
 
   private void centerMapAction() {
@@ -311,13 +348,7 @@ public class DrivingActivity extends AbstractMapActivity {
       public void completed(Optional<Fare> fare) {
         setProgressBarIndeterminateVisibility(false);
         if (fare.isPresent() && fare.get().status == FareStatus.cancelled) {
-          Toast.makeText(DrivingActivity.this, "Fare Cancelled!", Toast.LENGTH_SHORT).show();
-          // clear out the fare from the DB
-          deleteFareFromDb(fare.get());
-
-          // back to the main screen
-          startActivity(new Intent(DrivingActivity.this, FareListActivity.class));
-          finish();
+          onFareCancelled(fare.get());
         } else {
           // Something happened. better not risk it
         }
@@ -362,7 +393,7 @@ public class DrivingActivity extends AbstractMapActivity {
     task.execute(mFare);
 
   }
-  
+
   ////////////////////////////////////////////////////////////
   // Util
   ////////////////////////////////////////////////////////////
@@ -370,9 +401,26 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // Logout
   ////////////////////////////////////////////////////////////
-  
-  protected void setStatus(FareStatus status) {
-    mFareStatusLabel.setText(getString(sTextForMode.get(status)));
+
+  private void onCrazyErrorState() {
+    Toast.makeText(DrivingActivity.this, "Crazy error! aborting!", Toast.LENGTH_LONG).show();
+
+    deleteFareAndLeave(mFare);
+  }
+
+  private void deleteFareAndLeave(Fare fare) {
+    // clear out the fare from the DB
+    deleteFareFromDb(fare);
+
+    // back to the main screen
+    startActivity(new Intent(DrivingActivity.this, FareListActivity.class));
+    finish();
+  }
+
+  private void onFareCancelled(Fare fare) {
+    Toast.makeText(DrivingActivity.this, "Fare Cancelled!", Toast.LENGTH_LONG).show();
+
+    deleteFareAndLeave(fare);
   }
 
   private void logout() {
@@ -390,13 +438,13 @@ public class DrivingActivity extends AbstractMapActivity {
       e.printStackTrace();
       goBlooey(e);
     }
-   
+
   }
 
   ////////////////////////////////////////////////////////////
   // Nav
   ////////////////////////////////////////////////////////////
-  
+
 
   private void onCouldNotFindFare() {
     Toast.makeText(DrivingActivity.this, "Error! No fare found.", Toast.LENGTH_SHORT).show();
@@ -406,7 +454,7 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // DB
   ////////////////////////////////////////////////////////////
-  
+
   private void deleteFareFromDb(Fare fare) {
     RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
 
@@ -421,18 +469,18 @@ public class DrivingActivity extends AbstractMapActivity {
       e.printStackTrace();
     }
   }
-        
+
   private Optional<Fare> getFareFromDb(long fareId) {
     // get the fare from the DB.
     RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
 
     QueryBuilder<Fare, Integer> builder = dao.queryBuilder();
-    
+
     Where<Fare, Integer> where = builder.where();
     try {
       where.eq("id", fareId);
       builder.setWhere(where);
-      
+
       // get all fares that are waiting
       List<Fare> fares = dao.query(builder.prepare());
       if (fares.size() > 0) {
@@ -448,7 +496,7 @@ public class DrivingActivity extends AbstractMapActivity {
     }
     return Optional.absent();
   }
-  
+
   ////////////////////////////////////////////////////////////
   // ORMLite
   ////////////////////////////////////////////////////////////
@@ -469,21 +517,32 @@ public class DrivingActivity extends AbstractMapActivity {
     }
     return databaseHelper;
   }
-  
+
   ////////////////////////////////////////////////////////////
   // Utils
   ////////////////////////////////////////////////////////////
- 
+
   void handleThrowable(Throwable t) {
+    if (t instanceof ResourceException) {
+      ResourceException resEx = (ResourceException) t;
+
+      if (resEx.getStatus().getCode() == 400) {
+        //onFareCancelled(mFare);
+        // Something crazy happened
+        onCrazyErrorState();
+      } else {
+        goBlooey(t);
+      }
+    }
     goBlooey(t);
   }
-  
+
   void goBlooey(Throwable t) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
     builder.setTitle("Exception!").setMessage(t.toString()).setPositiveButton("OK", null).show();
   }
-  
+
   private static final HashMap<FareStatus, Integer> sTextForMode = new HashMap<FareStatus, Integer>();
 
   static {

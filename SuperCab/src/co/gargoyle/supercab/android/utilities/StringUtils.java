@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
 
+import android.text.Html;
+import android.text.Spanned;
 import android.text.format.DateUtils;
 
 public class StringUtils {
@@ -39,6 +41,12 @@ public class StringUtils {
         DateUtils.FORMAT_ABBREV_RELATIVE
         );
     return timeString;
+  }
+
+  public static Spanned makeWebLinkFromUrl(String url, String displayText) {
+    return Html.fromHtml(String.format("<a href=\"%s\">%s</a>",
+                         url,
+                         displayText));
   }
 
 }

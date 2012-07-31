@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import co.gargoyle.supercab.android.enums.PointType;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
@@ -29,8 +30,14 @@ public class PickupDropoffOverlay extends ItemizedOverlay<PickupDropoffItem> {
           dropOffMarker
       );
 
-      overlay.addPickup(fare.source);
-      overlay.addPickup(fare.destination);
+      PickupPoint pickup = fare.source;
+      pickup.pointType = PointType.PICKUP;
+
+      PickupPoint dropoff = fare.destination;
+      dropoff.pointType = PointType.DROPOFF;
+
+      overlay.addPickup(pickup);
+      overlay.addPickup(dropoff);
 
       return overlay;
     }
