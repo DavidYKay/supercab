@@ -19,7 +19,6 @@ public abstract class AbstractMapActivity extends RoboMapActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
   }
 
   @Override
