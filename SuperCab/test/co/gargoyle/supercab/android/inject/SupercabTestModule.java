@@ -1,18 +1,16 @@
 package co.gargoyle.supercab.android.inject;
 
 import roboguice.util.Ln;
-import android.content.Context;
 import android.util.Log;
 import co.gargoyle.supercab.android.activities.FareDetailActivity;
 
 import com.google.inject.AbstractModule;
-import com.xtremelabs.robolectric.Robolectric;
 
 public class SupercabTestModule extends AbstractModule {
 
   @Override 
   protected void configure() {
-    Context context = Robolectric.application;
+//    Context context = Robolectric.application;
     
     bind(FareDetailActivity.class);    
     //bind(PhoneUtils.class).toInstance(new MockPhoneUtils(context));

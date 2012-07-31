@@ -386,7 +386,7 @@ public class DrivingActivity extends AbstractMapActivity {
         
   private Optional<Fare> getFareFromDb(long fareId) {
     // get the fare from the DB.
-    RuntimeExceptionDao dao = getHelper().getRuntimeDao(Fare.class);
+    RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
 
     QueryBuilder<Fare, Integer> builder = dao.queryBuilder();
     
