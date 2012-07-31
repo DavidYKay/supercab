@@ -65,9 +65,6 @@ public class HailActivity extends AbstractMapActivity {
   private static final int TEXT_ACTIVE_COLOR   = R.color.text_active;
   private static final int TEXT_INACTIVE_COLOR = R.color.text_inactive;
 
-  private static final int ZOOM_LEVEL_CITY         = 15;
-  private static final int ZOOM_LEVEL_NEIGHBORHOOD = 20;
-
   @InjectView(R.id.map) protected ExtendedMapView mMapView;
   @InjectView(R.id.bottom_bar_pickup) private View mPickupBar;
   @InjectView(R.id.bottom_bar_confirmation) private View mConfirmationBar;
