@@ -295,26 +295,6 @@ public class DrivingActivity extends AbstractMapActivity {
   // Address Text Management
   ////////////////////////////////////////////////////////////
 
-  ////////////////////////////////////////////////////////////
-  // Resources
-  ////////////////////////////////////////////////////////////
-
-  private Drawable getPinDrawableForMode(PointType mode) {
-    Drawable newPin;
-    if (mode == PointType.PICKUP) {
-      newPin = getResources().getDrawable(R.drawable.map_pin_green);
-    } else {
-      newPin = getResources().getDrawable(R.drawable.map_pin_red);
-    }
-    return newPin;
-  }
-
-  private Drawable getBoundedPinForMapOverlayWithMode(PointType mode) {
-    Drawable pin = getPinDrawableForMode(mode);
-
-    pin.setBounds(0, 0, pin.getIntrinsicWidth(), pin.getIntrinsicHeight());
-    return pin;
-  }
 
   ////////////////////////////////////////////////////////////
   // Fare

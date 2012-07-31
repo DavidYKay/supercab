@@ -342,7 +342,9 @@ public class HailActivity extends AbstractMapActivity {
   }
 
   private void zoomMapToFitBothPins() {
-    mMapController.zoomToSpan(mPickupDropoffOverlay.getLatSpanE6(), mPickupDropoffOverlay.getLonSpanE6());
+    int latSpan = (int) (1.1 * mPickupDropoffOverlay.getLatSpanE6());
+    int lonSpan = (int) (1.1 * mPickupDropoffOverlay.getLonSpanE6());
+    mMapController.zoomToSpan(latSpan, lonSpan);
 
     Optional<GeoPoint> result = mPickupDropoffOverlay.getCenterPoint();
     if (result.isPresent()) {
@@ -525,23 +527,6 @@ public class HailActivity extends AbstractMapActivity {
     Drawable drawable = getPinDrawableForMode(mode);
     Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
     return bitmap;
-  }
-
-  private Drawable getPinDrawableForMode(PointType mode) {
-    Drawable newPin;
-    if (mode == PointType.PICKUP) {
-      newPin = getResources().getDrawable(R.drawable.map_pin_green);
-    } else {
-      newPin = getResources().getDrawable(R.drawable.map_pin_red);
-    }
-    return newPin;
-  }
-
-  private Drawable getBoundedPinForMapOverlayWithMode(PointType mode) {
-    Drawable pin = getPinDrawableForMode(mode);
-
-    pin.setBounds(0, 0, pin.getIntrinsicWidth(), pin.getIntrinsicHeight());
-    return pin;
   }
 
   private String getHailTextForMode(PointType mode) {

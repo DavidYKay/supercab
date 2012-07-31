@@ -9,7 +9,7 @@
   android:layout_marginTop="0dp"
   android:orientation="vertical"
   android:padding="0dp" >
-  
+
   <co.gargoyle.supercab.android.map.ExtendedMapView
     android:id="@+id/map"
     android:layout_width="fill_parent"

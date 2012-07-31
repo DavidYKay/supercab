@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.utilities.GeoUtils;
 
@@ -21,14 +22,19 @@ public class PickupDropoffOverlay extends ItemizedOverlay<PickupDropoffItem> {
 
   private PickupDropoffOverlayTapListener mTapListener;
 
-  //public static class Factory {
-  //  public static PickupDropoffOverlay createOverlay() {
-  //    PickupDropoffOverlay overlay = new PickupDropoffOverlay(
-  //        pickupMarkerDrawable
-  //    );
-  //    return overlay;
-  //  }
-  //}
+  public static class Factory {
+    public static PickupDropoffOverlay createFromFare(Drawable pickupMarker, Drawable dropOffMarker, Fare fare) {
+      PickupDropoffOverlay overlay = new PickupDropoffOverlay(
+          pickupMarker,
+          dropOffMarker
+      );
+
+      overlay.addPickup(fare.source);
+      overlay.addPickup(fare.destination);
+
+      return overlay;
+    }
+  }
 
   public PickupDropoffOverlay(Drawable pickupMarker, Drawable dropOffMarker) {
     super(pickupMarker);

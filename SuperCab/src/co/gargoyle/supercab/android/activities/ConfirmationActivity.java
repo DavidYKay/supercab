@@ -26,6 +26,11 @@ import co.gargoyle.supercab.android.R;
 import co.gargoyle.supercab.android.activities.parent.AbstractMapActivity;
 import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
 import co.gargoyle.supercab.android.enums.FareStatus;
+import co.gargoyle.supercab.android.enums.PointType;
+import co.gargoyle.supercab.android.map.ExtendedMapView;
+import co.gargoyle.supercab.android.map.PickupDropoffItem;
+import co.gargoyle.supercab.android.map.PickupDropoffOverlay;
+import co.gargoyle.supercab.android.map.PickupDropoffOverlayTapListener;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
 import co.gargoyle.supercab.android.model.UserModel;
@@ -50,10 +55,14 @@ public class ConfirmationActivity extends AbstractMapActivity {
 
   private static final int PROGRESS_DIALOG = 1;
 
+  @InjectView(R.id.map) private ExtendedMapView mMapView;
+
   @InjectView(R.id.time_value) private TextView mTimeLabel;
   @InjectView(R.id.from_address) private TextView mFromLabel;
   @InjectView(R.id.to_address) private TextView mToLabel;
   @InjectView(R.id.driver_status) private TextView mDriverLabel;
+
+  protected ProgressDialog mProgressDialog;
 
   private Fare mFare;
   private SCOrmLiteHelper databaseHelper;
@@ -61,7 +70,8 @@ public class ConfirmationActivity extends AbstractMapActivity {
   @SuppressWarnings("rawtypes")
   private HashSet<AsyncTask> mTasks = new HashSet<AsyncTask>();
 
-  protected ProgressDialog mProgressDialog;
+  private PickupDropoffOverlay mPickupDropoffOverlay;
+  //private DriverLocationOverlay mDriverLocationOverlay;
 
   @Inject protected PreferenceUtils mPreferenceUtils;
 
@@ -78,6 +88,21 @@ public class ConfirmationActivity extends AbstractMapActivity {
 
     Intent i = getIntent();
     mFare = i.getParcelableExtra(Constants.KEY_FARE);
+
+    mPickupDropoffOverlay = PickupDropoffOverlay.Factory.createFromFare(
+        getBoundedPinForMapOverlayWithMode(PointType.PICKUP),
+        getBoundedPinForMapOverlayWithMode(PointType.DROPOFF),
+        mFare);
+    mPickupDropoffOverlay.setTapListener(new PickupDropoffOverlayTapListener() {
+      @Override
+      public void itemWasTapped(PickupDropoffItem item) {
+        Toast.makeText(ConfirmationActivity.this,
+                       item.getTitle(),
+                       Toast.LENGTH_SHORT).show();
+      }
+    });
+    mMapView.getOverlays().add(mPickupDropoffOverlay);
+
 
     Date time = mFare.timeRequested;
     CharSequence timeString = StringUtils.getNiceTime(time);
@@ -348,7 +373,7 @@ public class ConfirmationActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // Nav
   ////////////////////////////////////////////////////////////
-  
+
   private void onFareCancelled() {
     deleteFareFromDb(mFare);
 
