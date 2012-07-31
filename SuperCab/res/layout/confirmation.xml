@@ -19,6 +19,15 @@
     android:apiKey="@string/maps_api_key"
     android:clickable="true" />
 
+   <ProgressBar
+     android:id="@+id/step_progress"
+     android:layout_width="fill_parent"
+     android:layout_height="wrap_content"
+     android:layout_marginTop="5dp"
+     android:max="4"
+     style="@android:style/Widget.ProgressBar.Horizontal"
+     />
+
   <TableLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tableLayout1"

@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.gargoyle.supercab.android.R;
@@ -56,6 +57,8 @@ public class ConfirmationActivity extends AbstractMapActivity {
   private static final int PROGRESS_DIALOG = 1;
 
   @InjectView(R.id.map) private ExtendedMapView mMapView;
+
+  @InjectView(R.id.step_progress) private ProgressBar mStepProgress;
 
   @InjectView(R.id.time_value) private TextView mTimeLabel;
   @InjectView(R.id.from_address) private TextView mFromLabel;
@@ -167,6 +170,7 @@ public class ConfirmationActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
 
   private void setMode(FareStatus status) {
+    setBarProgressForMode(status);
     if (status == FareStatus.cancelled) {
       onFareCancelled();
     } else {
@@ -175,6 +179,28 @@ public class ConfirmationActivity extends AbstractMapActivity {
       // Update the GUI
       mDriverLabel.setText(getString(sTextForMode.get(status)));
     }
+  }
+
+  private void setBarProgressForMode(FareStatus status) {
+    int value = 0;
+    switch (status) {
+      case waiting:
+        value = 1;
+        break;
+      case accepted:
+        value = 2;
+        break;
+      case active:
+        value = 3;
+        break;
+      case complete:
+        value = 4;
+        break;
+      case cancelled:
+        value = 0;
+        break;
+    }
+    mStepProgress.setProgress(value);
   }
 
   private void refresh() {
