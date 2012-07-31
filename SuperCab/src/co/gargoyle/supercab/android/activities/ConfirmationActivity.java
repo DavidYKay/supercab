@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.restlet.resource.ResourceException;
+
 import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -25,6 +27,7 @@ import co.gargoyle.supercab.android.database.SCOrmLiteHelper;
 import co.gargoyle.supercab.android.enums.FareStatus;
 import co.gargoyle.supercab.android.model.Fare;
 import co.gargoyle.supercab.android.model.PickupPoint;
+import co.gargoyle.supercab.android.model.UserModel;
 import co.gargoyle.supercab.android.tasks.GetFareTask;
 import co.gargoyle.supercab.android.tasks.PostFareTask;
 import co.gargoyle.supercab.android.tasks.PutFareTask;
@@ -32,12 +35,15 @@ import co.gargoyle.supercab.android.tasks.listeners.GetFareListener;
 import co.gargoyle.supercab.android.tasks.listeners.PostFareListener;
 import co.gargoyle.supercab.android.tasks.listeners.PutFareListener;
 import co.gargoyle.supercab.android.utilities.Constants;
+import co.gargoyle.supercab.android.utilities.PreferenceUtils;
 import co.gargoyle.supercab.android.utilities.StringUtils;
 
 import com.google.common.base.Optional;
+import com.google.inject.Inject;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedDelete;
 
 public class ConfirmationActivity extends AbstractMapActivity {
 
@@ -56,7 +62,7 @@ public class ConfirmationActivity extends AbstractMapActivity {
 
   protected ProgressDialog mProgressDialog;
 
-
+  @Inject protected PreferenceUtils mPreferenceUtils;
 
   ////////////////////////////////////////////////////////////
   // Activity Lifecycle
@@ -64,7 +70,7 @@ public class ConfirmationActivity extends AbstractMapActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
+
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
     setContentView(R.layout.confirmation);
@@ -92,11 +98,11 @@ public class ConfirmationActivity extends AbstractMapActivity {
   public void onCancelButtonClick(View v) {
     cancelFare();
   }
-  
+
   ////////////////////////////////////////////////////////////
   // Menus
   ////////////////////////////////////////////////////////////
-  
+
   private static final int MENU_LOGOUT = Menu.FIRST;
   private static final int MENU_REFRESH = Menu.FIRST + 1;
 
@@ -160,12 +166,12 @@ public class ConfirmationActivity extends AbstractMapActivity {
     @Override
     public void handleError(Throwable exception) {
       setProgressBarIndeterminateVisibility(false);
-      goBlooey(exception);
+      handleThrowable(exception);
     }
 
     @Override
     public void unauthorized() {
-      goBlooey(new Exception("Your app is now in an invalid state! Please call your driver."));
+      onUnauthorizedCrazyState();
 //      logout();
     }
 
@@ -174,14 +180,14 @@ public class ConfirmationActivity extends AbstractMapActivity {
     setProgressBarIndeterminateVisibility(true);
     task.execute(mFare.superCabId);
   }
-  
+
   private void updateFareStatus(FareStatus status) {
     if (!mFare.status.equals(status)) {
       mFare.status = status;
       updateFare(mFare);
     }
   }
-  
+
   private void updateFare(Fare fare) {
     RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
     dao.update(fare);
@@ -227,7 +233,7 @@ public class ConfirmationActivity extends AbstractMapActivity {
 
       @Override
       public void handleError(Throwable exception) {
-        goBlooey(exception);
+        handleThrowable(exception);
       }
     });
 
@@ -263,7 +269,7 @@ public class ConfirmationActivity extends AbstractMapActivity {
     @Override
     public void handleError(Throwable exception) {
       setProgressBarIndeterminateVisibility(false);
-      goBlooey(exception);
+      handleThrowable(exception);
     }
 
     });
@@ -275,10 +281,30 @@ public class ConfirmationActivity extends AbstractMapActivity {
   // Error Handling
   ////////////////////////////////////////////////////////////
 
+  public void onUnauthorizedCrazyState() {
+    Toast.makeText(getApplicationContext(),
+                   "Your app is now in an invalid state! Please contact customer support.",
+                   Toast.LENGTH_LONG);
+    logout();
+  }
+
+  void handleThrowable(Throwable t) {
+    if (t instanceof ResourceException) {
+      ResourceException resEx = (ResourceException) t;
+      if (resEx.getStatus().getCode() == 401) {
+        // Something crazy happened
+        onUnauthorizedCrazyState();
+      } else {
+        goBlooey(t);
+      }
+    } else {
+      goBlooey(t);
+    }
+
+  }
 
   void goBlooey(Throwable t) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
     builder.setTitle("Exception!").setMessage(t.toString()).setPositiveButton("OK", null).show();
   }
 
@@ -311,6 +337,27 @@ public class ConfirmationActivity extends AbstractMapActivity {
           OpenHelperManager.getHelper(this, SCOrmLiteHelper.class);
     }
     return databaseHelper;
+  }
+
+  ////////////////////////////////////////////////////////////
+  // Nav
+  ////////////////////////////////////////////////////////////
+
+  private void logout() {
+    RuntimeExceptionDao <UserModel, Integer> dao = getHelper().getRuntimeDao(UserModel.class);
+    DeleteBuilder<UserModel, Integer> builder = dao.deleteBuilder();
+    PreparedDelete<UserModel> deleteAll;
+    try {
+      deleteAll = builder.prepare();
+      dao.delete(deleteAll);
+      mPreferenceUtils.clearUser();
+
+      startActivity(new Intent(ConfirmationActivity.this, LoginActivity.class));
+      finish();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      goBlooey(e);
+    }
   }
 
   ////////////////////////////////////////////////////////////
