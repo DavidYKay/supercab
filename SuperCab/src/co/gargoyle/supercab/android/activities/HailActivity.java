@@ -95,7 +95,6 @@ public class HailActivity extends AbstractMapActivity {
 
     Log.i(TAG, "Starting up, creating directories");
     
-
     Optional<Fare> pendingFare = getFareFromDb();
     if (pendingFare.isPresent()) {
       proceedToConfirmation(pendingFare.get());

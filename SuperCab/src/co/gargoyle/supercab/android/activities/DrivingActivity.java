@@ -80,14 +80,14 @@ public class DrivingActivity extends AbstractMapActivity {
     Log.i(TAG, "Starting up, creating directories");
 
     Intent i = getIntent();
-    //Fare fare = i.getParcelableExtra(Constants.KEY_FARE); 
+    //Fare fare = i.getParcelableExtra(Constants.KEY_FARE);
     //if (fare == null) {
     //  onCouldNotFindFare();
     //} else {
     //  mFare = fare;
     //}
 
-    long fareId = i.getIntExtra(Constants.KEY_FARE_ID, -1); 
+    long fareId = i.getIntExtra(Constants.KEY_FARE_ID, -1);
     if (fareId == -1) {
       onCouldNotFindFare();
     } else {
@@ -196,7 +196,7 @@ public class DrivingActivity extends AbstractMapActivity {
 
   public void onCancelFareButtonClicked(View view) {
     Log.i(TAG, "onCancelFareButtonClicked()");
-    
+
     cancelFare();
   }
 
@@ -213,7 +213,7 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // Map Management
   ////////////////////////////////////////////////////////////
-  
+
   private void fitPinsAndMe() {
     ArrayList<GeoPoint> points = new ArrayList<GeoPoint>();
 
@@ -376,7 +376,7 @@ public class DrivingActivity extends AbstractMapActivity {
     task.execute(mFare);
 
   }
-  
+
   ////////////////////////////////////////////////////////////
   // Util
   ////////////////////////////////////////////////////////////
@@ -384,7 +384,7 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // Logout
   ////////////////////////////////////////////////////////////
-  
+
   protected void setStatus(FareStatus status) {
     mFareStatusLabel.setText(getString(sTextForMode.get(status)));
   }
@@ -404,13 +404,13 @@ public class DrivingActivity extends AbstractMapActivity {
       e.printStackTrace();
       goBlooey(e);
     }
-   
+
   }
 
   ////////////////////////////////////////////////////////////
   // Nav
   ////////////////////////////////////////////////////////////
-  
+
 
   private void onCouldNotFindFare() {
     Toast.makeText(DrivingActivity.this, "Error! No fare found.", Toast.LENGTH_SHORT).show();
@@ -420,7 +420,7 @@ public class DrivingActivity extends AbstractMapActivity {
   ////////////////////////////////////////////////////////////
   // DB
   ////////////////////////////////////////////////////////////
-  
+
   private void deleteFareFromDb(Fare fare) {
     RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
 
@@ -435,18 +435,18 @@ public class DrivingActivity extends AbstractMapActivity {
       e.printStackTrace();
     }
   }
-        
+
   private Optional<Fare> getFareFromDb(long fareId) {
     // get the fare from the DB.
     RuntimeExceptionDao<Fare, Integer> dao = getHelper().getRuntimeDao(Fare.class);
 
     QueryBuilder<Fare, Integer> builder = dao.queryBuilder();
-    
+
     Where<Fare, Integer> where = builder.where();
     try {
       where.eq("id", fareId);
       builder.setWhere(where);
-      
+
       // get all fares that are waiting
       List<Fare> fares = dao.query(builder.prepare());
       if (fares.size() > 0) {
@@ -462,7 +462,7 @@ public class DrivingActivity extends AbstractMapActivity {
     }
     return Optional.absent();
   }
-  
+
   ////////////////////////////////////////////////////////////
   // ORMLite
   ////////////////////////////////////////////////////////////
@@ -483,21 +483,21 @@ public class DrivingActivity extends AbstractMapActivity {
     }
     return databaseHelper;
   }
-  
+
   ////////////////////////////////////////////////////////////
   // Utils
   ////////////////////////////////////////////////////////////
- 
+
   void handleThrowable(Throwable t) {
     goBlooey(t);
   }
-  
+
   void goBlooey(Throwable t) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
     builder.setTitle("Exception!").setMessage(t.toString()).setPositiveButton("OK", null).show();
   }
-  
+
   private static final HashMap<FareStatus, Integer> sTextForMode = new HashMap<FareStatus, Integer>();
 
   static {
